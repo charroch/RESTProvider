@@ -22,7 +22,7 @@ public class EmptyCursor extends AbstractCursor {
      */
     @Override
     public String[] getColumnNames() {
-        return new String[]{};
+        return new String[]{"_id"};
     }
 
     /*

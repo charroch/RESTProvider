@@ -49,7 +49,7 @@ define "RESTProviderAll", :layout => android_layout do
     project.compile.sources << _('gen')
 	  url = "http://cloud.github.com/downloads/kaeppler/droid-fu/droid-fu-1.0-SNAPSHOT.jar"
 	  download(artifact("droidfu:droidfu:jar:1.0-SNAPSHOT") =>url)
-  	compile.with SIGNPOST, JACKSON, DOM4J, DROIDFU, File.expand_path('android.jar', ENV['ANDROID_HOME'] + "/platforms/android-2.0"), project('RESTProvider')
+  	compile.with SIGNPOST, JACKSON, DOM4J, DROIDFU, File.expand_path('android.jar', ENV['ANDROID_HOME'] + "/platforms/android-2.0")
     eclipse.external_sources = project('RESTProvider')
     eclipse.exclude_libs = [File.expand_path('android.jar', ENV['ANDROID_HOME'] + "/platforms/android-2.0")]
   end

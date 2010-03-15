@@ -6,10 +6,13 @@ import java.util.Arrays;
 import java.util.Iterator;
 
 import novoda.rest.RESTProvider;
+import novoda.rest.handlers.QueryHandler;
 
 import org.apache.http.HttpResponse;
 import org.apache.http.client.ClientProtocolException;
+import org.apache.http.util.EntityUtils;
 import org.codehaus.jackson.JsonNode;
+import org.codehaus.jackson.JsonParseException;
 import org.codehaus.jackson.JsonProcessingException;
 import org.codehaus.jackson.map.ObjectMapper;
 
@@ -17,7 +20,7 @@ import android.database.AbstractCursor;
 import android.os.Bundle;
 import android.util.Log;
 
-public class JsonCursor extends AbstractCursor {
+public class JsonCursor extends AbstractCursor implements QueryHandler<JsonCursor> {
 
     private static final String TAG = JsonCursor.class.getSimpleName();
 
@@ -179,10 +182,11 @@ public class JsonCursor extends AbstractCursor {
 
     public JsonCursor handleResponse(HttpResponse response) throws ClientProtocolException,
             IOException {
-        array = mapper.readTree(response.getEntity().getContent());
-        return init();
+        String re = EntityUtils.toString(response.getEntity());
+        Log.i(TAG, re);
+        return handleResponse(re);
     }
-    
+
     public JsonCursor handleResponse(String json) throws JsonProcessingException, IOException {
         array = mapper.readTree(json);
         return init();
@@ -255,7 +259,7 @@ public class JsonCursor extends AbstractCursor {
     }
 
     public static class Builder {
-        
+
         private String root = null;
 
         private String[] columnNames;
@@ -265,7 +269,7 @@ public class JsonCursor extends AbstractCursor {
         private String idNode = null;
 
         private String[] foreignKeys;
-        
+
         public Builder withRootField(String root) {
             this.root = root;
             return this;
