@@ -1,7 +1,7 @@
 package novoda.rest.test.cursors;
 
 import junit.framework.TestCase;
-import novoda.rest.cursors.JsonCursor;
+import novoda.rest.cursors.json.JsonCursor;
 
 import org.apache.http.HttpEntity;
 import org.apache.http.ProtocolVersion;
@@ -151,6 +151,14 @@ public class JsonCursorTest extends TestCase {
 		assertTrue(tree.moveToNext());
 		assertEquals("Simon Patterson", tree.getString(tree
 				.getColumnIndexOrThrow("artist")));
+	}
+	
+	public void testSingleObject() throws Exception {
+	    String json = "{\"test\":{\"f\":1, \"f2\":\"value\"}}";
+	    MockHttpResponse response = new MockHttpResponse(json);
+	    JsonCursor cursor = new JsonCursor("test").handleResponse(response);
+	    assertTrue(cursor.getCount() == 1);
+	    assertEquals(cursor.getString(cursor.getColumnIndex("f")), "1");
 	}
 
 	private class MockHttpResponse extends BasicHttpResponse {
