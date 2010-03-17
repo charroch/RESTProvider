@@ -3,7 +3,7 @@ package novoda.rest.test;
 
 import junit.framework.TestCase;
 import novoda.rest.cache.UriCache;
-import novoda.rest.cursors.JsonCursor;
+import novoda.rest.cursors.json.JsonCursor;
 import novoda.rest.test.mock.MockRESTProvider;
 import novoda.rest.test.utils.MockJsonFactory;
 

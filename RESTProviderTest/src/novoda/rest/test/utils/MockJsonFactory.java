@@ -2,7 +2,7 @@ package novoda.rest.test.utils;
 
 import java.io.IOException;
 
-import novoda.rest.cursors.JsonCursor;
+import novoda.rest.cursors.json.JsonCursor;
 
 import org.apache.http.HttpEntity;
 import org.apache.http.ProtocolVersion;

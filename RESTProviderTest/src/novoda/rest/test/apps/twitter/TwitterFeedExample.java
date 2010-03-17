@@ -17,7 +17,6 @@ public class TwitterFeedExample extends ListActivity {
 		super.onCreate(savedInstanceState);
 		CPAsyncHandler g = new CPAsyncHandler(getContentResolver());
 		
-		// it actually don't work with the query options yet
 		g.startQuery(1, null, Uri.parse("content://novoda.rest.test.twitter"),
 				null, "q=?", new String[] { "droidcon" }, null);
 	}

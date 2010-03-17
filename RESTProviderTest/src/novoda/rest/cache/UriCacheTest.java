@@ -1,7 +1,7 @@
 package novoda.rest.cache;
 
 import junit.framework.TestCase;
-import novoda.rest.cursors.JsonCursor;
+import novoda.rest.cursors.json.JsonCursor;
 import android.net.Uri;
 
 public class UriCacheTest extends TestCase {

@@ -1,4 +1,5 @@
-package novoda.rest.test.cursors;
+
+package novoda.rest.test.cursors.json;
 
 import junit.framework.TestCase;
 import novoda.rest.cursors.json.JsonCursor;
@@ -13,7 +14,6 @@ import org.apache.http.message.BasicStatusLine;
 // Tried using mock but failed miserably
 public class JsonCursorTest extends TestCase {
 
-	@Override
 	protected void setUp() throws Exception {
 		super.setUp();
 	}

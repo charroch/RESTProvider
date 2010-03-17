@@ -3,6 +3,7 @@ package novoda.rest.cursors;
 
 import java.io.IOException;
 
+import novoda.rest.cursors.json.JsonCursor;
 import novoda.rest.handlers.QueryHandler;
 
 import org.apache.http.HttpResponse;

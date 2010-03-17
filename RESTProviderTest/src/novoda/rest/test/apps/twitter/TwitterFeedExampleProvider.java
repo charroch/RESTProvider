@@ -1,7 +1,7 @@
 package novoda.rest.test.apps.twitter;
 
 import novoda.rest.RESTProvider;
-import novoda.rest.cursors.JsonCursor;
+import novoda.rest.cursors.json.JsonCursor;
 
 import org.apache.http.client.ResponseHandler;
 import org.apache.http.client.methods.HttpGet;
