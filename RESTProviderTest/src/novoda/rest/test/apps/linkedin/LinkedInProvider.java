@@ -12,9 +12,9 @@ import novoda.rest.cursors.xml.XMLCursor;
 import novoda.rest.handlers.UpdateHandler;
 import oauth.signpost.OAuthConsumer;
 import oauth.signpost.commonshttp.CommonsHttpOAuthConsumer;
+import oauth.signpost.exception.OAuthCommunicationException;
 import oauth.signpost.exception.OAuthExpectationFailedException;
 import oauth.signpost.exception.OAuthMessageSignerException;
-import oauth.signpost.signature.SignatureMethod;
 
 import org.apache.http.HttpResponse;
 import org.apache.http.client.ClientProtocolException;
@@ -57,7 +57,7 @@ public class LinkedInProvider extends DefaultRESTProvider {
         pref.registerOnSharedPreferenceChangeListener(listener);
 
         consumer = new CommonsHttpOAuthConsumer(Constants.CONSUMER_KEY,
-                Constants.CONSUMER_KEY_SECRET, SignatureMethod.HMAC_SHA1);
+                Constants.CONSUMER_KEY_SECRET);
 
         consumer.setTokenWithSecret(pref.getString(OAuthParameters.OAUTH_TOKEN_KEY, ""), pref
                 .getString(OAuthParameters.OAUTH_TOKEN_SECRET_KEY, ""));
@@ -77,6 +77,8 @@ public class LinkedInProvider extends DefaultRESTProvider {
                 Log.e(TAG, "an error occured in getRequest", e);
             } catch (OAuthExpectationFailedException e) {
                 Log.e(TAG, "an error occured in getRequest", e);
+            } catch (OAuthCommunicationException e) {
+                Log.e(TAG, "an error occured in getRequest", e);
             }
             return get;
         } else if (type == RESTProvider.UPDATE) {
@@ -91,6 +93,8 @@ public class LinkedInProvider extends DefaultRESTProvider {
             } catch (OAuthExpectationFailedException e) {
                 Log.e(TAG, "an error occured in getRequest", e);
             } catch (UnsupportedEncodingException e) {
+                Log.e(TAG, "an error occured in getRequest", e);
+            } catch (OAuthCommunicationException e) {
                 Log.e(TAG, "an error occured in getRequest", e);
             }
             return put;

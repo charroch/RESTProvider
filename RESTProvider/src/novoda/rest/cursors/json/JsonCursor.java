@@ -10,6 +10,7 @@ import novoda.rest.handlers.QueryHandler;
 
 import org.apache.http.HttpResponse;
 import org.apache.http.client.ClientProtocolException;
+import org.apache.http.entity.BufferedHttpEntity;
 import org.apache.http.util.EntityUtils;
 import org.codehaus.jackson.JsonNode;
 import org.codehaus.jackson.JsonParseException;
@@ -182,9 +183,23 @@ public class JsonCursor extends AbstractCursor implements QueryHandler<JsonCurso
 
     public JsonCursor handleResponse(HttpResponse response) throws ClientProtocolException,
             IOException {
-        String re = EntityUtils.toString(response.getEntity());
-        Log.i(TAG, re);
-        return handleResponse(re);
+        if (response == null) {
+            throw new IOException("response is null");
+        }
+        BufferedHttpEntity ent = new BufferedHttpEntity(response.getEntity());
+        try {
+            array = mapper.readTree(ent.getContent());
+        } catch (JsonParseException e) {
+            Log.e(TAG, "parsing error: " + e.getMessage());
+            try {
+                Log.e(TAG, EntityUtils.toString(ent));
+            } catch (Exception e2){
+                Log.e(TAG, "can't read stream");
+            }
+            // ensure we don't fail further down... This will return a cursor of size 0
+            array = mapper.readTree("{}");
+        }
+        return init();
     }
 
     public JsonCursor handleResponse(String json) throws JsonProcessingException, IOException {

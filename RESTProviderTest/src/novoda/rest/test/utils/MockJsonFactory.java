@@ -17,9 +17,11 @@ public class MockJsonFactory {
 	public static JsonCursor createFromString(String json, String root,
 			boolean useId, String rootId, String... fk)
 			throws ClientProtocolException, IOException {
+	    
 		MockHttpResponse response = new MockHttpResponse(json);
 		return new JsonCursor(root, useId, rootId).withForeignKey(fk)
 				.handleResponse(response);
+		
 	}
 
 	private static class MockHttpResponse extends BasicHttpResponse {
