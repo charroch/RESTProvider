@@ -7,6 +7,7 @@ import java.net.ConnectException;
 import novoda.rest.cache.UriCache;
 import novoda.rest.cursors.ErrorCursor;
 import novoda.rest.cursors.One2ManyMapping;
+import novoda.rest.interceptors.DebugInterceptor;
 
 import org.apache.http.HttpResponse;
 import org.apache.http.HttpVersion;
@@ -226,6 +227,9 @@ public abstract class RESTProvider extends ContentProvider {
         schemeRegistry.register(new Scheme("https", PlainSocketFactory.getSocketFactory(), 443));
         ThreadSafeClientConnManager cm = new ThreadSafeClientConnManager(httpParams, schemeRegistry);
         httpClient = new DefaultHttpClient(cm, httpParams);
+        if (android.util.Config.DEBUG) {
+            httpClient.addRequestInterceptor(new DebugInterceptor());
+        }
     }
 
     protected void registerMappedCursor(Cursor cursor, Uri uri) {
