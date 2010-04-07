@@ -2,6 +2,8 @@
 package novoda.rest.cursors.json;
 
 import java.io.IOException;
+import java.net.URL;
+import java.net.URLEncoder;
 import java.util.Arrays;
 import java.util.Iterator;
 
@@ -10,6 +12,7 @@ import novoda.rest.handlers.QueryHandler;
 
 import org.apache.http.HttpResponse;
 import org.apache.http.client.ClientProtocolException;
+import org.apache.http.client.utils.URLEncodedUtils;
 import org.apache.http.entity.BufferedHttpEntity;
 import org.apache.http.util.EntityUtils;
 import org.codehaus.jackson.JsonNode;
@@ -192,7 +195,8 @@ public class JsonCursor extends AbstractCursor implements QueryHandler<JsonCurso
         } catch (JsonParseException e) {
             Log.e(TAG, "parsing error: " + e.getMessage());
             try {
-                Log.e(TAG, EntityUtils.toString(ent));
+                Log.i(TAG, "Avoiding printing out the data incase spacial chars crash logcat");
+//                Log.e(TAG, URLEncoder.encode(EntityUtils.toString(ent)));
             } catch (Exception e2){
                 Log.e(TAG, "can't read stream");
             }
