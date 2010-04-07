@@ -2,19 +2,16 @@
 package novoda.rest.cursors.json;
 
 import java.io.IOException;
-import java.net.URL;
-import java.net.URLEncoder;
 import java.util.Arrays;
 import java.util.Iterator;
 
 import novoda.rest.RESTProvider;
+import novoda.rest.cursors.One2ManyMapping;
 import novoda.rest.handlers.QueryHandler;
 
 import org.apache.http.HttpResponse;
 import org.apache.http.client.ClientProtocolException;
-import org.apache.http.client.utils.URLEncodedUtils;
 import org.apache.http.entity.BufferedHttpEntity;
-import org.apache.http.util.EntityUtils;
 import org.codehaus.jackson.JsonNode;
 import org.codehaus.jackson.JsonParseException;
 import org.codehaus.jackson.JsonProcessingException;
@@ -24,7 +21,7 @@ import android.database.AbstractCursor;
 import android.os.Bundle;
 import android.util.Log;
 
-public class JsonCursor extends AbstractCursor implements QueryHandler<JsonCursor> {
+public class JsonCursor extends AbstractCursor implements QueryHandler<JsonCursor>, One2ManyMapping {
 
     private static final String TAG = JsonCursor.class.getSimpleName();
 

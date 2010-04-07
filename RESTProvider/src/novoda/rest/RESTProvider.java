@@ -227,8 +227,10 @@ public abstract class RESTProvider extends ContentProvider {
         schemeRegistry.register(new Scheme("https", PlainSocketFactory.getSocketFactory(), 443));
         ThreadSafeClientConnManager cm = new ThreadSafeClientConnManager(httpParams, schemeRegistry);
         httpClient = new DefaultHttpClient(cm, httpParams);
-        if (android.util.Config.DEBUG) {
-            httpClient.addRequestInterceptor(new DebugInterceptor());
+        if (DEBUG) {
+            DebugInterceptor interceptor = new DebugInterceptor();
+            httpClient.addRequestInterceptor(interceptor);
+            httpClient.addResponseInterceptor(interceptor);
         }
     }
 

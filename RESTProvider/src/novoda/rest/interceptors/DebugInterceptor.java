@@ -24,7 +24,10 @@ import org.apache.http.HttpEntityEnclosingRequest;
 import org.apache.http.HttpException;
 import org.apache.http.HttpRequest;
 import org.apache.http.HttpRequestInterceptor;
+import org.apache.http.HttpResponse;
+import org.apache.http.HttpResponseInterceptor;
 import org.apache.http.entity.BufferedHttpEntity;
+import org.apache.http.entity.StringEntity;
 import org.apache.http.protocol.HttpContext;
 import org.apache.http.util.EntityUtils;
 
@@ -36,9 +39,9 @@ import android.util.Log;
  * figure out another way to debug my calls, this interceptor will print all
  * request info before it hit the wire.
  */
-public class DebugInterceptor implements HttpRequestInterceptor {
+public class DebugInterceptor implements HttpRequestInterceptor, HttpResponseInterceptor {
 
-    private static final String TAG = DebugInterceptor.class.toString();
+    private static final String TAG = DebugInterceptor.class.getSimpleName();
 
     /*
      * (non-Javadoc)
@@ -47,20 +50,38 @@ public class DebugInterceptor implements HttpRequestInterceptor {
      * , org.apache.http.protocol.HttpContext)
      */
     public void process(HttpRequest request, HttpContext context) throws HttpException, IOException {
-        Log.d(TAG, "--- Debug start ---");
+        Log.d(TAG, "--- request debug start ---");
         Log.d(TAG, "request: " + request);
         Log.d(TAG, "context: " + context);
         if (request != null) {
             StringBuffer buf = new StringBuffer();
             buf.append("request line: \n").append(request.getRequestLine());
-            buf.append("headers: \n").append(Arrays.toString(request.getAllHeaders()));
-            buf.append("params: \n").append(request.getParams());
+            buf.append("\nheaders: \n").append(Arrays.toString(request.getAllHeaders()));
+            buf.append("\nparams: \n").append(request.getParams());
             if (request instanceof HttpEntityEnclosingRequest) {
-               BufferedHttpEntity entity = new BufferedHttpEntity(((HttpEntityEnclosingRequest)request).getEntity());
-               buf.append("entity: \n").append(EntityUtils.toString(entity));
+                BufferedHttpEntity entity = new BufferedHttpEntity(
+                        ((HttpEntityEnclosingRequest)request).getEntity());
+                buf.append("\nentity: \n").append(EntityUtils.toString(entity));
             }
             Log.d(TAG, buf.toString());
         }
-        Log.d(TAG, "--- End Debug ---");
+        Log.d(TAG, "--- request debug end ---");
+    }
+
+    public void process(HttpResponse response, HttpContext context) throws HttpException,
+            IOException {
+        Log.d(TAG, "--- response debug start ---");
+        Log.d(TAG, "response: " + response);
+        Log.d(TAG, "context: " + context);
+        if (response != null) {
+            StringBuffer buf = new StringBuffer();
+            buf.append("\nstatus line: \n").append(response.getStatusLine());
+            buf.append("\nheaders: \n").append(Arrays.toString(response.getAllHeaders()));
+            StringEntity entity = new StringEntity(EntityUtils.toString(response.getEntity()));
+            buf.append("\nentity: \n").append(EntityUtils.toString(entity));
+            Log.d(TAG, buf.toString());
+            response.setEntity(entity);
+        }
+        Log.d(TAG, "--- response debug end ---");
     }
 }
