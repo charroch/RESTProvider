@@ -58,6 +58,11 @@ public abstract class RESTProvider extends ContentProvider {
 
     @Override
     public boolean onCreate() {
+        if (DEBUG) {
+            DebugInterceptor interceptor = new DebugInterceptor();
+            httpClient.addRequestInterceptor(interceptor, httpClient.getRequestInterceptorCount());
+            httpClient.addResponseInterceptor(interceptor, httpClient.getResponseInterceptorCount());
+        }
         return true;
     }
 
@@ -227,11 +232,6 @@ public abstract class RESTProvider extends ContentProvider {
         schemeRegistry.register(new Scheme("https", PlainSocketFactory.getSocketFactory(), 443));
         ThreadSafeClientConnManager cm = new ThreadSafeClientConnManager(httpParams, schemeRegistry);
         httpClient = new DefaultHttpClient(cm, httpParams);
-        if (DEBUG) {
-            DebugInterceptor interceptor = new DebugInterceptor();
-            httpClient.addRequestInterceptor(interceptor);
-            httpClient.addResponseInterceptor(interceptor);
-        }
     }
 
     protected void registerMappedCursor(Cursor cursor, Uri uri) {
