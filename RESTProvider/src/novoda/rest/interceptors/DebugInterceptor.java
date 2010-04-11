@@ -18,6 +18,7 @@
 package novoda.rest.interceptors;
 
 import java.io.IOException;
+import java.io.InputStream;
 import java.util.Arrays;
 
 import org.apache.http.HttpEntityEnclosingRequest;
@@ -27,7 +28,6 @@ import org.apache.http.HttpRequestInterceptor;
 import org.apache.http.HttpResponse;
 import org.apache.http.HttpResponseInterceptor;
 import org.apache.http.entity.BufferedHttpEntity;
-import org.apache.http.entity.StringEntity;
 import org.apache.http.protocol.HttpContext;
 import org.apache.http.util.EntityUtils;
 
@@ -77,11 +77,38 @@ public class DebugInterceptor implements HttpRequestInterceptor, HttpResponseInt
             StringBuffer buf = new StringBuffer();
             buf.append("\nstatus line: \n").append(response.getStatusLine());
             buf.append("\nheaders: \n").append(Arrays.toString(response.getAllHeaders()));
-            StringEntity entity = new StringEntity(EntityUtils.toString(response.getEntity()));
-            buf.append("\nentity: \n").append(EntityUtils.toString(entity));
-            Log.d(TAG, buf.toString());
-            response.setEntity(entity);
+            BufferedHttpEntity entity = new BufferedHttpEntity(response.getEntity());
+            if (entity.isRepeatable()) {
+                if (entity.getContent().markSupported()) {
+                    buf.append("\nentity: \n").append(EntityUtils.toString(entity));
+                    entity.getContent().reset();
+                }
+            }
         }
         Log.d(TAG, "--- response debug end ---");
+    }
+
+    private class DebuggableInputStream extends InputStream {
+
+        private InputStream in;
+
+        public DebuggableInputStream(InputStream in) {
+            this.in = in;
+        }
+
+        @Override
+        public int read() throws IOException {
+            return in.read();
+        }
+
+        @Override
+        public int read(byte[] b, int offset, int length) throws IOException {
+            return super.read(b, offset, length);
+        }
+
+        @Override
+        public int read(byte[] b) throws IOException {
+            return super.read(b);
+        }
     }
 }

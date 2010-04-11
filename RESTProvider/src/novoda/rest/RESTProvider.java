@@ -61,7 +61,7 @@ public abstract class RESTProvider extends ContentProvider {
         if (DEBUG) {
             DebugInterceptor interceptor = new DebugInterceptor();
             httpClient.addRequestInterceptor(interceptor, httpClient.getRequestInterceptorCount());
-            httpClient.addResponseInterceptor(interceptor, httpClient.getResponseInterceptorCount());
+            //httpClient.addResponseInterceptor(interceptor, httpClient.getResponseInterceptorCount());
         }
         return true;
     }
