@@ -32,6 +32,7 @@ import org.apache.http.protocol.HttpResponseInterceptorList;
 
 import android.content.ContentProvider;
 import android.content.ContentValues;
+import android.content.SharedPreferences;
 import android.database.AbstractCursor;
 import android.database.Cursor;
 import android.net.Uri;
@@ -79,6 +80,11 @@ public abstract class RESTProvider extends ContentProvider {
         OAuthInterceptor interceptor = new OAuthInterceptor(pref.getConsumerKey(), pref
                 .getConsumerSecret());
         httpClient.addRequestInterceptor(interceptor);
+        SharedPreferences p = pref.getSharedPreference();
+        if (p.contains(pref.getTokenKey())) {
+            interceptor.setTokenWithSecret(p.getString(pref.getTokenKey(), ""), p.getString(pref
+                    .getTokenSecret(), ""));
+        }
         pref.getSharedPreference().registerOnSharedPreferenceChangeListener(
                 new OAuthOnSharedPreferenceChangeListener(pref.getTokenKey(),
                         pref.getTokenSecret(), interceptor));
