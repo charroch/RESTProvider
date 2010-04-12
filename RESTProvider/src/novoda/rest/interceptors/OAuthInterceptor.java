@@ -32,6 +32,10 @@ import org.apache.http.HttpRequestInterceptor;
 import org.apache.http.impl.client.RequestWrapper;
 import org.apache.http.protocol.HttpContext;
 
+import com.mugasha.Constants;
+
+import android.content.SharedPreferences;
+import android.content.SharedPreferences.OnSharedPreferenceChangeListener;
 import android.util.Log;
 
 /**
@@ -59,7 +63,6 @@ public class OAuthInterceptor extends CommonsHttpOAuthConsumer implements HttpRe
         if (request == null) {
             throw new IllegalArgumentException("HTTP request may not be null");
         }
-
         if (request instanceof RequestWrapper) {
             try {
                 for (final Entry<String, String> e : super.sign(

@@ -4,9 +4,13 @@ package novoda.rest;
 import java.io.IOException;
 import java.net.ConnectException;
 
+import novoda.rest.auth.OAuthOnSharedPreferenceChangeListener;
 import novoda.rest.cache.UriCache;
 import novoda.rest.cursors.ErrorCursor;
 import novoda.rest.cursors.One2ManyMapping;
+import novoda.rest.interceptors.OAuthInterceptor;
+import novoda.rest.interceptors.OAuthPreferences;
+import novoda.rest.logging.DebugLogConfig;
 
 import org.apache.http.HttpResponse;
 import org.apache.http.HttpVersion;
@@ -59,13 +63,25 @@ public abstract class RESTProvider extends ContentProvider {
     public boolean onCreate() {
         if (DEBUG) {
             try {
-                new novoda.rest.logging.DebugLogConfig(getContext().getAssets().open("httpclient.logging"));
+                new DebugLogConfig(getContext().getAssets().open("httpclient.logging"));
             } catch (IOException e) {
                 Log.w(TAG, "To enable http logging, ensure you have a "
                         + "file called httpclient.logging in your assets folder");
             }
         }
+        if (this instanceof OAuthPreferences) {
+            setOAuthPreferences((OAuthPreferences)this);
+        }
         return true;
+    }
+
+    public void setOAuthPreferences(OAuthPreferences pref) {
+        OAuthInterceptor interceptor = new OAuthInterceptor(pref.getConsumerKey(), pref
+                .getConsumerSecret());
+        httpClient.addRequestInterceptor(interceptor);
+        pref.getSharedPreference().registerOnSharedPreferenceChangeListener(
+                new OAuthOnSharedPreferenceChangeListener(pref.getTokenKey(),
+                        pref.getTokenSecret(), interceptor));
     }
 
     @Override
