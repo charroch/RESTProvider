@@ -4,10 +4,13 @@ package novoda.rest;
 import java.io.IOException;
 import java.net.ConnectException;
 
+import novoda.rest.auth.OAuthOnSharedPreferenceChangeListener;
 import novoda.rest.cache.UriCache;
 import novoda.rest.cursors.ErrorCursor;
 import novoda.rest.cursors.One2ManyMapping;
-import novoda.rest.interceptors.DebugInterceptor;
+import novoda.rest.interceptors.OAuthInterceptor;
+import novoda.rest.interceptors.OAuthPreferences;
+import novoda.rest.logging.DebugLogConfig;
 
 import org.apache.http.HttpResponse;
 import org.apache.http.HttpVersion;
@@ -29,6 +32,7 @@ import org.apache.http.protocol.HttpResponseInterceptorList;
 
 import android.content.ContentProvider;
 import android.content.ContentValues;
+import android.content.SharedPreferences;
 import android.database.AbstractCursor;
 import android.database.Cursor;
 import android.net.Uri;
@@ -59,11 +63,31 @@ public abstract class RESTProvider extends ContentProvider {
     @Override
     public boolean onCreate() {
         if (DEBUG) {
-            DebugInterceptor interceptor = new DebugInterceptor();
-            httpClient.addRequestInterceptor(interceptor, httpClient.getRequestInterceptorCount());
-            //httpClient.addResponseInterceptor(interceptor, httpClient.getResponseInterceptorCount());
+            try {
+                new DebugLogConfig(getContext().getAssets().open("httpclient.logging"));
+            } catch (IOException e) {
+                Log.w(TAG, "To enable http logging, ensure you have a "
+                        + "file called httpclient.logging in your assets folder");
+            }
+        }
+        if (this instanceof OAuthPreferences) {
+            setOAuthPreferences((OAuthPreferences)this);
         }
         return true;
+    }
+
+    public void setOAuthPreferences(OAuthPreferences pref) {
+        OAuthInterceptor interceptor = new OAuthInterceptor(pref.getConsumerKey(), pref
+                .getConsumerSecret());
+        httpClient.addRequestInterceptor(interceptor);
+        SharedPreferences p = pref.getSharedPreference();
+        if (p.contains(pref.getTokenKey())) {
+            interceptor.setTokenWithSecret(p.getString(pref.getTokenKey(), ""), p.getString(pref
+                    .getTokenSecret(), ""));
+        }
+        pref.getSharedPreference().registerOnSharedPreferenceChangeListener(
+                new OAuthOnSharedPreferenceChangeListener(pref.getTokenKey(),
+                        pref.getTokenSecret(), interceptor));
     }
 
     @Override
