@@ -44,7 +44,7 @@ import android.util.Log;
  */
 public abstract class RESTProvider extends ContentProvider {
 
-    private static final String TAG = RESTProvider.class.getSimpleName();
+    protected static final String TAG = RESTProvider.class.getSimpleName();
 
     private static final int MAX_CONNECTIONS = 6;
 
@@ -59,7 +59,7 @@ public abstract class RESTProvider extends ContentProvider {
     static {
         setupHttpClient();
     }
-
+    
     @Override
     public boolean onCreate() {
         if (DEBUG) {
@@ -71,20 +71,26 @@ public abstract class RESTProvider extends ContentProvider {
             }
         }
         if (this instanceof OAuthPreferences) {
+            Log.i(TAG, "setting oauth pref");
             setOAuthPreferences((OAuthPreferences)this);
         }
         return true;
     }
 
     public void setOAuthPreferences(OAuthPreferences pref) {
-        OAuthInterceptor interceptor = new OAuthInterceptor(pref.getConsumerKey(), pref
+        
+        interceptor = new OAuthInterceptor(pref.getConsumerKey(), pref
                 .getConsumerSecret());
+        
         httpClient.addRequestInterceptor(interceptor);
+        
         SharedPreferences p = pref.getSharedPreference();
+        
         if (p.contains(pref.getTokenKey())) {
             interceptor.setTokenWithSecret(p.getString(pref.getTokenKey(), ""), p.getString(pref
                     .getTokenSecret(), ""));
         }
+        
         pref.getSharedPreference().registerOnSharedPreferenceChangeListener(
                 new OAuthOnSharedPreferenceChangeListener(pref.getTokenKey(),
                         pref.getTokenSecret(), interceptor));
@@ -238,6 +244,8 @@ public abstract class RESTProvider extends ContentProvider {
     static final public int DELETE = 3;
 
     public static final boolean DEBUG = true;
+
+    private OAuthInterceptor interceptor;
 
     /*
      * Gracefully taken from droidfu - rockon Mathias

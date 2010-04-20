@@ -1,40 +1,19 @@
 
 package novoda.rest.cursors;
 
-import java.io.IOException;
+import java.io.InputStream;
+import java.util.List;
 
-import novoda.rest.cursors.json.JsonCursor;
-import novoda.rest.handlers.QueryHandler;
+import android.database.Cursor;
 
-import org.apache.http.HttpResponse;
-import org.apache.http.HttpStatus;
-import org.apache.http.client.ClientProtocolException;
-
-
-// not used for now
-public class CursorFactory {
-
-    private static final String APPLICATION_JSON = "application/json";
-
-    private static final String CONTENT_TYPE = "Content-Type";
-
-    public static QueryHandler<JsonCursor> create(String root) throws ClientProtocolException,
-            IOException {
-        return new JsonCursor(root);
+public abstract class CursorFactory {
+    Cursor getRootCursor() {
+        return null;
     }
 
-    public static boolean isJson(HttpResponse response) {
-        if (response.containsHeader(CONTENT_TYPE)
-                && response.getFirstHeader(CONTENT_TYPE).equals(APPLICATION_JSON)) {
-            return true;
-        }
-        return false;
+    List<Cursor> getChildCursor() {
+        return null;
     }
 
-    public static boolean isOK(HttpResponse response) {
-        if (response != null && response.getStatusLine().getStatusCode() == HttpStatus.SC_OK) {
-            return true;
-        }
-        return false;
-    }
+    public abstract void parse(InputStream in, Mapper mapper, Features features);
 }

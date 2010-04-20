@@ -35,6 +35,7 @@ public class OAuthOnSharedPreferenceChangeListener implements OnSharedPreference
     }
 
     public void onSharedPreferenceChanged(SharedPreferences sharedPreferences, String key) {
+        Log.i("RESTProvider", key);
         if (key.equalsIgnoreCase(tokenKey)) {
             Log.i(TAG, "Changing token value");
             consumer.setTokenWithSecret(sharedPreferences.getString(tokenKey, ""),

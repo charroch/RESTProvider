@@ -32,8 +32,6 @@ import org.apache.http.HttpRequestInterceptor;
 import org.apache.http.impl.client.RequestWrapper;
 import org.apache.http.protocol.HttpContext;
 
-import android.content.SharedPreferences;
-import android.content.SharedPreferences.OnSharedPreferenceChangeListener;
 import android.util.Log;
 
 /**
