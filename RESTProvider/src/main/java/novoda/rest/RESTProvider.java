@@ -27,6 +27,7 @@ import org.apache.http.impl.client.DefaultHttpClient;
 import org.apache.http.impl.conn.tsccm.ThreadSafeClientConnManager;
 import org.apache.http.params.BasicHttpParams;
 import org.apache.http.params.HttpProtocolParams;
+import org.apache.http.protocol.HTTP;
 import org.apache.http.protocol.HttpRequestInterceptorList;
 import org.apache.http.protocol.HttpResponseInterceptorList;
 
@@ -35,6 +36,7 @@ import android.content.ContentValues;
 import android.content.SharedPreferences;
 import android.database.AbstractCursor;
 import android.database.Cursor;
+import android.net.SSLCertificateSocketFactory;
 import android.net.Uri;
 import android.util.Log;
 
@@ -243,14 +245,10 @@ public abstract class RESTProvider extends ContentProvider {
 
     static final public int DELETE = 3;
 
-    public static final boolean DEBUG = true;
+    public static boolean DEBUG = true;
 
     private OAuthInterceptor interceptor;
 
-    /*
-     * Gracefully taken from droidfu - rockon Mathias
-     * github.com/kaeppler/droid-fu/
-     */
     private static void setupHttpClient() {
         BasicHttpParams httpParams = new BasicHttpParams();
         ConnManagerParams.setTimeout(httpParams, CONNECTION_TIMEOUT);
@@ -261,8 +259,9 @@ public abstract class RESTProvider extends ContentProvider {
         HttpProtocolParams.setUserAgent(httpParams, HTTP_USER_AGENT);
         SchemeRegistry schemeRegistry = new SchemeRegistry();
         schemeRegistry.register(new Scheme("http", PlainSocketFactory.getSocketFactory(), 80));
-        schemeRegistry.register(new Scheme("https", PlainSocketFactory.getSocketFactory(), 443));
+        //schemeRegistry.register(new Scheme("https", new EasySSLProtocolSocketFactory(), 443));
         ThreadSafeClientConnManager cm = new ThreadSafeClientConnManager(httpParams, schemeRegistry);
+        HttpProtocolParams.setContentCharset(httpParams, HTTP.UTF_8);
         httpClient = new DefaultHttpClient(cm, httpParams);
     }
 

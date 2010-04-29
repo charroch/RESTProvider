@@ -1,14 +1,38 @@
+/*
+ *   Copyright 2010, Novoda ltd 
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ * 
+ */
 
 package novoda.rest.utils;
 
 import java.io.UnsupportedEncodingException;
 import java.net.URLDecoder;
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 
+import org.apache.http.NameValuePair;
+import org.apache.http.message.BasicNameValuePair;
+
 import android.content.ContentValues;
 
+/**
+ * A collection of utility methods for handling parameters.
+ */
 public class HTTPUtils {
 
     /**
@@ -37,7 +61,7 @@ public class HTTPUtils {
     }
 
     /**
-     * Parse a query string into a map of key/value pairs
+     * Parse a query string into a map of key/value pairs.
      * 
      * @param queryString the string to parse (without the '?')
      * @return key/value pairs mapping
@@ -64,6 +88,12 @@ public class HTTPUtils {
         return map;
     }
 
+    /**
+     * Convert to params.
+     * 
+     * @param values the values
+     * @return the map
+     */
     public static Map<String, String> convertToParams(ContentValues values) {
         Map<String, String> ret = new HashMap<String, String>();
         for (Entry<String, Object> entry : values.valueSet()) {
@@ -71,16 +101,34 @@ public class HTTPUtils {
         }
         return ret;
     }
-    
-    public static String convertToQueryString(Map<String, String> param){
+
+    /**
+     * Convert to query string.
+     * 
+     * @param param the param
+     * @return the string
+     */
+    public static String convertToQueryString(Map<String, String> param) {
         if (param == null)
             return null;
-        
+
         StringBuffer buf = new StringBuffer("?");
         for (Map.Entry<String, String> entry : param.entrySet()) {
             buf.append(entry.getKey()).append("=").append(entry.getValue()).append("&");
         }
-        buf.deleteCharAt(buf.length()-1);
+        buf.deleteCharAt(buf.length() - 1);
         return buf.toString();
+    }
+
+    public static List<NameValuePair> convertToHCParams(Map<String, String> param) {
+        if (param == null)
+            return new ArrayList<NameValuePair>();
+
+        List<NameValuePair> r = new ArrayList<NameValuePair>(param.size());
+        for (Entry<String, String> entry : param.entrySet()) {
+            r.add(new BasicNameValuePair(entry.getKey(), entry.getValue()));
+        }
+        
+        return r;
     }
 }

@@ -69,7 +69,7 @@
 	<uses-sdk
 		android:minSdkVersion="5" />
 	<instrumentation
-		android:targetPackage="novoda.rest"
+		android:targetPackage="novoda.rest.test"
 		android:name="android.test.InstrumentationTestRunner" />
 	<uses-permission
 		android:name="android.permission.INTERNET" />

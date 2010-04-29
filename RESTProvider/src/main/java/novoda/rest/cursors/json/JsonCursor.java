@@ -5,12 +5,14 @@ import java.io.IOException;
 import java.net.URLEncoder;
 import java.util.Arrays;
 import java.util.Iterator;
+import java.util.Map;
 
 import novoda.rest.RESTProvider;
 import novoda.rest.cursors.One2ManyMapping;
 import novoda.rest.handlers.QueryHandler;
 
 import org.apache.http.HttpResponse;
+import org.apache.http.MethodNotSupportedException;
 import org.apache.http.client.ClientProtocolException;
 import org.apache.http.entity.BufferedHttpEntity;
 import org.apache.http.protocol.HTTP;
@@ -45,6 +47,8 @@ public class JsonCursor extends AbstractCursor implements QueryHandler<JsonCurso
     private String idNode = null;
 
     private String[] foreignKeys;
+
+    private Map<String, String> columnMapper = null;
 
     /**
      * Very basic cursor which will parse the response into a JSON object using
@@ -99,6 +103,28 @@ public class JsonCursor extends AbstractCursor implements QueryHandler<JsonCurso
         return this;
     }
 
+    public JsonCursor withMapper(Map<String, String> mapper) {
+        this.columnMapper = mapper;
+        return this;
+    }
+
+    @SuppressWarnings("unchecked")
+    private static <T> T[] concat(T[] a, T[] b) {
+        final int alen = a.length;
+        final int blen = b.length;
+        if (alen == 0) {
+            return b;
+        }
+        if (blen == 0) {
+            return a;
+        }
+        final T[] result = (T[])java.lang.reflect.Array.newInstance(
+                a.getClass().getComponentType(), alen + blen);
+        System.arraycopy(a, 0, result, 0, alen);
+        System.arraycopy(b, 0, result, alen, blen);
+        return result;
+    }
+
     @Override
     public String[] getColumnNames() {
         if (withId && idNode == null) {
@@ -151,10 +177,20 @@ public class JsonCursor extends AbstractCursor implements QueryHandler<JsonCurso
 
     @Override
     public String getString(int column) {
+        // TODO not throw an exception
         if (columnNames[column].equals(COLUMN_ID))
             return current.path(idNode).getValueAsText();
-        else
+        else {
+            if (columnMapper != null && columnMapper.containsKey(columnNames[column])) {
+                JsonNode node = current;
+                String[] path = columnMapper.get(columnNames[column]).split("\\.");
+                for (String s : path) {
+                    node = node.path(s);
+                }
+                return node.getTextValue();
+            }
             return current.path(columnNames[column]).getValueAsText();
+        }
     }
 
     @Override
@@ -165,13 +201,13 @@ public class JsonCursor extends AbstractCursor implements QueryHandler<JsonCurso
     @Override
     public Bundle getExtras() {
         Bundle b = new Bundle();
-        String[] ids = new String[array.size()];
-        for (int i = 0; i < array.size(); i++) {
-            ids[i] = array.get(i).path(idNode).getValueAsText();
-        }
-        b.putStringArray("ids", ids);
-        b.putStringArray("foreign_keys", foreignKeys);
-        b.putString("json", array.toString());
+        // String[] ids = new String[array.size()];
+        // for (int i = 0; i < array.size(); i++) {
+        // ids[i] = array.get(i).path(idNode).getValueAsText();
+        // }
+        // b.putStringArray("ids", ids);
+        // b.putStringArray("foreign_keys", foreignKeys);
+        b.putString("json", current.toString());
         return b;
     }
 
@@ -250,6 +286,10 @@ public class JsonCursor extends AbstractCursor implements QueryHandler<JsonCurso
             }
             columnNames[i++] = node;
         }
+        if (columnMapper != null) {
+            String tmp[] = new String[columnMapper.size()];
+            columnNames = concat(columnNames, columnMapper.keySet().toArray(tmp));
+        }
         return this;
     }
 
@@ -307,11 +347,11 @@ public class JsonCursor extends AbstractCursor implements QueryHandler<JsonCurso
         }
 
         public Builder addOneToMany(JsonCursor.Builder... fields) {
-            return this;
+            throw new UnsupportedOperationException("not implemented");
         }
 
         public Builder removeFields(String... fields) {
-            return this;
+            throw new UnsupportedOperationException("not implemented");
         }
 
         public Builder withArraysAsForeignKeys(boolean auto) {

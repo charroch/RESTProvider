@@ -9,6 +9,7 @@ import novoda.rest.handlers.QueryHandler;
 
 import org.apache.http.HttpResponse;
 import org.apache.http.client.ClientProtocolException;
+import org.apache.http.protocol.HTTP;
 import org.apache.http.util.EntityUtils;
 import org.dom4j.Document;
 import org.dom4j.DocumentException;
@@ -28,8 +29,15 @@ public abstract class XMLCursor extends AbstractCursor implements QueryHandler<X
     public int getCount() {
         int ret = 0;
         try {
-            ret = Integer.parseInt(((Node)document.selectSingleNode(getCountXPath()))
-                    .getStringValue());
+            Object obj = document.selectObject(getCountXPath());
+
+            if (obj instanceof Double) {
+                return ((Double)obj).intValue();
+            }
+
+            Node node = document.selectSingleNode(getCountXPath());
+            if (node != null)
+                ret = Integer.parseInt(node.getStringValue());
         } catch (NumberFormatException e) {
             Log.e(TAG, "Can't parse the count for: " + document.asXML() + " using "
                     + getCountXPath());
@@ -89,8 +97,8 @@ public abstract class XMLCursor extends AbstractCursor implements QueryHandler<X
     public short getShort(int column) {
         short ret = 0;
         try {
-            ret = Short.parseShort(((Node)document.selectSingleNode(getXPath(mPos, getColumnName(column))))
-                    .getStringValue());
+            ret = Short.parseShort(((Node)document.selectSingleNode(getXPath(mPos,
+                    getColumnName(column)))).getStringValue());
         } catch (NumberFormatException e) {
             Log.e(TAG, "Can't parse short for: " + document.asXML() + " using " + getCountXPath());
         }
@@ -99,9 +107,12 @@ public abstract class XMLCursor extends AbstractCursor implements QueryHandler<X
 
     @Override
     public String getString(int column) {
-        String ret = ((Node)document.selectSingleNode(getXPath(mPos, getColumnName(column))))
-                .getStringValue();
-        return ret;
+        Node node = document.selectSingleNode(getXPath(mPos, getColumnName(column)));
+        if (node != null && node.hasContent()) {
+            return node.getStringValue();
+        } else {
+            return "";
+        }
     }
 
     @Override
@@ -111,12 +122,9 @@ public abstract class XMLCursor extends AbstractCursor implements QueryHandler<X
 
     public XMLCursor handleResponse(HttpResponse response) throws ClientProtocolException,
             IOException {
-        String xml = EntityUtils.toString(response.getEntity());
-        if (RESTProvider.DEBUG)
-            Log.d(TAG, xml);
-        SAXReader reader = new SAXReader();
+        SAXReader reader = new SAXReader(false);
         try {
-            document = reader.read(new ByteArrayInputStream(xml.getBytes("UTF-8")));
+            document = reader.read(response.getEntity().getContent());
         } catch (IllegalStateException e) {
             Log.e(TAG, "an error occured in handleResponse", e);
         } catch (DocumentException e) {

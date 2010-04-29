@@ -9,7 +9,7 @@ import org.codehaus.jackson.map.JsonDeserializer;
 
 import android.database.AbstractCursor;
 
-public class JsonToCursorDeserializer extends JsonDeserializer<AbstractCursor> {
+public class CursorDeserializer extends JsonDeserializer<AbstractCursor> {
 
     @Override
     public AbstractCursor deserialize(JsonParser parser, DeserializationContext context)
