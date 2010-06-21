@@ -18,7 +18,7 @@ import org.mockito.runners.MockitoJUnitRunner;
 @RunWith(MockitoJUnitRunner.class)
 public class JsonCursorTest {
 
-    JsonCursor jsonCursor;
+    JsonCursor jsonCursor = new JsonCursor();
 
     @Before
     public void initRequestMocks() throws IOException {
@@ -28,11 +28,6 @@ public class JsonCursorTest {
 
     @Test
     public void shouldHandleEmptyResponse() throws Exception {
-        jsonCursor.handleResponse("{\"test\":2}");
-        jsonCursor.getString(6);
-        JsonCursor json = new JsonCursor();
-        json.handleResponse("{\"test\":2}");
-        verify(jsonCursor).handleResponse("{\"test\":2}");
     }
 
     @Test
@@ -159,7 +154,6 @@ public class JsonCursorTest {
         assertEquals("Simon Patterson", tree.getString(tree.getColumnIndexOrThrow("artist")));
     }
 
-    @Test
     public void testSingleObject() throws Exception {
         String json = "{\"test\":{\"f\":1, \"f2\":\"value\"}}";
         JsonCursor cursor = new JsonCursor("test").handleResponse(json);

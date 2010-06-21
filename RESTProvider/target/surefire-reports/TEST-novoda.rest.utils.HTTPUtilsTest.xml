@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8" ?>
-<testsuite failures="0" time="0.331" errors="0" skipped="0" tests="13" name="novoda.rest.cursors.json.JsonCursorTest">
+<testsuite failures="0" time="0.029" errors="0" skipped="0" tests="1" name="novoda.rest.utils.HTTPUtilsTest">
   <properties>
     <property name="java.runtime.name" value="Java(TM) SE Runtime Environment"/>
     <property name="sun.boot.library.path" value="/usr/lib/jvm/java-6-sun-1.6.0.20/jre/lib/amd64"/>
@@ -33,7 +33,7 @@
     <property name="sun.management.compiler" value="HotSpot 64-Bit Server Compiler"/>
     <property name="os.version" value="2.6.31-20-generic"/>
     <property name="user.home" value="/home/acsia"/>
-    <property name="user.timezone" value="Europe/London"/>
+    <property name="user.timezone" value=""/>
     <property name="java.awt.printerjob" value="sun.print.PSPrinterJob"/>
     <property name="file.encoding" value="UTF-8"/>
     <property name="java.specification.version" value="1.6"/>
@@ -57,17 +57,5 @@
     <property name="sun.desktop" value="gnome"/>
     <property name="sun.cpu.isalist" value=""/>
   </properties>
-  <testcase time="0.29" classname="novoda.rest.cursors.json.JsonCursorTest" name="shouldHandleEmptyResponse"/>
-  <testcase time="0.019" classname="novoda.rest.cursors.json.JsonCursorTest" name="testEmptyJsonShouldReturnCursorWithCountZero"/>
-  <testcase time="0.002" classname="novoda.rest.cursors.json.JsonCursorTest" name="testOneDepthJSON"/>
-  <testcase time="0.001" classname="novoda.rest.cursors.json.JsonCursorTest" name="testsimpleJSONwithRootNode"/>
-  <testcase time="0" classname="novoda.rest.cursors.json.JsonCursorTest" name="testsimpleJSONArray"/>
-  <testcase time="0.001" classname="novoda.rest.cursors.json.JsonCursorTest" name="testsimpleJSONArrayWithNullRoot"/>
-  <testcase time="0" classname="novoda.rest.cursors.json.JsonCursorTest" name="testsimpleJSONwithRootNamedNode"/>
-  <testcase time="0.001" classname="novoda.rest.cursors.json.JsonCursorTest" name="testsimpleJSONwithRootNamedNodeAsInt"/>
-  <testcase time="0" classname="novoda.rest.cursors.json.JsonCursorTest" name="testsimpleJSONwithRootNamedNodeAsLong"/>
-  <testcase time="0.001" classname="novoda.rest.cursors.json.JsonCursorTest" name="testJSONWithForeignKeys"/>
-  <testcase time="0.002" classname="novoda.rest.cursors.json.JsonCursorTest" name="testComplexJsonWithForeignKeys"/>
-  <testcase time="0.002" classname="novoda.rest.cursors.json.JsonCursorTest" name="testComplexJsonWithForeignKeys2"/>
-  <testcase time="0.001" classname="novoda.rest.cursors.json.JsonCursorTest" name="testEmptyArray"/>
+  <testcase time="0.028" classname="novoda.rest.utils.HTTPUtilsTest" name="testMap2HCParams"/>
 </testsuite>

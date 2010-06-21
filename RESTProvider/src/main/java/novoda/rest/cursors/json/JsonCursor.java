@@ -201,12 +201,12 @@ public class JsonCursor extends AbstractCursor implements QueryHandler<JsonCurso
     @Override
     public Bundle getExtras() {
         Bundle b = new Bundle();
-        // String[] ids = new String[array.size()];
-        // for (int i = 0; i < array.size(); i++) {
-        // ids[i] = array.get(i).path(idNode).getValueAsText();
-        // }
-        // b.putStringArray("ids", ids);
-        // b.putStringArray("foreign_keys", foreignKeys);
+        String[] ids = new String[array.size()];
+        for (int i = 0; i < array.size(); i++) {
+            ids[i] = array.get(i).path(idNode).getValueAsText();
+        }
+        b.putStringArray("ids", ids);
+        b.putStringArray("foreign_keys", foreignKeys);
         b.putString("json", current.toString());
         return b;
     }

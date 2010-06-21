@@ -12,6 +12,7 @@ import javax.xml.parsers.DocumentBuilderFactory;
 
 import org.apache.http.HttpResponse;
 import org.apache.http.entity.StringEntity;
+import org.json.JSONObject;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -35,6 +36,9 @@ public class DOMCursorTest {
     }
 
     @Test
+    public void testLame() throws Exception {
+    }
+
     public void testSimpleDOM() throws Exception {
         String xml = "<root><field>field</field><field2>field2</field2></root>";
 
@@ -48,22 +52,19 @@ public class DOMCursorTest {
 
         int numSections = array.getLength();
         for (int i = 0; i < numSections; i++) {
-            
+
             Element section = (Element)array.item(i); // A <sect1>
 
             String title = section.getChildNodes().item(0).getNodeName();
             System.out.println(title);
         }
 
-        when(response.getEntity())
-                .thenReturn(
-                        new StringEntity(
-                                "<root>\n\t<field>field</field>\n\t</root>"));
+        when(response.getEntity()).thenReturn(
+                new StringEntity("<root>\n\t<field>field</field>\n\t</root>"));
         DOMCursor cursor = new DOMCursor.Builder().withRootField("root").create();
         cursor.handleResponse(response);
         assertTrue(cursor.moveToFirst());
         assertEquals("field", cursor.getColumnNames()[0]);
         assertEquals("field", cursor.getString(cursor.getColumnIndex("field")));
-
     }
 }

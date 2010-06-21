@@ -3,6 +3,7 @@ package novoda.rest;
 
 import java.io.IOException;
 import java.net.ConnectException;
+import java.util.Arrays;
 
 import novoda.rest.auth.OAuthOnSharedPreferenceChangeListener;
 import novoda.rest.cache.UriCache;
@@ -274,6 +275,8 @@ public abstract class RESTProvider extends ContentProvider {
                 return;
 
             String[] ids = cursor.getExtras().getStringArray("ids");
+            
+            Log.i(TAG, Arrays.toString(ids));
             for (int j = 0; j < cursor.getCount(); j++) {
                 String idField = ids[j];
                 Uri returi = uri;
