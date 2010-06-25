@@ -42,4 +42,9 @@ public abstract class UriRequestMap {
 			String selection, String[] selectionArg, String sortOrder);
 	
 	public abstract List<NameValuePair> transform(Uri uri, ContentValues values);
+	
+	public String getTableName(Uri uri) {
+		uri.getPathSegments();
+		return "";
+	}
 }
