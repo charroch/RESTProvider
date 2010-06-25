@@ -6,6 +6,7 @@ import org.apache.http.NameValuePair;
 import org.apache.http.client.ResponseHandler;
 import org.apache.http.client.methods.HttpUriRequest;
 
+import android.content.ContentValues;
 import android.database.AbstractCursor;
 import android.net.Uri;
 
@@ -37,6 +38,8 @@ public abstract class UriRequestMap {
 
 	public abstract ResponseHandler<? extends Integer> getDeleteHandler(Uri uri);
 
-	public abstract List<NameValuePair> tranform(String[] projection,
+	public abstract List<NameValuePair> tranform(Uri uri, String[] projection,
 			String selection, String[] selectionArg, String sortOrder);
+	
+	public abstract List<NameValuePair> transform(Uri uri, ContentValues values);
 }
