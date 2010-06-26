@@ -1,5 +1,8 @@
 package novoda.rest.providers;
 
+import java.sql.SQLException;
+
+import novoda.rest.database.ModularSQLiteOpenHelper;
 import android.content.ContentProvider;
 import android.content.ContentValues;
 import android.database.Cursor;
@@ -8,7 +11,9 @@ import android.net.Uri;
 
 public abstract class ModularProvider extends ContentProvider {
 
-	public void test(final Cursor cursor, Uri uri) {
+	private ModularSQLiteOpenHelper dbHelper;
+
+    public void test(final Cursor cursor, Uri uri) {
 		String[] columnNames = cursor.getColumnNames();
 		String dbTable = uri.getLastPathSegment();
 	}
@@ -26,14 +31,19 @@ public abstract class ModularProvider extends ContentProvider {
 	}
 
 	@Override
-	public Uri insert(Uri arg0, ContentValues arg1) {
-		// TODO Auto-generated method stub
+	public Uri insert(Uri uri, ContentValues values) {
+	    try {
+	    dbHelper.getWritableDatabase().insertOrThrow(uri.getLastPathSegment(), "", values);
+	    }catch (Exception e){
+	        
+	    }
 		return null;
 	}
 
 	@Override
 	public boolean onCreate() {
-i		return false;
+	    dbHelper = new ModularSQLiteOpenHelper(getContext());
+		return true;
 	}
 
 	@Override
