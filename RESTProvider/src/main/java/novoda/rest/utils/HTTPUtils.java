@@ -128,7 +128,21 @@ public class HTTPUtils {
         for (Entry<String, String> entry : param.entrySet()) {
             r.add(new BasicNameValuePair(entry.getKey(), entry.getValue()));
         }
-        
+
+        return r;
+    }
+
+    public static List<NameValuePair> getParamsFrom(String... params) {
+        if (params == null)
+            return new ArrayList<NameValuePair>();
+
+        if (params.length % 2 == 1)
+            throw new IllegalStateException("you need to have a paired number of parameters");
+
+        List<NameValuePair> r = new ArrayList<NameValuePair>(params.length / 2);
+        for (int i = 0; i < params.length; i++) {
+            r.add(new BasicNameValuePair(params[i], params[++i]));
+        }
         return r;
     }
 }
