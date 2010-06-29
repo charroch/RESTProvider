@@ -87,14 +87,11 @@ public abstract class ModularProvider extends ContentProvider {
         Intent intent = new Intent(getContext(), getService().getClass());
         intent.setAction(RESTCallService.ACTION_QUERY);
         intent.setData(uri);
-        Log.i(TAG, intent.toString());
         intent.putExtra(RESTCallService.BUNDLE_PROJECTION, projection);
         intent.putExtra(RESTCallService.BUNDLE_SELECTION, selection);
         intent.putExtra(RESTCallService.BUNDLE_SELECTION_ARG, selectionArgs);
         intent.putExtra(RESTCallService.BUNDLE_SORT_ORDER, sortOrder);
-        
         getContext().startService(intent);
-        
         return c;
     }
 
@@ -111,7 +108,6 @@ public abstract class ModularProvider extends ContentProvider {
 
     @Override
     public int update(Uri arg0, ContentValues arg1, String arg2, String[] arg3) {
-        // TODO Auto-generated method stub
         return 0;
     }
 }

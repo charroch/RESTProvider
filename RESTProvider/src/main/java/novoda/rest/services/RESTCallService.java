@@ -11,27 +11,21 @@ import android.content.Intent;
 import android.database.AbstractCursor;
 import android.net.Uri;
 import android.os.Bundle;
-import android.os.IBinder;
-import android.util.Log;
 
 import java.io.IOException;
 
 public abstract class RESTCallService extends IntentService implements UriRequestMap {
 
+    private static final String TAG = RESTCallService.class.getSimpleName();
+
     public RESTCallService() {
-        super("REST");
+        this(TAG);
     }
     
     public RESTCallService(String name) {
         super(name);
     }
-
-    @Override
-    public IBinder onBind(Intent intent) {
-        return super.onBind(intent);
-    }
     
-    private static final String TAG = RESTCallService.class.getSimpleName();
 
     public static final String BUNDLE_SORT_ORDER = "sortOrder";
 
@@ -40,7 +34,6 @@ public abstract class RESTCallService extends IntentService implements UriReques
     public static final String BUNDLE_SELECTION = "selection";
 
     public static final String BUNDLE_PROJECTION = "projection";
-
 
     public static final String ACTION_QUERY = "novoda.rest.action.ACTION_QUERY";
 
@@ -62,8 +55,6 @@ public abstract class RESTCallService extends IntentService implements UriReques
         Uri uri = intent.getData();
         String action = intent.getAction();
 
-        Log.i(TAG, "ur:" + uri.toString());
-        
         if (action.equals(ACTION_QUERY)) {
             final String[] projection = bundle.getStringArray(BUNDLE_PROJECTION);
             final String selection = bundle.getString(BUNDLE_SELECTION);
@@ -76,14 +67,13 @@ public abstract class RESTCallService extends IntentService implements UriReques
                 ContentValues values = new ContentValues(cursor.getColumnCount());
                 while (cursor.moveToNext()){
                     DatabaseUtils.cursorRowToContentValues(cursor, values);
-                    Log.i(TAG, "urid: " + uri.toString());
                     getContentResolver().insert(uri, values);
                 }
             } catch (IOException e) {
                 e.printStackTrace();
             }
         }
-
+        getBaseContext().sendBroadcast(new Intent("novoda.rest.action.QUERY_COMPLETE"));
     }
 
     private static void setupHttpClient() {

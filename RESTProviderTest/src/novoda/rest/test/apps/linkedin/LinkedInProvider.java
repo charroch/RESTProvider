@@ -1,23 +1,16 @@
 
 package novoda.rest.test.apps.linkedin;
 
-import java.io.IOException;
-import java.io.UnsupportedEncodingException;
-import java.util.HashMap;
-import java.util.Map;
+import com.google.gdata.client.authn.oauth.OAuthParameters;
 
 import novoda.rest.DefaultRESTProvider;
 import novoda.rest.RESTProvider;
-import novoda.rest.cursors.xml.XMLCursor;
-import novoda.rest.handlers.UpdateHandler;
 import oauth.signpost.OAuthConsumer;
 import oauth.signpost.commonshttp.CommonsHttpOAuthConsumer;
 import oauth.signpost.exception.OAuthCommunicationException;
 import oauth.signpost.exception.OAuthExpectationFailedException;
 import oauth.signpost.exception.OAuthMessageSignerException;
 
-import org.apache.http.HttpResponse;
-import org.apache.http.client.ClientProtocolException;
 import org.apache.http.client.ResponseHandler;
 import org.apache.http.client.methods.HttpGet;
 import org.apache.http.client.methods.HttpPut;
@@ -31,7 +24,8 @@ import android.database.AbstractCursor;
 import android.net.Uri;
 import android.util.Log;
 
-import com.google.gdata.client.authn.oauth.OAuthParameters;
+import java.io.UnsupportedEncodingException;
+import java.util.Map;
 
 public class LinkedInProvider extends DefaultRESTProvider {
 
@@ -114,53 +108,16 @@ public class LinkedInProvider extends DefaultRESTProvider {
 
     @Override
     public ResponseHandler<? extends AbstractCursor> getQueryHandler(Uri uri) {
-        return new mXML();
+        throw new UnsupportedOperationException();
     }
 
     @Override
     public ResponseHandler<? extends Integer> getUpdateHandler(Uri uri) {
-        return new LinkedInUpdateHandler();
+        throw new UnsupportedOperationException();
     }
 
     @Override
     public String getType(Uri uri) {
         return null;
     }
-
-    public class mXML extends XMLCursor {
-
-        final Map<String, String> xpath = new HashMap<String, String>(2);
-
-        public mXML() {
-            // we need _id for the adapter
-            xpath.put("_id", "/network/updates/update[#]/update-content/person/id");
-            xpath.put("first-name", "/network/updates/update[#]/update-content/person/first-name");
-            xpath.put("last-name", "/network/updates/update[#]/update-content/person/last-name");
-            xpath.put("headline", "/network/updates/update[#]/update-content/person/headline");
-            xpath.put("update-type", "/network/updates/update[#]/update-type");
-        }
-
-        @Override
-        public String getXPath(int row, String column) {
-            return xpath.get(column).replace("#", "" + (row + 1));
-        }
-
-        @Override
-        public String[] getColumnNames() {
-            return (String[])xpath.keySet().toArray(new String[0]);
-        }
-
-        @Override
-        public String getCountXPath() {
-            return "/network/updates/@count";
-        }
-    }
-
-    public class LinkedInUpdateHandler extends UpdateHandler {
-        public Integer handleResponse(HttpResponse response) throws ClientProtocolException,
-                IOException {
-            return response.getStatusLine().getStatusCode();
-        }
-    }
-
 }
