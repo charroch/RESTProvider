@@ -61,10 +61,10 @@ public class DatabaseUtilsTest {
         when(p.isNullAllowed("f")).thenReturn(true);
         when(p.getPrimaryKey()).thenReturn(null);
         when(p.getTableFields()).thenReturn(fields);
-        when(p.getTableName(uri)).thenReturn("test");
+        when(p.getTableName()).thenReturn("test");
         when(p.getType("f")).thenReturn(SQLiteType.TEXT);
 
-        String sql = DatabaseUtils.getCreateStatement(p, uri);
+        String sql = DatabaseUtils.getCreateStatement(p);
         assertEquals(expected, sql);
 
         expected = "CREATE TABLE IF NOT EXISTS test (_id INTEGER PRIMARY KEY AUTOINCREMENT , f TEXT NOT NULL);";
@@ -75,10 +75,9 @@ public class DatabaseUtilsTest {
         when(p.isNullAllowed("f")).thenReturn(false);
         when(p.getPrimaryKey()).thenReturn(null);
         when(p.getTableFields()).thenReturn(fields);
-        when(p.getTableName(uri)).thenReturn("test");
         when(p.getType("f")).thenReturn(SQLiteType.TEXT);
 
-        sql = DatabaseUtils.getCreateStatement(p, uri);
+        sql = DatabaseUtils.getCreateStatement(p);
         assertEquals(expected, sql);
 
         expected = "CREATE TABLE IF NOT EXISTS test (_id INTEGER PRIMARY KEY AUTOINCREMENT , f TEXT NOT NULL, f2 INTEGER);";
@@ -90,11 +89,10 @@ public class DatabaseUtilsTest {
         when(p.isNullAllowed("f2")).thenReturn(true);
         when(p.getPrimaryKey()).thenReturn(null);
         when(p.getTableFields()).thenReturn(fields);
-        when(p.getTableName(uri)).thenReturn("test");
         when(p.getType("f")).thenReturn(SQLiteType.TEXT);
         when(p.getType("f2")).thenReturn(SQLiteType.INTEGER);
 
-        sql = DatabaseUtils.getCreateStatement(p, uri);
+        sql = DatabaseUtils.getCreateStatement(p);
         assertEquals(expected, sql);
 
         expected = "CREATE TABLE IF NOT EXISTS test (f TEXT PRIMARY KEY , f2 INTEGER);";
@@ -106,11 +104,10 @@ public class DatabaseUtilsTest {
         when(p.isNullAllowed("f2")).thenReturn(true);
         when(p.getPrimaryKey()).thenReturn("f");
         when(p.getTableFields()).thenReturn(fields);
-        when(p.getTableName(uri)).thenReturn("test");
         when(p.getType("f")).thenReturn(SQLiteType.TEXT);
         when(p.getType("f2")).thenReturn(SQLiteType.INTEGER);
 
-        sql = DatabaseUtils.getCreateStatement(p, uri);
+        sql = DatabaseUtils.getCreateStatement(p);
         assertEquals(expected, sql);
 
         expected = "CREATE TABLE IF NOT EXISTS test (f TEXT PRIMARY KEY , f2 INTEGER UNIQUE);";
@@ -123,20 +120,18 @@ public class DatabaseUtilsTest {
         when(p.isNullAllowed("f2")).thenReturn(true);
         when(p.getPrimaryKey()).thenReturn("f");
         when(p.getTableFields()).thenReturn(fields);
-        when(p.getTableName(uri)).thenReturn("test");
         when(p.getType("f")).thenReturn(SQLiteType.TEXT);
         when(p.getType("f2")).thenReturn(SQLiteType.INTEGER);
 
-        sql = DatabaseUtils.getCreateStatement(p, uri);
+        sql = DatabaseUtils.getCreateStatement(p);
         assertEquals(expected, sql);
         
-        expected = "CREATE TABLE IF NOT EXISTS test (f TEXT PRIMARY KEY , f2 INTEGER UNIQUE);";
-
+        expected = "CREATE TABLE IF NOT EXISTS test (f TEXT PRIMARY KEY , f2 INTEGER UNIQUE ON CONFLICT REPLACE);";
         fields = new String[] {
                 "f", "f2"
         };
         when(p.onConflict("f2")).thenReturn(SQLiteConflictClause.REPLACE);
-        sql = DatabaseUtils.getCreateStatement(p, uri);
+        sql = DatabaseUtils.getCreateStatement(p);
         assertEquals(expected, sql);
     }
 }

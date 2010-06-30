@@ -17,7 +17,7 @@ public class UriCache implements Map<Uri, Cursor> {
     private volatile static UriCache uInstance;
 
     private UriCache() {
-        this.cache = new MapMaker().weakValues().makeMap();
+        //this.cache = new MapMaker().weakValues().makeMap();
     }
 
     public static UriCache getInstance() {

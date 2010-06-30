@@ -132,11 +132,11 @@ public abstract class RESTProvider extends ContentProvider {
     public Cursor query(Uri uri, String[] projection, String selection, String[] selectionArgs,
             String sortOrder) {
 
-        // Check cache first
-        if (UriCache.getInstance().canRespondTo(uri)) {
-            Log.i(TAG, uri.toString() + " will be taken from cache");
-            return UriCache.getInstance().get(uri);
-        }
+//        // Check cache first
+//        if (UriCache.getInstance().canRespondTo(uri)) {
+//            Log.i(TAG, uri.toString() + " will be taken from cache");
+//            return UriCache.getInstance().get(uri);
+//        }
 
         try {
             HttpUriRequest request = queryRequest(uri, projection, selection, selectionArgs,

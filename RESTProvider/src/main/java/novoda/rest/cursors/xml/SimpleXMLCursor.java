@@ -2,7 +2,6 @@
 package novoda.rest.cursors.xml;
 
 import novoda.mixml.XMLNode;
-import novoda.rest.cursors.MapCursor;
 import novoda.rest.cursors.RESTCursor;
 import novoda.rest.database.SQLTableCreator;
 
@@ -10,12 +9,8 @@ import org.apache.http.HttpResponse;
 import org.apache.http.client.ClientProtocolException;
 import org.xml.sax.SAXException;
 
-import android.database.AbstractCursor;
-import android.database.MatrixCursor;
-
 import java.io.IOException;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -24,7 +19,7 @@ import java.util.Map.Entry;
 import javax.xml.parsers.FactoryConfigurationError;
 import javax.xml.parsers.ParserConfigurationException;
 
-public class SimpleXMLCursor extends RESTCursor<SimpleXMLCursor> {
+public class SimpleXMLCursor extends RESTCursor {
 
     private CursorParams P;
 
@@ -33,8 +28,6 @@ public class SimpleXMLCursor extends RESTCursor<SimpleXMLCursor> {
     private String[] columnName;
 
     private List<XMLNode> nodeList = new ArrayList<XMLNode>();
-
-    private List<String> singleNode = new ArrayList<String>();
 
     public static class CursorParams {
         public String rootName;
@@ -136,6 +129,9 @@ public class SimpleXMLCursor extends RESTCursor<SimpleXMLCursor> {
 
     @Override
     public long getLong(int column) {
+        if (P.withAutoId && columnName[column].equals("_id")) {
+            return mPos;
+        }
         return nodeList.get(mPos).path(getOriginalName(column)).getAsLong();
     }
 
@@ -189,19 +185,16 @@ public class SimpleXMLCursor extends RESTCursor<SimpleXMLCursor> {
     private void init() {
         if (P.nodeName != null) {
             nodeList = node.getAsList(P.nodeName);
-            Map<String, String> m = nodeList.get(0).getAsMap();
-            for (Entry<String, String> e : P.mapper.entrySet()) {
-                m.put(e.getKey(), m.remove(e.getValue()));
-            }
-            columnName = m.keySet().toArray(new String[] {});
         } else {
             nodeList.add(node);
-            Map<String, String> m = nodeList.get(0).getAsMap();
-            for (Entry<String, String> e : P.mapper.entrySet()) {
-                m.put(e.getKey(), m.remove(e.getValue()));
-            }
-            columnName = m.keySet().toArray(new String[] {});
         }
+        
+        Map<String, String> m = nodeList.get(0).getAsMap();
+        for (Entry<String, String> e : P.mapper.entrySet()) {
+            m.put(e.getKey(), m.remove(e.getValue()));
+        }
+        columnName = m.keySet().toArray(new String[] {});
+        
         if (P.withAutoId) {
             String[] tmp = new String[columnName.length + 1];
             System.arraycopy(columnName, 0, tmp, 0, columnName.length);

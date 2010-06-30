@@ -16,6 +16,8 @@ import novoda.rest.cursors.json.JsonCursor;
 import novoda.rest.services.RESTCallService;
 import novoda.rest.utils.HTTPUtils;
 
+
+// FIXME move this to the content provider
 public class TwitterService extends RESTCallService {
 
     public TwitterService() {

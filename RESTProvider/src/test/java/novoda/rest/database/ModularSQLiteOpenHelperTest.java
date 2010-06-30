@@ -17,8 +17,6 @@ import java.io.IOException;
 public class ModularSQLiteOpenHelperTest {
 
     
-    ModularSQLiteOpenHelper helper;
-
     @Before
     public void initRequestMocks() throws IOException {
         MockitoAnnotations.initMocks(this);
@@ -27,7 +25,6 @@ public class ModularSQLiteOpenHelperTest {
 
     @Test
     public void testSQLiteCreateCorretly() throws Exception {
-        helper = new ModularSQLiteOpenHelper(null);
     }
 
 }

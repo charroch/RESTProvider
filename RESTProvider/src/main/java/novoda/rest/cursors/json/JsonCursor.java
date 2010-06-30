@@ -1,18 +1,11 @@
 
 package novoda.rest.cursors.json;
 
-import java.io.IOException;
-import java.net.URLEncoder;
-import java.util.Arrays;
-import java.util.Iterator;
-import java.util.Map;
-
 import novoda.rest.RESTProvider;
 import novoda.rest.cursors.One2ManyMapping;
 import novoda.rest.handlers.QueryHandler;
 
 import org.apache.http.HttpResponse;
-import org.apache.http.MethodNotSupportedException;
 import org.apache.http.client.ClientProtocolException;
 import org.apache.http.entity.BufferedHttpEntity;
 import org.apache.http.protocol.HTTP;
@@ -25,6 +18,12 @@ import org.codehaus.jackson.map.ObjectMapper;
 import android.database.AbstractCursor;
 import android.os.Bundle;
 import android.util.Log;
+
+import java.io.IOException;
+import java.net.URLEncoder;
+import java.util.Arrays;
+import java.util.Iterator;
+import java.util.Map;
 
 public class JsonCursor extends AbstractCursor implements QueryHandler<JsonCursor>, One2ManyMapping {
 

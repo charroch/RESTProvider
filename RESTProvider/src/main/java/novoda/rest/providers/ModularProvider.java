@@ -3,6 +3,7 @@ package novoda.rest.providers;
 
 import novoda.rest.cursors.EmptyCursor;
 import novoda.rest.database.ModularSQLiteOpenHelper;
+import novoda.rest.database.SQLTableCreator;
 import novoda.rest.services.RESTCallService;
 import novoda.rest.utils.DatabaseUtils;
 
@@ -10,6 +11,7 @@ import android.content.ContentProvider;
 import android.content.ContentValues;
 import android.content.Context;
 import android.content.Intent;
+import android.database.AbstractCursor;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteException;
 import android.database.sqlite.SQLiteOpenHelper;
@@ -25,13 +27,11 @@ public abstract class ModularProvider extends ContentProvider {
 
     @Override
     public int delete(Uri arg0, String arg1, String[] arg2) {
-        // TODO Auto-generated method stub
         return 0;
     }
 
     @Override
     public String getType(Uri arg0) {
-        // TODO Auto-generated method stub
         return null;
     }
 
@@ -44,9 +44,10 @@ public abstract class ModularProvider extends ContentProvider {
                     .insertOrThrow(uri.getLastPathSegment(), "", values);
         } catch (SQLiteException e) {
             if (e.getMessage().contains("no such table")) {
+                // FIXME potential stack overflow
                 Log.v(TAG, "creating table: " + uri.getLastPathSegment());
                 dbHelper.getWritableDatabase().execSQL(
-                        DatabaseUtils.contentValuestoTableCreate(values, getTableName(uri)));
+                        DatabaseUtils.contentValuestoTableCreate(values, getTableCreator(uri).getTableName()));
                 return insert(uri, values);
             }
         }
@@ -96,18 +97,18 @@ public abstract class ModularProvider extends ContentProvider {
     }
 
    protected abstract RESTCallService getService();
+   
+   protected abstract SQLTableCreator getTableCreator(final Uri uri);
 
     protected SQLiteOpenHelper getSQLiteOpenHelper(Context context) {
         return new ModularSQLiteOpenHelper(context);
     }
 
-    public String getTableName(Uri uri) {
-        return uri.getLastPathSegment();
-    }
-    
-
     @Override
     public int update(Uri arg0, ContentValues arg1, String arg2, String[] arg3) {
         return 0;
+    }
+
+    public void insertCursor(AbstractCursor cursor) {
     }
 }

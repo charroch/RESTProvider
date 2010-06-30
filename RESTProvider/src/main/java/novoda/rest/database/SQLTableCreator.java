@@ -1,7 +1,6 @@
 
 package novoda.rest.database;
 
-import android.net.Uri;
 
 /**
  * Definition of the methods needed to create a table out of an object - will
@@ -21,10 +20,6 @@ public interface SQLTableCreator {
 
     public SQLiteType getType(final String field);
 
-    public String getParentTableName(final Uri uri);
-
-    public String getParentID(final Uri uri);
-
     public boolean isNullAllowed(final String field);
 
     public boolean isUnique(final String field);
@@ -35,7 +30,7 @@ public interface SQLTableCreator {
     
     public SQLiteConflictClause onConflict(final String field);
     
-    public String getTableName(final Uri uri);
+    public String getTableName();
     
     public String[] getTableFields();
 }

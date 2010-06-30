@@ -2,6 +2,8 @@
 package novoda.rest.services;
 
 import novoda.rest.UriRequestMap;
+import novoda.rest.database.SQLTableCreator;
+import novoda.rest.providers.ModularProvider;
 import novoda.rest.utils.AndroidHttpClient;
 import novoda.rest.utils.DatabaseUtils;
 
@@ -26,7 +28,6 @@ public abstract class RESTCallService extends IntentService implements UriReques
     public RESTCallService(String name) {
         super(name);
     }
-    
 
     public static final String BUNDLE_SORT_ORDER = "sortOrder";
 
@@ -67,7 +68,11 @@ public abstract class RESTCallService extends IntentService implements UriReques
                         getQueryHandler(uri));
                 
                 ContentProviderClient client = getContentResolver().acquireContentProviderClient(uri);
-                //client.getLocalContentProvider().
+                ModularProvider provider = (ModularProvider) client.getLocalContentProvider();
+                
+                if (cursor instanceof SQLTableCreator) {
+                    provider.insertCursor(cursor);
+                }
                 
                 ContentValues values = new ContentValues(cursor.getColumnCount());
                 while (cursor.moveToNext()){

@@ -21,7 +21,7 @@ public class DatabaseUtils extends android.database.DatabaseUtils {
         return buf.toString();
     }
 
-    public static String getCreateStatement(SQLTableCreator creator, Uri uri) {
+    public static String getCreateStatement(SQLTableCreator creator) {
 
         String primaryKey = creator.getPrimaryKey();
         SQLiteType primaryKeyType = creator.getType(primaryKey);
@@ -34,7 +34,7 @@ public class DatabaseUtils extends android.database.DatabaseUtils {
         }
 
         StringBuilder sql = new StringBuilder();
-        sql.append("CREATE TABLE IF NOT EXISTS ").append(creator.getTableName(uri)).append(" (").append(
+        sql.append("CREATE TABLE IF NOT EXISTS ").append(creator.getTableName()).append(" (").append(
                 primaryKey).append(" ").append(primaryKeyType.name()).append(" PRIMARY KEY")
                 .append(((shouldAutoincrement) ? " AUTOINCREMENT " : " "));
 

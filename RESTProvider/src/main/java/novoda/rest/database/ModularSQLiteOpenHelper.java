@@ -1,14 +1,12 @@
 
 package novoda.rest.database;
 
+import novoda.rest.utils.DatabaseUtils;
+
 import android.content.Context;
 import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteOpenHelper;
-import android.database.sqlite.SQLiteStatement;
 import android.net.Uri;
-
-import java.util.ArrayList;
-import java.util.List;
 
 public class ModularSQLiteOpenHelper extends SQLiteOpenHelper {
 
@@ -18,8 +16,6 @@ public class ModularSQLiteOpenHelper extends SQLiteOpenHelper {
             + " IF NOT EXISTS " + "(_id INTEGER PRIMARY KEY AUTOINCREMENT,"
             + " uri TEXT NOT NULL, " + "status INTEGER NOT NULL, " + "createdAt INTEGER NOT NULL, "
             + "updatedAt INTEGER);";
-
-    private List<SQLiteStatement> statements = new ArrayList<SQLiteStatement>();
 
     public ModularSQLiteOpenHelper(Context context) {
         super(context, new StringBuilder(context.getApplicationInfo().packageName).append(".db")
@@ -36,13 +32,9 @@ public class ModularSQLiteOpenHelper extends SQLiteOpenHelper {
         // No upgrade
     }
 
-    public void create(SQLTableCreator creator, Uri uri) {
-        String sql = "CREATE TABLE " + creator.getParentTableName(uri) + " IF NOT EXISTS " + "("
-                + creator.getPrimaryKey() + " " + creator.getType(creator.getPrimaryKey())
-                + " PRIMARY KEY ";
+    public void create(SQLTableCreator creator) {
+        getWritableDatabase().compileStatement(DatabaseUtils.getCreateStatement(creator))
+                .execute();
     }
-    
-    public SQLiteStatement getCreateStatement(SQLTableCreator creator, Uri uri) {
-        return null;
-    }
+
 }
