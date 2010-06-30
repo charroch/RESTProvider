@@ -5,7 +5,7 @@
 	<modelVersion>4.0.0</modelVersion>
 	<groupId>novoda.rest</groupId>
 	<artifactId>RESTProvider</artifactId>
-	<version>0.0.1-SNAPSHOT</version>
+	<version>0.0.2-SNAPSHOT</version>
 	<name>RESTProvider</name>
 	<description>Automatically parse RESTful API responses into a Provider in Android</description>
 	<url>http://github.com/novoda/RESTProvider</url>
@@ -89,6 +89,13 @@
 			<groupId>com.google.android</groupId>
 			<artifactId>android</artifactId>
 			<version>2.1_r1</version>
+			<type>jar</type>
+			<scope>compile</scope>
+		</dependency>
+		<dependency>
+			<groupId>com.github.charroch</groupId>
+			<artifactId>MiXML</artifactId>
+			<version>0.0.1</version>
 			<type>jar</type>
 			<scope>compile</scope>
 		</dependency>

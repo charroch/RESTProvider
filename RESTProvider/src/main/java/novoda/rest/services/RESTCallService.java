@@ -6,6 +6,7 @@ import novoda.rest.utils.AndroidHttpClient;
 import novoda.rest.utils.DatabaseUtils;
 
 import android.app.IntentService;
+import android.content.ContentProviderClient;
 import android.content.ContentValues;
 import android.content.Intent;
 import android.database.AbstractCursor;
@@ -64,6 +65,10 @@ public abstract class RESTCallService extends IntentService implements UriReques
                 AbstractCursor cursor = httpClient.execute(getRequest(uri, UriRequestMap.QUERY,
                         getQueryParams(uri, projection, selection, selectionArg, sortOrder)),
                         getQueryHandler(uri));
+                
+                ContentProviderClient client = getContentResolver().acquireContentProviderClient(uri);
+                //client.getLocalContentProvider().
+                
                 ContentValues values = new ContentValues(cursor.getColumnCount());
                 while (cursor.moveToNext()){
                     DatabaseUtils.cursorRowToContentValues(cursor, values);

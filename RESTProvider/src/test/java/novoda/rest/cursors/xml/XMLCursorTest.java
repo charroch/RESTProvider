@@ -89,4 +89,28 @@ public class XMLCursorTest {
         assertEquals(c.getInt(c.getColumnIndex("integer")), 1);
         assertEquals(c.getString(c.getColumnIndex("value")), "string");
     }
+
+    @Test
+    public void shouldParseSimpleObjects() throws Exception {
+        SimpleXMLCursor c1 = new SimpleXMLCursor.Builder().withRootNode("response").create();
+        when(entity.getContent()).thenReturn(
+                new FileInputStream(new File("src/test/resources/simpleSingle.xml")));
+        c1.handleResponse(response);
+
+        assertEquals(c1.getCount(), 1);
+        assertTrue(c1.moveToFirst());
+        assertEquals(c1.getString(c1.getColumnIndex("msg")), "message");
+    }
+
+    @Test
+    public void shouldAddID() throws Exception {
+        SimpleXMLCursor c = new SimpleXMLCursor.Builder().withFieldID("integer").withRootNode(
+                "array").withNodeName("array_item").withAutoID().create();
+        when(entity.getContent()).thenReturn(
+                new FileInputStream(new File("src/test/resources/simple.xml")));
+        c.handleResponse(response);
+        assertTrue(c.getColumnIndex("_id") > 0);
+        c.moveToFirst();
+        assertEquals(c.getInt(c.getColumnIndex("_id")) , 0);
+    }
 }

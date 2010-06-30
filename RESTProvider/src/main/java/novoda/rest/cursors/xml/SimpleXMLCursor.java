@@ -2,6 +2,7 @@
 package novoda.rest.cursors.xml;
 
 import novoda.mixml.XMLNode;
+import novoda.rest.cursors.MapCursor;
 import novoda.rest.cursors.RESTCursor;
 import novoda.rest.database.SQLTableCreator;
 
@@ -9,8 +10,12 @@ import org.apache.http.HttpResponse;
 import org.apache.http.client.ClientProtocolException;
 import org.xml.sax.SAXException;
 
+import android.database.AbstractCursor;
+import android.database.MatrixCursor;
+
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -29,16 +34,20 @@ public class SimpleXMLCursor extends RESTCursor<SimpleXMLCursor> {
 
     private List<XMLNode> nodeList = new ArrayList<XMLNode>();
 
+    private List<String> singleNode = new ArrayList<String>();
+
     public static class CursorParams {
         public String rootName;
 
         public String fieldId;
 
-        public String nodeName;
+        public String nodeName = null;
 
         public Map<String, String> mapper = new HashMap<String, String>();
 
         public SQLTableCreator sqlCreateMapper;
+
+        public boolean withAutoId = false;
 
         public CursorParams() {
         }
@@ -85,6 +94,11 @@ public class SimpleXMLCursor extends RESTCursor<SimpleXMLCursor> {
             P.sqlCreateMapper = creator;
             return this;
         }
+
+        public Builder withAutoID() {
+            P.withAutoId = true;
+            return this;
+        }
     }
 
     @Override
@@ -109,6 +123,9 @@ public class SimpleXMLCursor extends RESTCursor<SimpleXMLCursor> {
 
     @Override
     public int getInt(int column) {
+        if (P.withAutoId && columnName[column].equals("_id")) {
+            return mPos;
+        }
         return nodeList.get(mPos).path(getOriginalName(column)).getAsInt();
     }
 
@@ -177,6 +194,19 @@ public class SimpleXMLCursor extends RESTCursor<SimpleXMLCursor> {
                 m.put(e.getKey(), m.remove(e.getValue()));
             }
             columnName = m.keySet().toArray(new String[] {});
+        } else {
+            nodeList.add(node);
+            Map<String, String> m = nodeList.get(0).getAsMap();
+            for (Entry<String, String> e : P.mapper.entrySet()) {
+                m.put(e.getKey(), m.remove(e.getValue()));
+            }
+            columnName = m.keySet().toArray(new String[] {});
+        }
+        if (P.withAutoId) {
+            String[] tmp = new String[columnName.length + 1];
+            System.arraycopy(columnName, 0, tmp, 0, columnName.length);
+            tmp[tmp.length - 1] = "_id";
+            columnName = tmp;
         }
     }
 }
