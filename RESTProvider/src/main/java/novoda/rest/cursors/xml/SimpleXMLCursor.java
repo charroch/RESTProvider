@@ -1,14 +1,6 @@
 
 package novoda.rest.cursors.xml;
 
-import novoda.mixml.XMLNode;
-import novoda.rest.cursors.RESTCursor;
-import novoda.rest.database.SQLTableCreator;
-
-import org.apache.http.HttpResponse;
-import org.apache.http.client.ClientProtocolException;
-import org.xml.sax.SAXException;
-
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -19,7 +11,23 @@ import java.util.Map.Entry;
 import javax.xml.parsers.FactoryConfigurationError;
 import javax.xml.parsers.ParserConfigurationException;
 
-public class SimpleXMLCursor extends RESTCursor {
+import novoda.mixml.XMLNode;
+import novoda.rest.cursors.RESTMarshaller;
+import novoda.rest.database.SQLTableCreator;
+
+import org.apache.http.HttpResponse;
+import org.apache.http.ParseException;
+import org.apache.http.client.ClientProtocolException;
+import org.xml.sax.SAXException;
+
+import android.database.AbstractCursor;
+import android.net.Uri;
+
+public class SimpleXMLCursor extends RESTMarshaller {
+
+    public SimpleXMLCursor(Uri uri) {
+        super(uri);
+    }
 
     private CursorParams P;
 
@@ -66,8 +74,8 @@ public class SimpleXMLCursor extends RESTCursor {
             return this;
         }
 
-        public SimpleXMLCursor create() {
-            final SimpleXMLCursor cursor = new SimpleXMLCursor();
+        public SimpleXMLCursor create(final Uri uri) {
+            final SimpleXMLCursor cursor = new SimpleXMLCursor(uri);
             cursor.P = P;
             return cursor;
         }
@@ -201,5 +209,24 @@ public class SimpleXMLCursor extends RESTCursor {
             tmp[tmp.length - 1] = "_id";
             columnName = tmp;
         }
+    }
+
+    @Override
+    public AbstractCursor getChild(Uri uri) {
+        return null;
+    }
+
+    @Override
+    public List getChildUri() {
+        return null;
+    }
+
+    @Override
+    public AbstractCursor getCursor() {
+        return this;
+    }
+
+    @Override
+    public void parse(HttpResponse response) throws ParseException {
     }
 }
