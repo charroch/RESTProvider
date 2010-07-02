@@ -132,7 +132,7 @@ public abstract class RESTProvider extends ContentProvider {
     public Cursor query(Uri uri, String[] projection, String selection, String[] selectionArgs,
             String sortOrder) {
 
-//        // Check cache first
+//        // Check cache first FIXME broken
 //        if (UriCache.getInstance().canRespondTo(uri)) {
 //            Log.i(TAG, uri.toString() + " will be taken from cache");
 //            return UriCache.getInstance().get(uri);
