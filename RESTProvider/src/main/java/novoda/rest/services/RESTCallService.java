@@ -58,20 +58,25 @@ public abstract class RESTCallService extends IntentService implements UriReques
         String action = intent.getAction();
 
         if (action.equals(ACTION_QUERY)) {
-            final String[] projection = bundle.getStringArray(BUNDLE_PROJECTION);
+            
+        	final String[] projection = bundle.getStringArray(BUNDLE_PROJECTION);
             final String selection = bundle.getString(BUNDLE_SELECTION);
             final String[] selectionArg = bundle.getStringArray(BUNDLE_SELECTION_ARG);
             final String sortOrder = bundle.getString(BUNDLE_SORT_ORDER);
+            
             try {
-                AbstractCursor cursor = httpClient.execute(getRequest(uri, UriRequestMap.QUERY,
-                        getQueryParams(uri, projection, selection, selectionArg, sortOrder)),
-                        getQueryHandler(uri));
+                AbstractCursor cursor = null;
+//                AbstractCursor cursor =new RESTMarhalelr( httpClient.execute(getRequest(uri, UriRequestMap.QUERY,
+//                        getQueryParams(uri, projection, selection, selectionArg, sortOrder)),
+//                        getQueryHandler(uri))).getCursor();
+//                
+               // marshaller.getChildren();
                 
                 ContentProviderClient client = getContentResolver().acquireContentProviderClient(uri);
                 ModularProvider provider = (ModularProvider) client.getLocalContentProvider();
                 
                 if (cursor instanceof SQLTableCreator) {
-                    provider.insertCursor(cursor);
+                    provider.insertCursor(uri, cursor);
                 }
                 
                 ContentValues values = new ContentValues(cursor.getColumnCount());

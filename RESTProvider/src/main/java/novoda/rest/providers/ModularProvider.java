@@ -31,17 +31,14 @@ public abstract class ModularProvider extends ContentProvider {
     }
 
     @Override
-    public String getType(Uri arg0) {
-        return null;
-    }
-
-
-    @Override
     public Uri insert(Uri uri, ContentValues values) {
         long ret = -1;
         try {
+            
             ret = dbHelper.getWritableDatabase()
                     .insertOrThrow(uri.getLastPathSegment(), "", values);
+            
+            
         } catch (SQLiteException e) {
             if (e.getMessage().contains("no such table")) {
                 // FIXME potential stack overflow
@@ -69,7 +66,8 @@ public abstract class ModularProvider extends ContentProvider {
             String sortOrder) {
 
         SQLiteQueryBuilder qBuilder = new SQLiteQueryBuilder();
-        qBuilder.setTables(uri.getLastPathSegment());
+
+        qBuilder.setTables(getTableCreator(uri).getTableName());
 
         // Make the query.
         Cursor c = null;
@@ -109,6 +107,6 @@ public abstract class ModularProvider extends ContentProvider {
         return 0;
     }
 
-    public void insertCursor(AbstractCursor cursor) {
+    public void insertCursor(Uri uri, AbstractCursor cursor) {
     }
 }

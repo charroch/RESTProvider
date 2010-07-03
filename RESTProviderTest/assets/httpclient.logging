@@ -1,0 +1,6 @@
+org.apache.http.impl.conn.level = FINEST
+org.apache.http.impl.client.level = FINEST
+org.apache.http.client.level = FINEST
+org.apache.http.level = FINEST
+
+novoda.rest.debug.response = TRUE

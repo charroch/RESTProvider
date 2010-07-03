@@ -23,6 +23,11 @@ public class ModTwitter extends ModularProvider {
 
     @Override
     protected SQLTableCreator getTableCreator(Uri uri) {
+        return null;
+    }
+
+    @Override
+    public String getType(Uri arg0) {
         // TODO Auto-generated method stub
         return null;
     }
