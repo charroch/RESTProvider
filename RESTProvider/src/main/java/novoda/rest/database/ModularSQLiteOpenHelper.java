@@ -6,7 +6,6 @@ import novoda.rest.utils.DatabaseUtils;
 import android.content.Context;
 import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteOpenHelper;
-import android.net.Uri;
 
 public class ModularSQLiteOpenHelper extends SQLiteOpenHelper {
 
@@ -33,8 +32,7 @@ public class ModularSQLiteOpenHelper extends SQLiteOpenHelper {
     }
 
     public void create(SQLTableCreator creator) {
-        getWritableDatabase().compileStatement(DatabaseUtils.getCreateStatement(creator))
-                .execute();
+        getWritableDatabase().compileStatement(DatabaseUtils.getCreateStatement(creator)).execute();
     }
 
 }
