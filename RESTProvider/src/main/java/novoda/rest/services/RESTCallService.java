@@ -64,7 +64,7 @@ public abstract class RESTCallService extends IntentService implements UriReques
             final String[] selectionArg = bundle.getStringArray(BUNDLE_SELECTION_ARG);
             final String sortOrder = bundle.getString(BUNDLE_SORT_ORDER);
             
-            try {
+            //try {
                 AbstractCursor cursor = null;
 //                AbstractCursor cursor =new RESTMarhalelr( httpClient.execute(getRequest(uri, UriRequestMap.QUERY,
 //                        getQueryParams(uri, projection, selection, selectionArg, sortOrder)),
@@ -84,9 +84,9 @@ public abstract class RESTCallService extends IntentService implements UriReques
                     DatabaseUtils.cursorRowToContentValues(cursor, values);
                     getContentResolver().insert(uri, values);
                 }
-            } catch (IOException e) {
-                e.printStackTrace();
-            }
+//            } catch (IOException e) {
+//                e.printStackTrace();
+//            }
         }
         getBaseContext().sendBroadcast(new Intent("novoda.rest.action.QUERY_COMPLETE"));
     }

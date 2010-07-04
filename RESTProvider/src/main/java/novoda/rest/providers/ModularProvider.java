@@ -13,6 +13,7 @@ import android.content.Context;
 import android.content.Intent;
 import android.database.AbstractCursor;
 import android.database.Cursor;
+import android.database.DatabaseUtils.InsertHelper;
 import android.database.sqlite.SQLiteException;
 import android.database.sqlite.SQLiteOpenHelper;
 import android.database.sqlite.SQLiteQueryBuilder;
@@ -43,6 +44,9 @@ public abstract class ModularProvider extends ContentProvider {
             if (e.getMessage().contains("no such table")) {
                 // FIXME potential stack overflow
                 Log.v(TAG, "creating table: " + uri.getLastPathSegment());
+                
+                DatabaseUtils.InsertHelper i = new InsertHelper(dbHelper.getWritableDatabase(), "test");
+                
                 dbHelper.getWritableDatabase().execSQL(
                         DatabaseUtils.contentValuestoTableCreate(values, getTableCreator(uri).getTableName()));
                 return insert(uri, values);

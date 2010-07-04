@@ -1,16 +1,6 @@
 
 package novoda.rest.cursors.xml;
 
-import java.io.IOException;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.Map.Entry;
-
-import javax.xml.parsers.FactoryConfigurationError;
-import javax.xml.parsers.ParserConfigurationException;
-
 import novoda.mixml.XMLNode;
 import novoda.rest.cursors.RESTMarshaller;
 import novoda.rest.database.SQLTableCreator;
@@ -22,6 +12,17 @@ import org.xml.sax.SAXException;
 
 import android.database.AbstractCursor;
 import android.net.Uri;
+
+import java.io.IOException;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.Map.Entry;
+
+import javax.xml.parsers.FactoryConfigurationError;
+import javax.xml.parsers.ParserConfigurationException;
 
 public class SimpleXMLCursor extends RESTMarshaller {
 
@@ -37,6 +38,10 @@ public class SimpleXMLCursor extends RESTMarshaller {
 
     private List<XMLNode> nodeList = new ArrayList<XMLNode>();
 
+    private List<List<SimpleXMLCursor>> children = new ArrayList<List<SimpleXMLCursor>>();
+    
+    private List<List<Uri>> childrenUri = new ArrayList<List<Uri>>();
+
     public static class CursorParams {
         public String rootName;
 
@@ -49,6 +54,10 @@ public class SimpleXMLCursor extends RESTMarshaller {
         public SQLTableCreator sqlCreateMapper;
 
         public boolean withAutoId = false;
+
+        public List<SimpleXMLCursor> withChildren;
+
+        public Uri uri;
 
         public CursorParams() {
         }
@@ -76,6 +85,7 @@ public class SimpleXMLCursor extends RESTMarshaller {
 
         public SimpleXMLCursor create(final Uri uri) {
             final SimpleXMLCursor cursor = new SimpleXMLCursor(uri);
+            P.uri = uri;
             cursor.P = P;
             return cursor;
         }
@@ -98,6 +108,11 @@ public class SimpleXMLCursor extends RESTMarshaller {
 
         public Builder withAutoID() {
             P.withAutoId = true;
+            return this;
+        }
+
+        public Builder withChildren(SimpleXMLCursor... child) {
+            P.withChildren = new ArrayList<SimpleXMLCursor>(Arrays.asList(child));
             return this;
         }
     }
@@ -160,7 +175,30 @@ public class SimpleXMLCursor extends RESTMarshaller {
 
     @Override
     public boolean onMove(int oldPosition, int newPosition) {
+        if (P.withChildren != null) {
+            List<SimpleXMLCursor> child = new ArrayList<SimpleXMLCursor>(P.withChildren.size());
+            List<Uri> childUri = new ArrayList<Uri>(P.withChildren.size());
+            for (SimpleXMLCursor c : P.withChildren) {
+                c.initDom(nodeList.get(newPosition).path(c.P.rootName));
+                child.add(c);
+                childUri.add(c.P.uri);
+            }
+            children.add(child);
+            childrenUri.add(childUri);
+        }
         return super.onMove(oldPosition, newPosition);
+    }
+
+    private void initDom(XMLNode nodeC) {
+        node = nodeC;
+        try {
+            for (String n : P.rootName.split("/")) {
+                node = node.path(n);
+            }
+        } catch (IllegalStateException e) {
+            e.printStackTrace();
+        }
+        init();
     }
 
     @Override
@@ -196,13 +234,13 @@ public class SimpleXMLCursor extends RESTMarshaller {
         } else {
             nodeList.add(node);
         }
-        
+
         Map<String, String> m = nodeList.get(0).getAsMap();
         for (Entry<String, String> e : P.mapper.entrySet()) {
             m.put(e.getKey(), m.remove(e.getValue()));
         }
         columnName = m.keySet().toArray(new String[] {});
-        
+
         if (P.withAutoId) {
             String[] tmp = new String[columnName.length + 1];
             System.arraycopy(columnName, 0, tmp, 0, columnName.length);
@@ -212,13 +250,13 @@ public class SimpleXMLCursor extends RESTMarshaller {
     }
 
     @Override
-    public AbstractCursor getChild(Uri uri) {
-        return null;
+    public SimpleXMLCursor getChild(Uri uri) {
+        return children.get(0).get(childrenUri.indexOf(uri));
     }
 
     @Override
-    public List getChildUri() {
-        return null;
+    public List<Uri> getChildUri() {
+        return childrenUri.get(mPos);
     }
 
     @Override
