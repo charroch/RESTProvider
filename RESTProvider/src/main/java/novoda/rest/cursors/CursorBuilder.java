@@ -17,8 +17,8 @@ import java.util.List;
 public class CursorBuilder<T extends ResponseCursor> implements ResponseHandler<T> {
 
     public T cursor;
-    
-    public List<T> children;
+
+    public List<Builder<T>> children = new ArrayList<Builder<T>>();
 
     public CursorBuilder(Builder<T> builder) {
     }
@@ -44,10 +44,12 @@ public class CursorBuilder<T extends ResponseCursor> implements ResponseHandler<
     }
 
     public static final class Builder<T extends ResponseCursor> {
-        private final CursorController.CursorParams<T> P;
+        private final CursorController.CursorParams P;
+
+        private final List<Builder<T>> children = new ArrayList<Builder<T>>();
 
         public Builder() {
-            P = new CursorController.CursorParams<T>();
+            P = new CursorController.CursorParams();
         }
 
         public Builder<T> withFieldID(final String fieldID) {
@@ -89,7 +91,8 @@ public class CursorBuilder<T extends ResponseCursor> implements ResponseHandler<
             CursorBuilder<T> builder = new CursorBuilder<T>(this);
             try {
                 builder.cursor = clazz.newInstance();
-                builder.cursor.params = (CursorParams<ResponseCursor>) this.P;
+                builder.cursor.params = (CursorParams) this.P;
+                builder.children.addAll(children);
                 return builder;
             } catch (InstantiationException e) {
                 e.printStackTrace();
@@ -107,7 +110,7 @@ public class CursorBuilder<T extends ResponseCursor> implements ResponseHandler<
         }
 
         public Builder<T> withChildren(Builder<T>... child) {
-            P.withChil = new ArrayList<Builder<T>>(Arrays.asList(child));
+            children.addAll(Arrays.asList(child));
             return this;
         }
     }

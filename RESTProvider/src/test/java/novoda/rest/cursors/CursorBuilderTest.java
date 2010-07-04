@@ -53,14 +53,15 @@ public class CursorBuilderTest {
         when(status.getStatusCode()).thenReturn(200);
     }
 
+    @SuppressWarnings("unchecked")
     @Test
     public void simpleTest() throws Exception {
 
         when(entity.getContent()).thenReturn(
                 new FileInputStream(new File("src/test/resources/simple.xml")));
         
-        Builder<T2> child = new CursorBuilder.Builder<T2>().withRootNode("array")
-                .withNodeName("array_item").withFieldID("integer");
+        T2 child = new CursorBuilder.Builder<T2>().withRootNode("array")
+                .withNodeName("array_item").withFieldID("integer").build(T2.class);
 
         AbstractCursor c = new CursorBuilder.Builder<T2>().withFieldID("integer").withRootNode(
                 "array").withNodeName("array_item").withChildren(child).create(T2.class).handleResponse(response);

@@ -38,11 +38,11 @@ public abstract class ResponseCursor extends AbstractCursor {
     
     public abstract void parse(InputStream in) throws IOException;
 
-    protected CursorController.CursorParams<ResponseCursor> params;
+    protected CursorController.CursorParams params;
 
     protected String[] columnName;
 
-    public ResponseCursor() {
+    protected ResponseCursor() {
     }
 
     public Object get(int column) {

@@ -21,15 +21,24 @@ import javax.xml.parsers.ParserConfigurationException;
 public class T2 extends ResponseCursor {
 
     private XMLNode node;
-    
+
     private String[] columnName;
 
     private List<XMLNode> nodeList = new ArrayList<XMLNode>();
 
     private List<List<SimpleXMLCursor>> children = new ArrayList<List<SimpleXMLCursor>>();
-    
+
     private List<List<Uri>> childrenUri = new ArrayList<List<Uri>>();
-    
+
+    public T2() {
+        super();
+    }
+
+    public T2(XMLNode root) {
+        this.node = node;
+        init2();
+    }
+
     @Override
     public Object get(String field) {
         return nodeList.get(mPos).path(field).getAsString();
@@ -71,7 +80,7 @@ public class T2 extends ResponseCursor {
         }
         init2();
     }
-    
+
     private void init2() {
         if (params.nodeName != null) {
             nodeList = node.getAsList(params.nodeName);
@@ -95,6 +104,5 @@ public class T2 extends ResponseCursor {
     public int getCount() {
         return nodeList.size();
     }
-    
-    
+
 }
