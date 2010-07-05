@@ -1,11 +1,9 @@
 package novoda.rest.database;
 
 import novoda.rest.utils.DatabaseUtils;
-
 import android.content.Context;
 import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteOpenHelper;
-import android.net.Uri;
 
 public class ModularSQLiteOpenHelper extends SQLiteOpenHelper {
 

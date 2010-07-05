@@ -46,7 +46,7 @@ public class T2 extends ResponseCursor {
 
     @Override
     public ResponseCursor getChild(String field) {
-        return null;
+        return this;
     }
 
     @Override
@@ -105,4 +105,10 @@ public class T2 extends ResponseCursor {
         return nodeList.size();
     }
 
+    @Override
+    public void parseChildren(ResponseCursor parent, String field) {
+        T2 p = (T2)parent;
+        node = p.nodeList.get(p.mPos);
+        init2();
+    }
 }

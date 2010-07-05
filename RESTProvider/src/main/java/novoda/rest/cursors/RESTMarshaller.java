@@ -22,6 +22,9 @@ public abstract class RESTMarshaller<T extends AbstractCursor> extends AbstractC
     
     public abstract List<Uri> getChildUri();
 
+    /*
+     * instead of having getChild for uri maybe getting the child for mPos as for a normal cursor... Maybe we need a RESTCursor. 
+     */
     public abstract T getChild(final Uri uri);
 
     public abstract T getCursor();

@@ -1,10 +1,14 @@
 
 package novoda.rest.cursors;
 
-import android.database.AbstractCursor;
-
 import java.io.IOException;
 import java.io.InputStream;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
+
+import android.database.AbstractCursor;
+import android.util.Log;
 
 public abstract class ResponseCursor extends AbstractCursor {
 
@@ -28,6 +32,8 @@ public abstract class ResponseCursor extends AbstractCursor {
 
     public static final int BYTE_ARRAY = 9;
 
+    private static final String TAG = ResponseCursor.class.getSimpleName();
+
     public abstract int getType(int column);
 
     public abstract ResponseCursor getChild(String field);
@@ -35,12 +41,16 @@ public abstract class ResponseCursor extends AbstractCursor {
     public abstract String[] getChildrenFields();
 
     public abstract Object get(String field);
-    
+
     public abstract void parse(InputStream in) throws IOException;
+
+    public abstract void parseChildren(ResponseCursor parent, String field);
 
     protected CursorController.CursorParams params;
 
     protected String[] columnName;
+
+    private String[] childrenColumnNames;
 
     protected ResponseCursor() {
     }
@@ -50,10 +60,22 @@ public abstract class ResponseCursor extends AbstractCursor {
         if (field.equals("_id")) {
             return mPos;
         }
+
+        if (Arrays.asList(childrenColumnNames).contains(field)) {
+            // We hit a children.
+            Log.w(TAG, "you are requesting a child. Will output the child as string");
+        }
+
         return get((params.mapper.containsKey(field)) ? params.mapper.get(field) : field);
     }
 
     public void init() {
+
+        /*
+         * Getting the column names from concrete - this should be the ones from
+         * the XML/JSON applicable to that format (i.e. id should be the actual
+         * id field not _id)
+         */
         columnName = getColumnNames();
         if (params.withAutoId) {
             String[] tmp = new String[columnName.length + 1];
@@ -61,7 +83,18 @@ public abstract class ResponseCursor extends AbstractCursor {
             tmp[tmp.length - 1] = "_id";
             columnName = tmp;
         }
-        // params.withChildren.get(2).
+
+        /*
+         * Getting the root of all the children elements.
+         */
+        if (params.withChildren != null) {
+            List<String> childRoots = new ArrayList<String>(params.withChildren.size());
+            for (ResponseCursor child : params.withChildren) {
+                childRoots.add(child.params.rootName);
+            }
+            childrenColumnNames = childRoots.toArray(new String[] {});
+            childRoots = null;
+        }
     }
 
     @Override
@@ -72,35 +105,35 @@ public abstract class ResponseCursor extends AbstractCursor {
     @Override
     public short getShort(int column) {
         Object value = get(column);
-        return (value instanceof String) ? Short.valueOf((String) value) : ((Number) value)
+        return (value instanceof String) ? Short.valueOf((String)value) : ((Number)value)
                 .shortValue();
     }
 
     @Override
     public int getInt(int column) {
         Object value = get(column);
-        return (value instanceof String) ? Integer.valueOf((String) value) : ((Number) value)
+        return (value instanceof String) ? Integer.valueOf((String)value) : ((Number)value)
                 .intValue();
     }
 
     @Override
     public long getLong(int column) {
         Object value = get(column);
-        return (value instanceof String) ? Long.valueOf((String) value) : ((Number) value)
+        return (value instanceof String) ? Long.valueOf((String)value) : ((Number)value)
                 .longValue();
     }
 
     @Override
     public float getFloat(int column) {
         Object value = get(column);
-        return (value instanceof String) ? Float.valueOf((String) value) : ((Number) value)
+        return (value instanceof String) ? Float.valueOf((String)value) : ((Number)value)
                 .floatValue();
     }
 
     @Override
     public double getDouble(int column) {
         Object value = get(column);
-        return (value instanceof String) ? Double.valueOf((String) value) : ((Number) value)
+        return (value instanceof String) ? Double.valueOf((String)value) : ((Number)value)
                 .doubleValue();
     }
 

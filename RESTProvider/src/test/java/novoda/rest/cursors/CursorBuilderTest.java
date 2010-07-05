@@ -59,12 +59,13 @@ public class CursorBuilderTest {
 
         when(entity.getContent()).thenReturn(
                 new FileInputStream(new File("src/test/resources/simple.xml")));
-        
-        T2 child = new CursorBuilder.Builder<T2>().withRootNode("array")
-                .withNodeName("array_item").withFieldID("integer").build(T2.class);
+
+        T2 child = new CursorBuilder.Builder<T2>().withRootNode("array").withNodeName("array_item")
+                .withFieldID("integer").build(T2.class);
 
         AbstractCursor c = new CursorBuilder.Builder<T2>().withFieldID("integer").withRootNode(
-                "array").withNodeName("array_item").withChildren(child).create(T2.class).handleResponse(response);
+                "array").withNodeName("array_item").withChildren(child).create(T2.class)
+                .handleResponse(response);
 
         // Simple testing of columns and count
         assertTrue(Arrays.asList(c.getColumnNames()).contains("string"));
@@ -79,5 +80,21 @@ public class CursorBuilderTest {
         assertTrue(c.moveToNext());
         assertEquals(c.getInt(c.getColumnIndex("integer")), 2);
         assertEquals(c.getString(c.getColumnIndex("string")), "another");
+    }
+
+    @Test
+    public void testOneToMany() throws Exception {
+        when(entity.getContent()).thenReturn(
+                new FileInputStream(new File("src/test/resources/simple.xml")));
+
+        T2 child = new CursorBuilder.Builder<T2>().withRootNode("array").withNodeName("array_item")
+                .withFieldID("integer").build(T2.class);
+
+        ResponseCursor c = new CursorBuilder.Builder<T2>().withRootNode("response").withChildren(
+                child).create(T2.class).handleResponse(response);
+        
+        assertTrue(c.moveToFirst());
+        assertEquals(c.getInt(c.getColumnIndex("status")), 0);
+        assertEquals(c.getChild("array").getString(1), "string");
     }
 }

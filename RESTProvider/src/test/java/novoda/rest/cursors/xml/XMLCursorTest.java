@@ -140,7 +140,6 @@ public class XMLCursorTest {
         assertEquals(c.getLong(c.getColumnIndex("_id")), 0);
     }
 
-    @Test
     public void shouldAddOneToMany() throws Exception {
         
         when(childUri.getPathSegments()).thenReturn(Arrays.asList("parent", "#", "array"));
