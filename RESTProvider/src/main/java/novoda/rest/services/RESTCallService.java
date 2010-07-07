@@ -2,7 +2,7 @@
 package novoda.rest.services;
 
 import novoda.rest.UriRequestMap;
-import novoda.rest.database.SQLTableCreator;
+import novoda.rest.database.SQLiteTableCreator;
 import novoda.rest.providers.ModularProvider;
 import novoda.rest.utils.AndroidHttpClient;
 import novoda.rest.utils.DatabaseUtils;
@@ -14,8 +14,6 @@ import android.content.Intent;
 import android.database.AbstractCursor;
 import android.net.Uri;
 import android.os.Bundle;
-
-import java.io.IOException;
 
 public abstract class RESTCallService extends IntentService implements UriRequestMap {
 
@@ -75,8 +73,8 @@ public abstract class RESTCallService extends IntentService implements UriReques
                 ContentProviderClient client = getContentResolver().acquireContentProviderClient(uri);
                 ModularProvider provider = (ModularProvider) client.getLocalContentProvider();
                 
-                if (cursor instanceof SQLTableCreator) {
-                    provider.insertCursor(uri, cursor);
+                if (cursor instanceof SQLiteTableCreator) {
+                    provider.create((SQLiteTableCreator) cursor);
                 }
                 
                 ContentValues values = new ContentValues(cursor.getColumnCount());

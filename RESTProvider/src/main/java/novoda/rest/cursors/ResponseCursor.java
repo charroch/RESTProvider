@@ -1,17 +1,20 @@
 
 package novoda.rest.cursors;
 
+import android.database.AbstractCursor;
+import android.util.Log;
+
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
-import android.database.AbstractCursor;
-import android.util.Log;
-
 public abstract class ResponseCursor extends AbstractCursor {
 
+    private static final String TAG = ResponseCursor.class.getSimpleName();
+
+    /* Static variables for the getType() method */
     public static final int STRING = 0;
 
     public static final int INT = 1;
@@ -31,14 +34,11 @@ public abstract class ResponseCursor extends AbstractCursor {
     public static final int CHAR = 8;
 
     public static final int BYTE_ARRAY = 9;
-
-    private static final String TAG = ResponseCursor.class.getSimpleName();
+    /* Static variables for the getType() method */
 
     public abstract int getType(int column);
 
     public abstract ResponseCursor getChild(String field);
-
-    public abstract String[] getChildrenFields();
 
     public abstract Object get(String field);
 
@@ -61,7 +61,7 @@ public abstract class ResponseCursor extends AbstractCursor {
             return mPos;
         }
 
-        if (Arrays.asList(childrenColumnNames).contains(field)) {
+        if (childrenColumnNames != null && Arrays.asList(childrenColumnNames).contains(field)) {
             // We hit a children.
             Log.w(TAG, "you are requesting a child. Will output the child as string");
         }
@@ -105,35 +105,35 @@ public abstract class ResponseCursor extends AbstractCursor {
     @Override
     public short getShort(int column) {
         Object value = get(column);
-        return (value instanceof String) ? Short.valueOf((String)value) : ((Number)value)
+        return (value instanceof String) ? Short.valueOf((String) value) : ((Number) value)
                 .shortValue();
     }
 
     @Override
     public int getInt(int column) {
         Object value = get(column);
-        return (value instanceof String) ? Integer.valueOf((String)value) : ((Number)value)
+        return (value instanceof String) ? Integer.valueOf((String) value) : ((Number) value)
                 .intValue();
     }
 
     @Override
     public long getLong(int column) {
         Object value = get(column);
-        return (value instanceof String) ? Long.valueOf((String)value) : ((Number)value)
+        return (value instanceof String) ? Long.valueOf((String) value) : ((Number) value)
                 .longValue();
     }
 
     @Override
     public float getFloat(int column) {
         Object value = get(column);
-        return (value instanceof String) ? Float.valueOf((String)value) : ((Number)value)
+        return (value instanceof String) ? Float.valueOf((String) value) : ((Number) value)
                 .floatValue();
     }
 
     @Override
     public double getDouble(int column) {
         Object value = get(column);
-        return (value instanceof String) ? Double.valueOf((String)value) : ((Number)value)
+        return (value instanceof String) ? Double.valueOf((String) value) : ((Number) value)
                 .doubleValue();
     }
 

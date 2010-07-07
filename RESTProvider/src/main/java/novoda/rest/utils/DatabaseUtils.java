@@ -1,7 +1,7 @@
 
 package novoda.rest.utils;
 
-import novoda.rest.database.SQLTableCreator;
+import novoda.rest.database.SQLiteTableCreator;
 import novoda.rest.database.SQLiteType;
 
 import android.content.ContentValues;
@@ -21,7 +21,7 @@ public class DatabaseUtils extends android.database.DatabaseUtils {
         return buf.toString();
     }
 
-    public static String getCreateStatement(SQLTableCreator creator) {
+    public static String getCreateStatement(SQLiteTableCreator creator) {
 
         String primaryKey = creator.getPrimaryKey();
         SQLiteType primaryKeyType = creator.getType(primaryKey);

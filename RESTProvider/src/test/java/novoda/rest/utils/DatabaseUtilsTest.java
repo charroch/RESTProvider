@@ -4,7 +4,7 @@ package novoda.rest.utils;
 import static org.junit.Assert.assertEquals;
 import static org.mockito.Mockito.when;
 
-import novoda.rest.database.SQLTableCreator;
+import novoda.rest.database.SQLiteTableCreator;
 import novoda.rest.database.SQLiteConflictClause;
 import novoda.rest.database.SQLiteType;
 
@@ -28,7 +28,7 @@ public class DatabaseUtilsTest {
     Map<String, String> params;
 
     @Mock
-    SQLTableCreator p;
+    SQLiteTableCreator p;
 
     @Mock
     Uri uri;

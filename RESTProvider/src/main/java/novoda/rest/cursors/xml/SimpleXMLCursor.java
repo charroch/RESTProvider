@@ -3,7 +3,7 @@ package novoda.rest.cursors.xml;
 
 import novoda.mixml.XMLNode;
 import novoda.rest.cursors.RESTMarshaller;
-import novoda.rest.database.SQLTableCreator;
+import novoda.rest.database.SQLiteTableCreator;
 
 import org.apache.http.HttpResponse;
 import org.apache.http.ParseException;
@@ -51,7 +51,7 @@ public class SimpleXMLCursor extends RESTMarshaller {
 
         public Map<String, String> mapper = new HashMap<String, String>();
 
-        public SQLTableCreator sqlCreateMapper;
+        public SQLiteTableCreator sqlCreateMapper;
 
         public boolean withAutoId = false;
 
@@ -101,7 +101,7 @@ public class SimpleXMLCursor extends RESTMarshaller {
             return this;
         }
 
-        public Builder withSQLTableCreator(SQLTableCreator creator) {
+        public Builder withSQLTableCreator(SQLiteTableCreator creator) {
             P.sqlCreateMapper = creator;
             return this;
         }

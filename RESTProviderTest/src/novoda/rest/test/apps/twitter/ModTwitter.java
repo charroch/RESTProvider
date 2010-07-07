@@ -5,7 +5,7 @@ import android.content.ContentValues;
 import android.content.Intent;
 import android.net.Uri;
 
-import novoda.rest.database.SQLTableCreator;
+import novoda.rest.database.SQLiteTableCreator;
 import novoda.rest.providers.ModularProvider;
 import novoda.rest.services.RESTCallService;
 import novoda.rest.test.service.TwitterService;
@@ -22,7 +22,7 @@ public class ModTwitter extends ModularProvider {
     }
 
     @Override
-    protected SQLTableCreator getTableCreator(Uri uri) {
+    protected SQLiteTableCreator getTableCreator(Uri uri) {
         return null;
     }
 

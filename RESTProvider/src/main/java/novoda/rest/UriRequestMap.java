@@ -3,6 +3,9 @@ package novoda.rest;
 
 import java.util.List;
 
+import novoda.rest.database.SQLiteInserter;
+import novoda.rest.database.SQLiteTableCreator;
+
 import org.apache.http.NameValuePair;
 import org.apache.http.client.ResponseHandler;
 import org.apache.http.client.methods.HttpUriRequest;
@@ -47,4 +50,8 @@ public interface UriRequestMap {
 
     public abstract List<NameValuePair> getDeleteParams(Uri uri, String selection,
             String[] selectionArg);
+    
+    public abstract SQLiteTableCreator getTableCreator(Uri uri);
+    
+    public abstract SQLiteInserter getInserter(Uri uri);
 }

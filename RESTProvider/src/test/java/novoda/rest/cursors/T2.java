@@ -50,11 +50,6 @@ public class T2 extends ResponseCursor {
     }
 
     @Override
-    public String[] getChildrenFields() {
-        return null;
-    }
-
-    @Override
     public int getType(int column) {
         return 0;
     }
