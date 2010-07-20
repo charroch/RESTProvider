@@ -131,9 +131,9 @@ public abstract class ModularProvider extends ContentProvider {
      * @param inserter
      * @return the list of
      */
-    public Long[] insert(SQLiteInserter inserter) {
+    public Long[] insert(SQLiteInserter inserter, Uri uri) {
 
-        final String sql = inserter.getInsertStatement();
+        final String sql = inserter.getInsertStatement(getTableCreator(uri).getTableName());
         final int count = inserter.getCount();
         final String[] columns = inserter.getColumns();
         final List<Long> ret = new ArrayList<Long>(count);

@@ -1,12 +1,14 @@
 
 package novoda.rest.net;
 
+import novoda.rest.database.SQLiteInserter;
+
 import java.util.ArrayList;
 import java.util.List;
 
-public class ResponseTree<T> {
+public class ResponseTree {
     
-    private Node<T> rootElement;
+    private Node<? extends SQLiteInserter> rootElement;
 
     /**
      * Default ctor.
@@ -20,7 +22,7 @@ public class ResponseTree<T> {
      * 
      * @return the root element.
      */
-    public Node<T> getRootElement() {
+    public Node<? extends SQLiteInserter> getRootElement() {
         return this.rootElement;
     }
 
@@ -29,7 +31,7 @@ public class ResponseTree<T> {
      * 
      * @param rootElement the root element to set.
      */
-    public void setRootElement(Node<T> rootElement) {
+    public void setRootElement(Node<? extends SQLiteInserter> rootElement) {
         this.rootElement = rootElement;
     }
 
@@ -39,8 +41,8 @@ public class ResponseTree<T> {
      * 
      * @return a List<Node<T>>.
      */
-    public List<Node<T>> toList() {
-        List<Node<T>> list = new ArrayList<Node<T>>();
+    public List<Node<? extends SQLiteInserter>> toList() {
+        List<Node<? extends SQLiteInserter>> list = new ArrayList<Node<? extends SQLiteInserter>>();
         walk(rootElement, list);
         return list;
     }
@@ -64,9 +66,9 @@ public class ResponseTree<T> {
      * @param element the starting element.
      * @param list the output of the walk.
      */
-    private void walk(Node<T> element, List<Node<T>> list) {
+    private void walk(Node<? extends SQLiteInserter> element, List<Node<? extends SQLiteInserter>> list) {
         list.add(element);
-        for (Node<T> data : element.getChildren()) {
+        for (Node<? extends SQLiteInserter> data : element.getChildren()) {
             walk(data, list);
         }
     }

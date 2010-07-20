@@ -1,6 +1,8 @@
 
 package novoda.rest.net;
 
+import novoda.rest.database.SQLiteInserter;
+
 import java.util.ArrayList;
 import java.util.List;
 
@@ -9,7 +11,7 @@ import java.util.List;
  * can be thought of as instrumentation to determine the location of the type T
  * in the Tree<T>.
  */
-public class Node<T> {
+public class Node<T extends SQLiteInserter> {
 
     public T data;
 

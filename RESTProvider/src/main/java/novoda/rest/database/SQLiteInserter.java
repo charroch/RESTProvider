@@ -11,7 +11,7 @@ public interface SQLiteInserter {
 
     public int getCount();
 
-    public String getInsertStatement();
+    public String getInsertStatement(String table);
 
     public int getInsertIndex(String field);
 
@@ -21,7 +21,7 @@ public interface SQLiteInserter {
 
     public String[] getColumns();
 
-    // TODO not fully working yet
+    // FIXME not fully working yet
     public short onFailure(int index);
 
     // TODO v2

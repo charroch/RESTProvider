@@ -1,0 +1,10 @@
+Given the following json: {"root": {"id": 1, "value": "test"}}
+And table name is "root"
+When I parse against root node "root"
+Then I should get a count of 1
+And I should get columns: [id,value]
+And I should get SQL insert "INSERT INTO root(id, value) VALUES(?,?);"
+And the insert index of "id" should be 0
+And the insert index of "value" should be 1
+And the object returned for index 0 and field "id" should be 1
+And the object returned for index 0 and field "value" should be test
