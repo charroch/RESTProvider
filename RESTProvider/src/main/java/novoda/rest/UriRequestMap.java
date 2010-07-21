@@ -5,6 +5,7 @@ import java.util.List;
 
 import novoda.rest.database.SQLiteInserter;
 import novoda.rest.database.SQLiteTableCreator;
+import novoda.rest.net.ResponseTree;
 
 import org.apache.http.NameValuePair;
 import org.apache.http.client.ResponseHandler;
@@ -53,5 +54,9 @@ public interface UriRequestMap {
     
     public abstract SQLiteTableCreator getTableCreator(Uri uri);
     
-    public abstract SQLiteInserter getInserter(Uri uri);
+    public abstract List<SQLiteInserter> getInserter(Uri uri);
+    
+    public abstract ResponseHandler<? extends List<SQLiteInserter>> getQueryInserter(Uri uri);
+    
+    public abstract ResponseHandler<ResponseTree> getResponseTree(Uri baseUri);
 }

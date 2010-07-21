@@ -1,6 +1,7 @@
 
 package novoda.rest.database;
 
+
 public interface SQLiteInserter {
 
     public static short CONTINUE = 0;
@@ -11,8 +12,8 @@ public interface SQLiteInserter {
 
     public int getCount();
 
-    public String getInsertStatement(String table);
-
+    public String getInsertStatement(String tableName);
+    
     public int getInsertIndex(String field);
 
     public SQLiteType getType(String field);

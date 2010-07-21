@@ -8,3 +8,6 @@ And the insert index of "id" should be 0
 And the insert index of "value" should be 1
 And the object returned for index 0 and field "id" should be 1
 And the object returned for index 0 and field "value" should be test
+
+
+Given the following json: {"root": {"id": 1, "value": "test"}}

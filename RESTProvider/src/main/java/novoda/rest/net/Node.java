@@ -3,6 +3,8 @@ package novoda.rest.net;
 
 import novoda.rest.database.SQLiteInserter;
 
+import android.net.Uri;
+
 import java.util.ArrayList;
 import java.util.List;
 
@@ -14,6 +16,10 @@ import java.util.List;
 public class Node<T extends SQLiteInserter> {
 
     public T data;
+
+    private Uri uri;
+
+    public SQLiteInserter inserter;
 
     public List<Node<T>> children;
 
@@ -32,6 +38,12 @@ public class Node<T extends SQLiteInserter> {
     public Node(T data) {
         this();
         setData(data);
+    }
+    
+    public Node(T data, Uri uri) {
+        this();
+        setData(data);
+        setUri(uri);
     }
 
     /**
@@ -134,5 +146,13 @@ public class Node<T extends SQLiteInserter> {
         }
         sb.append("]").append("}");
         return sb.toString();
+    }
+
+    public void setUri(Uri insertUri) {
+        this.uri = insertUri;
+    }
+
+    public Uri getUri() {
+        return uri;
     }
 }

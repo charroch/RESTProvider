@@ -2,18 +2,18 @@
 package novoda.rest.services;
 
 import novoda.rest.UriRequestMap;
-import novoda.rest.database.SQLiteTableCreator;
+import novoda.rest.database.SQLiteInserter;
 import novoda.rest.providers.ModularProvider;
 import novoda.rest.utils.AndroidHttpClient;
-import novoda.rest.utils.DatabaseUtils;
 
 import android.app.IntentService;
 import android.content.ContentProviderClient;
-import android.content.ContentValues;
 import android.content.Intent;
-import android.database.AbstractCursor;
 import android.net.Uri;
 import android.os.Bundle;
+
+import java.io.IOException;
+import java.util.List;
 
 public abstract class RESTCallService extends IntentService implements UriRequestMap {
 
@@ -22,7 +22,7 @@ public abstract class RESTCallService extends IntentService implements UriReques
     public RESTCallService() {
         this(TAG);
     }
-    
+
     public RESTCallService(String name) {
         super(name);
     }
@@ -56,35 +56,22 @@ public abstract class RESTCallService extends IntentService implements UriReques
         String action = intent.getAction();
 
         if (action.equals(ACTION_QUERY)) {
-            
-        	final String[] projection = bundle.getStringArray(BUNDLE_PROJECTION);
+            final String[] projection = bundle.getStringArray(BUNDLE_PROJECTION);
             final String selection = bundle.getString(BUNDLE_SELECTION);
             final String[] selectionArg = bundle.getStringArray(BUNDLE_SELECTION_ARG);
             final String sortOrder = bundle.getString(BUNDLE_SORT_ORDER);
-            
-            //try {
-                AbstractCursor cursor = null;
-//                AbstractCursor cursor =new RESTMarhalelr( httpClient.execute(getRequest(uri, UriRequestMap.QUERY,
-//                        getQueryParams(uri, projection, selection, selectionArg, sortOrder)),
-//                        getQueryHandler(uri))).getCursor();
-//                
-               // marshaller.getChildren();
-                
-                ContentProviderClient client = getContentResolver().acquireContentProviderClient(uri);
-                ModularProvider provider = (ModularProvider) client.getLocalContentProvider();
-                
-                if (cursor instanceof SQLiteTableCreator) {
-                    provider.create((SQLiteTableCreator) cursor);
+            try {
+                List<SQLiteInserter> inserters = httpClient.execute(getRequest(uri, INSERT,
+                        getQueryParams(uri, projection, selection, selectionArg, sortOrder)),
+                        getQueryInserter(uri));
+                for (SQLiteInserter inserter : inserters) {
+                    ContentProviderClient client = getContentResolver().acquireContentProviderClient(uri);
+                    ModularProvider provider = (ModularProvider) client.getLocalContentProvider();
+                    provider.insert(inserter, uri);
                 }
-                
-                ContentValues values = new ContentValues(cursor.getColumnCount());
-                while (cursor.moveToNext()){
-                    DatabaseUtils.cursorRowToContentValues(cursor, values);
-                    getContentResolver().insert(uri, values);
-                }
-//            } catch (IOException e) {
-//                e.printStackTrace();
-//            }
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
         }
         getBaseContext().sendBroadcast(new Intent("novoda.rest.action.QUERY_COMPLETE"));
     }

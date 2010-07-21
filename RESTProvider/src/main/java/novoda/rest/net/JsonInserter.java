@@ -20,7 +20,11 @@ public abstract class JsonInserter implements SQLiteInserter {
 
     @Override
     public Object get(String field, int index) {
-        return node.get(index).get(field);
+        JsonNode o = node;
+        if (node.isArray()) {
+            o = node.get(index);
+        }
+        return o.get(field).getValueAsText();
     }
 
     @Override
@@ -60,9 +64,9 @@ public abstract class JsonInserter implements SQLiteInserter {
     }
 
     @Override
-    public String getInsertStatement(String table) {
+    public String getInsertStatement(String tableName) {
         String columns = Arrays.toString(getColumns());
-        StringBuilder builder = new StringBuilder().append("INSERT INTO ").append(table)
+        StringBuilder builder = new StringBuilder().append("INSERT INTO ").append(tableName)
                 .append("(").append(columns.substring(1, columns.length() - 1)).append(") VALUES(");
         for (int i = 0; i < getColumns().length; i++) {
             builder.append("?,");
@@ -70,10 +74,5 @@ public abstract class JsonInserter implements SQLiteInserter {
         builder.deleteCharAt(builder.lastIndexOf(","));
         builder.append(");");
         return builder.toString();
-    }
-
-    @Override
-    public short onFailure(int index) {
-        return 0;
     }
 }

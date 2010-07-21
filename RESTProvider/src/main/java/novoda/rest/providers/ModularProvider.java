@@ -27,14 +27,11 @@ import java.io.ObjectOutputStream;
 import java.util.ArrayList;
 import java.util.List;
 
-/**
- * @author acsia
- */
 public abstract class ModularProvider extends ContentProvider {
 
     private static final String TAG = ModularProvider.class.getSimpleName();
 
-    protected SQLiteOpenHelper dbHelper;
+    protected ModularSQLiteOpenHelper dbHelper;
 
     @Override
     public int delete(Uri arg0, String arg1, String[] arg2) {
@@ -72,16 +69,17 @@ public abstract class ModularProvider extends ContentProvider {
 
     @Override
     public boolean onCreate() {
-        dbHelper = getSQLiteOpenHelper(getContext());
+        dbHelper = (ModularSQLiteOpenHelper) getSQLiteOpenHelper(getContext());
         return true;
     }
 
     @Override
     public Cursor query(Uri uri, String[] projection, String selection, String[] selectionArgs,
             String sortOrder) {
-
+        
+        dbHelper.createTable(getTableCreator(uri));
+        
         SQLiteQueryBuilder qBuilder = new SQLiteQueryBuilder();
-
         qBuilder.setTables(getTableCreator(uri).getTableName());
 
         // Make the query.
@@ -134,11 +132,14 @@ public abstract class ModularProvider extends ContentProvider {
     public Long[] insert(SQLiteInserter inserter, Uri uri) {
 
         final String sql = inserter.getInsertStatement(getTableCreator(uri).getTableName());
+        
         final int count = inserter.getCount();
+        
         final String[] columns = inserter.getColumns();
         final List<Long> ret = new ArrayList<Long>(count);
 
         SQLiteStatement statement = dbHelper.getWritableDatabase().compileStatement(sql);
+        
         // TODO move to TransactionListner (v2 of android)
         // dbHelper.getWritableDatabase().beginTransaction();
         for (int i = 0; i < count; i++) {

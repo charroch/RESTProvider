@@ -43,6 +43,11 @@ public class ParsingSteps extends Steps {
             public SQLiteType getType(String field) {
                 return SQLiteType.TEXT;
             }
+
+            @Override
+            public short onFailure(int index) {
+                return 0;
+            }
         };
     }
 
@@ -61,14 +66,14 @@ public class ParsingSteps extends Steps {
         assertEquals(statement, inserter.getInsertStatement(tableName));
     }
     
-    @Then("And the insert index of \"$field\" should be $index")
+    @Then("the insert index of \"$field\" should be $index")
     public void checkIndexOfField(String field, int index) {
         assertEquals(inserter.getInsertIndex(field), index);
     }
     
-    @Then("And the object returned for index $index and field $field should be $object")
+    @Then("the object returned for index $index and field \"$field\" should be $object")
     public void checkObjectForIndex(int index, String field, Object obj) {
-        assertEquals(obj, inserter.get(field, index));
+        assertEquals(obj, inserter.get(field, index).toString());
     }
     
 }
