@@ -138,6 +138,7 @@ public class EmptyCursor extends AbstractCursor {
         super.deactivate();
     }
 
+
     @Override
     public void fillWindow(int position, CursorWindow window) {
         super.fillWindow(position, window);
@@ -162,7 +163,6 @@ public class EmptyCursor extends AbstractCursor {
     public String getColumnName(int columnIndex) {
         return super.getColumnName(columnIndex);
     }
-
 
     @Override
     public Bundle getExtras() {
@@ -193,6 +193,7 @@ public class EmptyCursor extends AbstractCursor {
     protected boolean isFieldUpdated(int columnIndex) {
         return super.isFieldUpdated(columnIndex);
     }
+
 
     @Override
     protected void onChange(boolean selfChange) {

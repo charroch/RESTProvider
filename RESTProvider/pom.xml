@@ -53,9 +53,9 @@
 			<snapshots>
 				<enabled>true</enabled>
 			</snapshots>
-			<id>Sonatype</id>
+			<id>sonatype-snapshots</id>
 			<name>Sonatype repo</name>
-			<url>https://oss.sonatype.org/</url>
+			<url>https://oss.sonatype.org/content/repositories/snapshots/</url>
 		</repository>
 	</repositories>
 
@@ -114,7 +114,7 @@
 		<dependency>
 			<groupId>com.github.charroch</groupId>
 			<artifactId>MiXML</artifactId>
-			<version>0.0.1</version>
+			<version>0.0.4-SNAPSHOT</version>
 			<type>jar</type>
 			<scope>compile</scope>
 		</dependency>
