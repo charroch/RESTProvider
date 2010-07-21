@@ -138,10 +138,6 @@ public class EmptyCursor extends AbstractCursor {
         super.deactivate();
     }
 
-    @Override
-    public void deactivateInternal() {
-        super.deactivateInternal();
-    }
 
     @Override
     public void fillWindow(int position, CursorWindow window) {
@@ -166,11 +162,6 @@ public class EmptyCursor extends AbstractCursor {
     @Override
     public String getColumnName(int columnIndex) {
         return super.getColumnName(columnIndex);
-    }
-
-    @Override
-    protected DataSetObservable getDataSetObservable() {
-        return super.getDataSetObservable();
     }
 
     @Override
@@ -203,11 +194,6 @@ public class EmptyCursor extends AbstractCursor {
         return super.isFieldUpdated(columnIndex);
     }
 
-    @Override
-    protected void notifyDataSetChange() {
-        // TODO Auto-generated method stub
-        super.notifyDataSetChange();
-    }
 
     @Override
     protected void onChange(boolean selfChange) {
