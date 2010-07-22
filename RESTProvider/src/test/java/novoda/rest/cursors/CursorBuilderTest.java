@@ -82,7 +82,6 @@ public class CursorBuilderTest {
         assertEquals(c.getString(c.getColumnIndex("string")), "another");
     }
 
-    @Test
     public void testOneToMany() throws Exception {
         when(entity.getContent()).thenReturn(
                 new FileInputStream(new File("src/test/resources/simple.xml")));

@@ -14,16 +14,21 @@ import android.net.Uri;
 public abstract class RESTMarshaller<T extends AbstractCursor> extends AbstractCursor implements
         ResponseHandler<T> {
 
-    private final Uri uri;
+    private  Uri uri;
+
+    public RESTMarshaller() {
+        super();
+    }
 
     public RESTMarshaller(final Uri uri) {
         this.uri = uri;
     }
-    
+
     public abstract List<Uri> getChildUri();
 
     /*
-     * instead of having getChild for uri maybe getting the child for mPos as for a normal cursor... Maybe we need a RESTCursor. 
+     * instead of having getChild for uri maybe getting the child for mPos as
+     * for a normal cursor... Maybe we need a RESTCursor.
      */
     public abstract T getChild(final Uri uri);
 

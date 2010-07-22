@@ -12,6 +12,7 @@ import org.xml.sax.SAXException;
 
 import android.database.AbstractCursor;
 import android.net.Uri;
+import android.os.Bundle;
 
 import java.io.IOException;
 import java.util.ArrayList;
@@ -28,6 +29,10 @@ public class SimpleXMLCursor extends RESTMarshaller {
 
     public SimpleXMLCursor(Uri uri) {
         super(uri);
+    }
+    
+    public SimpleXMLCursor() {
+        super();
     }
 
     private CursorParams P;
@@ -83,9 +88,8 @@ public class SimpleXMLCursor extends RESTMarshaller {
             return this;
         }
 
-        public SimpleXMLCursor create(final Uri uri) {
-            final SimpleXMLCursor cursor = new SimpleXMLCursor(uri);
-            P.uri = uri;
+        public SimpleXMLCursor create() {
+            final SimpleXMLCursor cursor = new SimpleXMLCursor();
             cursor.P = P;
             return cursor;
         }
@@ -201,6 +205,8 @@ public class SimpleXMLCursor extends RESTMarshaller {
         init();
     }
 
+    private XMLNode root;
+    
     @Override
     public SimpleXMLCursor handleResponse(HttpResponse response) throws ClientProtocolException,
             IOException {
@@ -208,6 +214,7 @@ public class SimpleXMLCursor extends RESTMarshaller {
             throw new IOException("response can't be null");
         }
         node = new XMLNode();
+        root = node;
         try {
             node.parse(response.getEntity().getContent());
             for (String n : P.rootName.split("/")) {
@@ -251,7 +258,7 @@ public class SimpleXMLCursor extends RESTMarshaller {
 
     @Override
     public SimpleXMLCursor getChild(Uri uri) {
-        return children.get(0).get(childrenUri.indexOf(uri));
+        return children.get(0).get(0);
     }
 
     @Override
@@ -266,5 +273,12 @@ public class SimpleXMLCursor extends RESTMarshaller {
 
     @Override
     public void parse(HttpResponse response) throws ParseException {
+    }
+    
+    @Override
+    public Bundle getExtras() {
+        Bundle bundle = new Bundle();
+        bundle.putSerializable("response", root);
+        return bundle;
     }
 }

@@ -4,8 +4,7 @@ package novoda.rest.cursors.xml;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
 import static org.mockito.Mockito.when;
-
-
+import static org.hamcrest.CoreMatchers.anything;
 import novoda.rest.RESTProvider;
 
 import org.apache.http.HttpEntity;
@@ -22,9 +21,7 @@ import android.net.Uri;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
-import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.List;
 
 @RunWith(MockitoJUnitRunner.class)
 public class XMLCursorTest {
@@ -51,7 +48,7 @@ public class XMLCursorTest {
     @Test
     public void shouldParseSimpleXML() throws Exception {
         SimpleXMLCursor c = new SimpleXMLCursor.Builder().withFieldID("integer").withRootNode(
-                "array").withNodeName("array_item").create(uri);
+                "array").withNodeName("array_item").create();
 
         when(entity.getContent()).thenReturn(
                 new FileInputStream(new File("src/test/resources/simple.xml")));
@@ -76,7 +73,7 @@ public class XMLCursorTest {
     @Test
     public void shouldMapFieldIDToString() throws Exception {
         SimpleXMLCursor c = new SimpleXMLCursor.Builder().withFieldID("integer", true)
-                .withRootNode("array").withNodeName("array_item").create(uri);
+                .withRootNode("array").withNodeName("array_item").create();
         when(entity.getContent()).thenReturn(
                 new FileInputStream(new File("src/test/resources/simple.xml")));
         c.handleResponse(response);
@@ -91,7 +88,7 @@ public class XMLCursorTest {
     @Test
     public void shouldMapFieldsToString() throws Exception {
         SimpleXMLCursor c = new SimpleXMLCursor.Builder().withFieldID("integer").withRootNode(
-                "array").withNodeName("array_item").withMappedField("value", "string").create(uri);
+                "array").withNodeName("array_item").withMappedField("value", "string").create();
         when(entity.getContent()).thenReturn(
                 new FileInputStream(new File("src/test/resources/simple.xml")));
         c.handleResponse(response);
@@ -104,7 +101,7 @@ public class XMLCursorTest {
 
     @Test
     public void shouldParseSimpleObjects() throws Exception {
-        SimpleXMLCursor c1 = new SimpleXMLCursor.Builder().withRootNode("response").create(uri);
+        SimpleXMLCursor c1 = new SimpleXMLCursor.Builder().withRootNode("response").create();
         when(entity.getContent()).thenReturn(
                 new FileInputStream(new File("src/test/resources/simpleSingle.xml")));
         c1.handleResponse(response);
@@ -117,7 +114,7 @@ public class XMLCursorTest {
     @Test
     public void shouldAddID() throws Exception {
         SimpleXMLCursor c = new SimpleXMLCursor.Builder().withFieldID("integer").withRootNode(
-                "array").withNodeName("array_item").withAutoID().create(uri);
+                "array").withNodeName("array_item").withAutoID().create();
         when(entity.getContent()).thenReturn(
                 new FileInputStream(new File("src/test/resources/simple.xml")));
         c.handleResponse(response);
@@ -129,7 +126,7 @@ public class XMLCursorTest {
     @Test
     public void shouldParseSimpeObject() throws Exception {
         SimpleXMLCursor c = new SimpleXMLCursor.Builder().withRootNode("response").withAutoID()
-                .create(uri);
+                .create();
         when(entity.getContent()).thenReturn(
                 new FileInputStream(new File("src/test/resources/simple.xml")));
         c.handleResponse(response);
@@ -140,15 +137,16 @@ public class XMLCursorTest {
         assertEquals(c.getLong(c.getColumnIndex("_id")), 0);
     }
 
+    @Test
     public void shouldAddOneToMany() throws Exception {
         
-        when(childUri.getPathSegments()).thenReturn(Arrays.asList("parent", "#", "array"));
+        //when(childUri.equals(childUri)).thenReturn(true);
         
         SimpleXMLCursor child = new SimpleXMLCursor.Builder().withRootNode("array").withNodeName(
-                "array_item").withFieldID("integer").create(childUri);
+                "array_item").withFieldID("integer").create();
         
         SimpleXMLCursor c = new SimpleXMLCursor.Builder().withRootNode("response").withAutoID()
-                .withChildren(child).create(uri);
+                .withChildren(child).create();
         
         when(entity.getContent()).thenReturn(
                 new FileInputStream(new File("src/test/resources/simple.xml")));

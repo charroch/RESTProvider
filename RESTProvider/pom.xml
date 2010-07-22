@@ -114,7 +114,7 @@
 		<dependency>
 			<groupId>com.github.charroch</groupId>
 			<artifactId>MiXML</artifactId>
-			<version>0.0.4-SNAPSHOT</version>
+			<version>0.0.3-SNAPSHOT</version>
 			<type>jar</type>
 			<scope>compile</scope>
 		</dependency>
