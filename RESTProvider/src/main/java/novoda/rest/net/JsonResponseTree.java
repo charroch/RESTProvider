@@ -51,6 +51,10 @@ public class JsonResponseTree extends ResponseTree {
             mapper.put(original, newValue);
             return this;
         }
+        
+        public Builder withUri(final Uri uri) {
+            return this;
+        }
 
         public ResponseTree create(InputStream in, Uri uri) throws JsonProcessingException, IOException {
             JsonNode node = objectMapper.readTree(in);
