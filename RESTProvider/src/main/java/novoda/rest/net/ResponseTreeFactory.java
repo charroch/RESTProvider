@@ -13,8 +13,15 @@ import java.util.Map;
 
 import android.net.Uri;
 
-public interface ResponseTreeFactory {
-    public ResponseTree parse(InputStream in, Uri uri);
+public abstract class ResponseTreeFactory {
+    
+    public abstract ResponseTree parse(InputStream in, Uri uri);
+    
+    public void load(InputStream in, Builder builder) {
+        //ResponseTree tree = new this.parse(in, uri);
+        
+    }
+    
     //public Node<>
 
     public static final class Builder {
@@ -64,7 +71,7 @@ public interface ResponseTreeFactory {
     }
 }
 
-class JsonTreeFactory implements ResponseTreeFactory {
+class JsonTreeFactory extends ResponseTreeFactory {
 
     @Override
     public ResponseTree parse(InputStream in, Uri uri) {
