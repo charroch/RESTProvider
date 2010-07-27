@@ -278,7 +278,7 @@ public class SimpleXMLCursor extends RESTMarshaller {
     @Override
     public Bundle getExtras() {
         Bundle bundle = new Bundle();
-        bundle.putSerializable("response", root);
+       // bundle.putSerializable("response", root);
         return bundle;
     }
 }

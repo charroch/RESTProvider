@@ -4,6 +4,7 @@ package novoda.rest.parsers;
 import android.content.ContentValues;
 
 import java.util.ArrayList;
+import java.util.Iterator;
 import java.util.List;
 
 /**
@@ -13,20 +14,25 @@ import java.util.List;
  * an Object in JSON. For each Node, we should be able to insert it into the
  * database by extracting the necessary data.
  */
-public abstract class Node<T> {
+public abstract class Node<T> implements Iterator<Node<T>> {
 
+    /*
+     * The representation of a node within the response object. This will be
+     * specific to each format and lets implementator the chance to parse the
+     * object into understandable content values.
+     */
     T data;
 
     /*
-     * The inserted row id in the database
+     * The inserted row id in the database. It is populated after an insert.
      */
-    private long databaseId = -1;
+    long databaseId = -1;
 
     /*
      * In case of One to many relationship, we need the database column name of
      * the parent for which to insert the child elements.
      */
-    private String idFieldName = null;
+    String idFieldName = null;
 
     private List<Node<T>> children;
 
@@ -35,21 +41,8 @@ public abstract class Node<T> {
      */
     private Node<T> parent;
 
-    /*
-     * And next in line
-     */
-    private Node<T> nextSibling;
-
     public T getData() {
         return data;
-    }
-
-    Node<T> next() {
-        return nextSibling;
-    }
-
-    protected void setNext(Node<T> sibling) {
-        this.nextSibling = sibling;
     }
 
     public List<Node<T>> getChildren() {
@@ -75,10 +68,12 @@ public abstract class Node<T> {
     }
 
     /*
-     * Gives you a chance to hook into the node before the insert.
+     * Gives you a chance to hook into the node before the insert. if One 2
+     * Many, we will add the parent's field name and the id of the parent's row
+     * with the new values to be inserted.
      */
     public void onPreInsert(ContentValues values) {
-        if (parent != null) {
+        if (parent != null && parent.databaseId > 0) {
             values.put(parent.getIdFieldName(), parent.getDatabaseId());
         }
     }
@@ -124,4 +119,14 @@ public abstract class Node<T> {
      * @return the table Name for which this row will be inserted
      */
     abstract String getTableName();
+
+    /**
+     * @return true if we should insert the node into DB, false otherwise
+     */
+    abstract boolean shouldInsert();
+
+    @Override
+    public void remove() {
+        // Do nothing.
+    }
 }
