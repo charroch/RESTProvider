@@ -12,6 +12,7 @@ public interface SQLiteInserter {
 
     public int getCount();
 
+    // Do I need?
     public String getInsertStatement(String tableName);
     
     public int getInsertIndex(String field);
@@ -20,6 +21,7 @@ public interface SQLiteInserter {
 
     public Object get(String field, int index);
 
+    // DO I need?
     public String[] getColumns();
 
     // FIXME not fully working yet

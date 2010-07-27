@@ -32,11 +32,11 @@ public class ModularSQLiteOpenHelper extends SQLiteOpenHelper {
 
     private Map<String, SQLiteTableCreator> createStatements = new HashMap<String, SQLiteTableCreator>();
 
-    private int dbVersion = 1;
+    private static int dbVersion = 2;
 
     public ModularSQLiteOpenHelper(Context context) {
         super(context, new StringBuilder(context.getApplicationInfo().packageName).append(".db")
-                .toString(), null, 1);
+                .toString(), null, dbVersion);
 
         Cursor cur = getReadableDatabase().rawQuery(SELECT_TABLES_NAME, null);
         while (cur.moveToNext()) {
@@ -47,6 +47,7 @@ public class ModularSQLiteOpenHelper extends SQLiteOpenHelper {
 
     @Override
     public void onCreate(SQLiteDatabase db) {
+        Log.v(TAG, "creating database");
         db.execSQL(CREATE_TABLE_STATUS);
     }
 

@@ -1,7 +1,14 @@
+
 package novoda.rest.test.apps.twitter;
 
 import novoda.rest.RESTProvider;
 import novoda.rest.cursors.json.JsonCursor;
+import novoda.rest.database.SQLiteConflictClause;
+import novoda.rest.database.SQLiteTableCreator;
+import novoda.rest.database.SQLiteType;
+import novoda.rest.providers.ModularProvider;
+import novoda.rest.services.RESTCallService;
+import novoda.rest.test.service.TwitterService;
 
 import org.apache.http.client.ResponseHandler;
 import org.apache.http.client.methods.HttpGet;
@@ -11,59 +18,67 @@ import android.content.ContentValues;
 import android.database.AbstractCursor;
 import android.net.Uri;
 
-public class TwitterFeedExampleProvider extends RESTProvider {
+public class TwitterFeedExampleProvider extends ModularProvider {
 
-	private static final String TAG = TwitterFeedExampleProvider.class
-			.getSimpleName();
+    private static final String TAG = TwitterFeedExampleProvider.class.getSimpleName();
 
-	@Override
-	public HttpUriRequest deleteRequest(Uri uri, String selection,
-			String[] selectionArgs) {
-		throw new UnsupportedOperationException("not in use");
-	}
+    @Override
+    protected RESTCallService getService() {
+        return new TwitterService();
+    }
 
-	@Override
-	public HttpUriRequest insertRequest(Uri uri, ContentValues values) {
-		throw new UnsupportedOperationException("not in use");
-	}
+    @Override
+    protected SQLiteTableCreator getTableCreator(Uri uri) {
+        return new SQLiteTableCreator() {
 
-	@Override
-	public HttpUriRequest queryRequest(Uri uri, String[] projection,
-			String selection, String[] selectionArgs, String sortOrder) {
-		HttpGet get = new HttpGet(
-				"http://search.twitter.com/search.json?q=droidcon");
-		return get;
-	}
+            public boolean shouldPKAutoIncrement() {
+                return false;
+            }
 
-	@Override
-	public HttpUriRequest updateRequest(Uri uri, ContentValues values,
-			String selection, String[] selectionArgs) {
-		throw new UnsupportedOperationException("not in use");
-	}
+            public boolean shouldIndex(String field) {
+                return false;
+            }
 
-	@Override
-	public String getType(Uri uri) {
-		return null;
-	}
+            public SQLiteConflictClause onConflict(String field) {
+                return SQLiteConflictClause.IGNORE;
+            }
 
-	@Override
-	public ResponseHandler<? extends Integer> getDeleteHandler(Uri uri) {
-		throw new UnsupportedOperationException("not in use");
-	}
+            public boolean isUnique(String field) {
+                return false;
+            }
 
-	@Override
-	public ResponseHandler<? extends Uri> getInsertHandler(Uri uri) {
-		throw new UnsupportedOperationException("not in use");
-	}
+            public boolean isOneToMany() {
+                return false;
+            }
 
-	@Override
-	public ResponseHandler<? extends AbstractCursor> getQueryHandler(Uri uri) {
-		return new JsonCursor("results", true);
-	}
+            public boolean isNullAllowed(String field) {
+                return true;
+            }
 
-	@Override
-	public ResponseHandler<? extends Integer> getUpdateHandler(Uri uri) {
-		throw new UnsupportedOperationException("not in use");
-	}
+            public SQLiteType getType(String field) {
+                return SQLiteType.TEXT;
+            }
+
+            public String getTableName() {
+                return "feed";
+            }
+
+            public String[] getTableFields() {
+                return new String[] {
+                        "profile_image_url", "created_at", "from_user", "to_user_id", "text", "id",
+                        "from_user_id", "geo", "iso_language_code", "source"
+                };
+            }
+
+            public String getPrimaryKey() {
+                return "id";
+            }
+        };
+    }
+
+    @Override
+    public String getType(Uri arg0) {
+        return null;
+    }
 
 }

@@ -24,6 +24,10 @@ public interface SQLiteTableCreator {
     public boolean isUnique(final String field);
 
     public boolean isOneToMany();
+    
+    public String getParentColumnName();
+    
+    public SQLiteType getParentType();
 
     public boolean shouldIndex(final String field);
 
@@ -32,4 +36,6 @@ public interface SQLiteTableCreator {
     public String getTableName();
 
     public String[] getTableFields();
+    
+    public String[] getTriggers();
 }

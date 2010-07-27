@@ -46,7 +46,7 @@ public class DatabaseUtils extends android.database.DatabaseUtils {
             sql.append(creator.isNullAllowed(f) ? "" : " NOT NULL");
             
             sql.append(creator.isUnique(f) ? " UNIQUE" : "");
-            sql.append((creator.onConflict(f) != null)? " ON CONFLICT " + creator.onConflict(f) : "");
+            sql.append((creator.onConflict(f) != null && creator.isUnique(f))? " ON CONFLICT " + creator.onConflict(f) : "");
         }
 
         sql.append(");");

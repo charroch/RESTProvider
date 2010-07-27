@@ -29,7 +29,12 @@ public abstract class JsonInserter implements SQLiteInserter {
 
     @Override
     public String[] getColumns() {
-        Iterator<String> fieldNames = node.getFieldNames();
+        Iterator<String> fieldNames;
+        if (node.isArray()) {
+            fieldNames = node.get(0).getFieldNames();
+        } else {
+            fieldNames = node.getFieldNames();
+        }
         List<String> s = new ArrayList<String>();
         while (fieldNames.hasNext()) {
             s.add(fieldNames.next());

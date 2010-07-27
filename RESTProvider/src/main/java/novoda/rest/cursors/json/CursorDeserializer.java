@@ -14,6 +14,7 @@ public class CursorDeserializer extends JsonDeserializer<AbstractCursor> {
     @Override
     public AbstractCursor deserialize(JsonParser parser, DeserializationContext context)
             throws IOException, JsonProcessingException {
+        
         return null;
     }
 }

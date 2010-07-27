@@ -76,9 +76,10 @@ public abstract class ModularProvider extends ContentProvider {
     @Override
     public Cursor query(Uri uri, String[] projection, String selection, String[] selectionArgs,
             String sortOrder) {
-        
+
+        Log.i(TAG, getTableCreator(uri).getTableName());
         dbHelper.createTable(getTableCreator(uri));
-        
+
         SQLiteQueryBuilder qBuilder = new SQLiteQueryBuilder();
         qBuilder.setTables(getTableCreator(uri).getTableName());
 
@@ -125,21 +126,31 @@ public abstract class ModularProvider extends ContentProvider {
                 .execute();
     }
 
+    public void create(Uri creator) {
+        SQLiteStatement statement = dbHelper.getWritableDatabase().compileStatement(
+                DatabaseUtils.getCreateStatement(getTableCreator(creator)));
+        statement.execute();
+        statement.close();
+    }
+
     /**
      * @param inserter
      * @return the list of
      */
     public Long[] insert(SQLiteInserter inserter, Uri uri) {
 
+        // Create DB:
+        dbHelper.createTable(getTableCreator(uri));
+
         final String sql = inserter.getInsertStatement(getTableCreator(uri).getTableName());
-        
+
         final int count = inserter.getCount();
-        
+
         final String[] columns = inserter.getColumns();
         final List<Long> ret = new ArrayList<Long>(count);
 
         SQLiteStatement statement = dbHelper.getWritableDatabase().compileStatement(sql);
-        
+
         // TODO move to TransactionListner (v2 of android)
         // dbHelper.getWritableDatabase().beginTransaction();
         for (int i = 0; i < count; i++) {
@@ -154,7 +165,7 @@ public abstract class ModularProvider extends ContentProvider {
                 if (value == null) {
                     value = new String("");
                 }
-                int index = inserter.getInsertIndex(column);
+                int index = inserter.getInsertIndex(column) + 1;
                 switch (inserter.getType(column)) {
                     case BLOB:
                         statement.bindBlob(index, getBytes(value));
