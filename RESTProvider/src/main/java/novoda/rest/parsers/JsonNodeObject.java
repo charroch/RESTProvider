@@ -1,29 +1,33 @@
 
 package novoda.rest.parsers;
 
+import java.util.Iterator;
+
 import org.codehaus.jackson.JsonNode;
 
 import android.content.ContentValues;
-
-import java.util.Iterator;
 
 public class JsonNodeObject extends Node<JsonNode> {
 
     private boolean isArray;
 
     private int arrayIndex;
+    
+    private String tableName;
 
     public JsonNodeObject(JsonNode node) {
         this(node, 0);
     }
 
     public JsonNodeObject(JsonNode node, int index) {
-        data = node;
-        isArray = node.isArray();
-        arrayIndex = index;
+        this(node, index, "");
     }
 
     public JsonNodeObject(JsonNode node, int index, String tableName) {
+        data = node;
+        isArray = node.isArray();
+        arrayIndex = index;
+        this.tableName = tableName;
     }
 
     @Override

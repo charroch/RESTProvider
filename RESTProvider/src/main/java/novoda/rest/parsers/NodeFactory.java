@@ -1,13 +1,18 @@
 
 package novoda.rest.parsers;
 
+import java.io.IOException;
 import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-public abstract class NodeFactory {
+import org.apache.http.HttpResponse;
+import org.apache.http.client.ClientProtocolException;
+import org.apache.http.client.ResponseHandler;
+
+public abstract class NodeFactory<T extends Node<?>> implements ResponseHandler<Node<?>> {
 
     public static class Options {
         public String rootNode;
@@ -19,11 +24,12 @@ public abstract class NodeFactory {
         public List<Options> children = new ArrayList<Options>();
     }
 
-    public static Node<?> parse(InputStream in) {
-        return null;
-    };
+    public abstract Node<?> readValue(InputStream in, Options options);
 
-    public static Node<?> parse(InputStream in, Options option) {
-        return null;
-    };
+    @Override
+    public Node<?> handleResponse(HttpResponse response) throws ClientProtocolException,
+            IOException {
+        return readValue(response.getEntity().getContent(), null);
+    }
+
 }
