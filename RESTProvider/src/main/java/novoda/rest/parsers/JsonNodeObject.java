@@ -14,18 +14,16 @@ public class JsonNodeObject extends Node<JsonNode> {
     private int arrayIndex;
 
     public JsonNodeObject(JsonNode node) {
-        data = node;
-        if (node.isArray()) {
-            // 
-            // node.
-        } else {
-            // do something else
-        }
-
+        this(node, 0);
     }
 
     public JsonNodeObject(JsonNode node, int index) {
+        data = node;
+        isArray = node.isArray();
         arrayIndex = index;
+    }
+
+    public JsonNodeObject(JsonNode node, int index, String tableName) {
     }
 
     @Override
@@ -51,7 +49,7 @@ public class JsonNodeObject extends Node<JsonNode> {
 
     @Override
     public boolean hasNext() {
-        return data.isArray();
+        return isArray;
     }
 
     @Override
