@@ -1,6 +1,10 @@
 package novoda.rest.exception;
 
-public class ParserException extends Exception {
+public class ParserException extends RuntimeException {
+
+    public ParserException(String string) {
+        super(string);
+    }
 
     /**
      * 

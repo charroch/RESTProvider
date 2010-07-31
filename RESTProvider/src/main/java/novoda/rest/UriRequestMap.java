@@ -82,5 +82,5 @@ public interface UriRequestMap {
 
     public abstract SQLiteTableCreator getTableCreator(Uri uri);
 
-    public abstract <T> NodeParser<? extends Node<T>> getParser(Uri uri);
+    public abstract <T extends Node<?>> NodeParser<T> getParser(Uri uri);
 }
