@@ -69,6 +69,21 @@ public class ModTwitter extends ModularProvider {
             public String getPrimaryKey() {
                 return null;
             }
+
+            public String getParentColumnName() {
+                // TODO Auto-generated method stub
+                return null;
+            }
+
+            public SQLiteType getParentType() {
+                // TODO Auto-generated method stub
+                return null;
+            }
+
+            public String[] getTriggers() {
+                // TODO Auto-generated method stub
+                return null;
+            }
         };
     }
 

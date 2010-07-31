@@ -1,46 +1,74 @@
+/*
+ * Copyright (C) 2010 Novoda
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *      http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
 
 package novoda.rest;
 
-import java.util.List;
-
-import novoda.rest.database.SQLiteInserter;
 import novoda.rest.database.SQLiteTableCreator;
-import novoda.rest.net.ResponseTree;
+import novoda.rest.parsers.Node;
+import novoda.rest.parsers.NodeParser;
 
 import org.apache.http.NameValuePair;
-import org.apache.http.client.ResponseHandler;
 import org.apache.http.client.methods.HttpUriRequest;
 
 import android.content.ContentValues;
-import android.database.AbstractCursor;
 import android.net.Uri;
 
+import java.util.List;
+
+// TODO: Auto-generated Javadoc
+/**
+ * The Interface UriRequestMap.
+ */
 public interface UriRequestMap {
 
+    /**
+     * The Constant QUERY which correspond to a a query call made against the
+     * content resolver for a URI that is answered by this content provider.
+     */
     static final public int QUERY = 0;
 
+    /** The Constant INSERT. */
     static final public int INSERT = 1;
 
+    /** The Constant UPDATE. */
     static final public int UPDATE = 2;
 
+    /** The Constant DELETE. */
     static final public int DELETE = 3;
 
     /**
-     * @param uri
-     * @param type
-     * @param params
-     * @return
+     * Gets the request.
+     * 
+     * @param uri the uri
+     * @param type the type
+     * @param params the params
+     * @return the request
      */
     public abstract HttpUriRequest getRequest(Uri uri, int type, List<NameValuePair> params);
 
-    public abstract ResponseHandler<? extends AbstractCursor> getQueryHandler(Uri uri);
-
-    public abstract ResponseHandler<? extends Uri> getInsertHandler(Uri uri);
-
-    public abstract ResponseHandler<? extends Integer> getUpdateHandler(Uri uri);
-
-    public abstract ResponseHandler<? extends Integer> getDeleteHandler(Uri uri);
-
+    /**
+     * Gets the query params.
+     * 
+     * @param uri the uri
+     * @param projection the projection
+     * @param selection the selection
+     * @param selectionArg the selection arg
+     * @param sortOrder the sort order
+     * @return the query params
+     */
     public abstract List<NameValuePair> getQueryParams(Uri uri, String[] projection,
             String selection, String[] selectionArg, String sortOrder);
 
@@ -51,12 +79,8 @@ public interface UriRequestMap {
 
     public abstract List<NameValuePair> getDeleteParams(Uri uri, String selection,
             String[] selectionArg);
-    
+
     public abstract SQLiteTableCreator getTableCreator(Uri uri);
-    
-    public abstract List<SQLiteInserter> getInserter(Uri uri);
-    
-    public abstract ResponseHandler<? extends List<SQLiteInserter>> getQueryInserter(Uri uri);
-    
-    public abstract ResponseHandler<ResponseTree> getResponseTree(Uri baseUri);
+
+    public abstract <T> NodeParser<? extends Node<T>> getParser(Uri uri);
 }

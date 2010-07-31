@@ -1,12 +1,7 @@
 
 package novoda.rest;
 
-import java.io.IOException;
-import java.net.ConnectException;
-import java.util.Arrays;
-
 import novoda.rest.auth.OAuthOnSharedPreferenceChangeListener;
-import novoda.rest.cache.UriCache;
 import novoda.rest.cursors.ErrorCursor;
 import novoda.rest.cursors.One2ManyMapping;
 import novoda.rest.interceptors.OAuthInterceptor;
@@ -37,9 +32,12 @@ import android.content.ContentValues;
 import android.content.SharedPreferences;
 import android.database.AbstractCursor;
 import android.database.Cursor;
-import android.net.SSLCertificateSocketFactory;
 import android.net.Uri;
 import android.util.Log;
+
+import java.io.IOException;
+import java.net.ConnectException;
+import java.util.Arrays;
 
 /**
  * Note: some code is taken from droidfu by Mathias Kaeppler:
@@ -132,12 +130,6 @@ public abstract class RESTProvider extends ContentProvider {
     public Cursor query(Uri uri, String[] projection, String selection, String[] selectionArgs,
             String sortOrder) {
 
-//        // Check cache first FIXME broken
-//        if (UriCache.getInstance().canRespondTo(uri)) {
-//            Log.i(TAG, uri.toString() + " will be taken from cache");
-//            return UriCache.getInstance().get(uri);
-//        }
-
         try {
             HttpUriRequest request = queryRequest(uri, projection, selection, selectionArgs,
                     sortOrder);
@@ -146,7 +138,6 @@ public abstract class RESTProvider extends ContentProvider {
                 Log.i(TAG, "will query: " + request.getURI());
 
             Cursor cursor = getQueryHandler(uri).handleResponse(httpClient.execute(request));
-            registerMappedCursor(cursor, uri);
             return cursor;
         } catch (ConnectException e) {
             Log.w(TAG, "an error occured in query", e);
@@ -264,39 +255,5 @@ public abstract class RESTProvider extends ContentProvider {
         ThreadSafeClientConnManager cm = new ThreadSafeClientConnManager(httpParams, schemeRegistry);
         HttpProtocolParams.setContentCharset(httpParams, HTTP.UTF_8);
         httpClient = new DefaultHttpClient(cm, httpParams);
-    }
-
-    protected void registerMappedCursor(Cursor cursor, Uri uri) {
-        if (cursor instanceof One2ManyMapping) {
-            UriCache cache = UriCache.getInstance();
-
-            String[] foreignFields = ((One2ManyMapping)cursor).getForeignFields();
-            if (foreignFields == null)
-                return;
-
-            String[] ids = cursor.getExtras().getStringArray("ids");
-            
-            Log.i(TAG, Arrays.toString(ids));
-            for (int j = 0; j < cursor.getCount(); j++) {
-                String idField = ids[j];
-                Uri returi = uri;
-
-                if (uri.getLastPathSegment() != null && uri.getLastPathSegment().equals(idField))
-                    returi = Uri
-                            .parse(uri.toString().subSequence(0,
-                                    uri.toString().length() - uri.getLastPathSegment().length())
-                                    .toString());
-
-                returi = Uri.withAppendedPath(returi, ids[j]);
-
-                for (int i = 0; i < foreignFields.length; i++) {
-                    Uri ruri = Uri.withAppendedPath(returi, foreignFields[i]);
-                    Cursor n = ((One2ManyMapping)cursor).getForeignCursor(j, foreignFields[i]);
-                    if (DEBUG)
-                        Log.d(TAG, "putting " + ruri.toString() + " into cache.");
-                    cache.put(ruri, n);
-                }
-            }
-        }
     }
 }

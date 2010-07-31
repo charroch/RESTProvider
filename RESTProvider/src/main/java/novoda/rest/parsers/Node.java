@@ -1,6 +1,8 @@
 
 package novoda.rest.parsers;
 
+import novoda.rest.parsers.NodeFactory.Options;
+
 import android.content.ContentValues;
 
 import java.util.ArrayList;
@@ -40,6 +42,8 @@ public abstract class Node<T> implements Iterator<Node<T>> {
      * Keep track of the parent
      */
     private Node<T> parent;
+    
+    private Options options;
 
     public T getData() {
         return data;
@@ -110,6 +114,19 @@ public abstract class Node<T> implements Iterator<Node<T>> {
         return parent;
     }
 
+    @Override
+    public void remove() {
+        // Do nothing.
+    }
+
+    public void setOptions(Options options) {
+        this.options = options;
+    }
+
+    public Options getOptions() {
+        return options;
+    }
+    
     /**
      * @return The values to be inserted into the DB for this node
      */
@@ -125,8 +142,6 @@ public abstract class Node<T> implements Iterator<Node<T>> {
      */
     abstract boolean shouldInsert();
 
-    @Override
-    public void remove() {
-        // Do nothing.
-    }
+    abstract void applyOptions(Options option);
+
 }

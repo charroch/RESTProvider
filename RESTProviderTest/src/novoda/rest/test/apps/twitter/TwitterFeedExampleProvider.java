@@ -73,6 +73,21 @@ public class TwitterFeedExampleProvider extends ModularProvider {
             public String getPrimaryKey() {
                 return "id";
             }
+
+            public String getParentColumnName() {
+                // TODO Auto-generated method stub
+                return null;
+            }
+
+            public SQLiteType getParentType() {
+                // TODO Auto-generated method stub
+                return null;
+            }
+
+            public String[] getTriggers() {
+                // TODO Auto-generated method stub
+                return null;
+            }
         };
     }
 
