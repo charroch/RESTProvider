@@ -1,10 +1,6 @@
 
 package novoda.rest.test.apps.twitter;
 
-import android.content.ContentValues;
-import android.content.Intent;
-import android.net.Uri;
-
 import novoda.rest.database.SQLiteConflictClause;
 import novoda.rest.database.SQLiteTableCreator;
 import novoda.rest.database.SQLiteType;
@@ -12,9 +8,12 @@ import novoda.rest.providers.ModularProvider;
 import novoda.rest.services.RESTCallService;
 import novoda.rest.test.service.TwitterService;
 
+import android.database.Cursor;
+import android.net.Uri;
+
 public class ModTwitter extends ModularProvider {
 
-    private static final String TAG = TwitterFeedExampleProvider.class.getSimpleName();
+    private static final String TAG = ModTwitter.class.getSimpleName();
 
     @Override
     protected RESTCallService getService() {
@@ -23,18 +22,106 @@ public class ModTwitter extends ModularProvider {
 
     @Override
     protected SQLiteTableCreator getTableCreator(Uri uri) {
+        if (uri != null && uri.compareTo(Uri.parse("content://test")) == 0) {
+            return new SQLiteTableCreator() {
+                public String getParentColumnName() {
+                    return "sets_id";
+                }
+
+                public SQLiteType getParentType() {
+                    return null;
+                }
+
+                public String getPrimaryKey() {
+                    return null;
+                }
+
+                public String[] getTableFields() {
+                    return new String[] {
+                            "start_byte", "track_likes", "id", "title", "duration", "end_time",
+                            "artist_image", "likes", "start_time", "number", "artist_id", "artist",
+                            "track_link", "sets_id"
+                    };
+                }
+
+                public String getTableName() {
+                    return "tracks";
+                }
+
+                public String[] getTriggers() {
+                    return null;
+                }
+
+                public SQLiteType getType(String field) {
+                    return SQLiteType.TEXT;
+                }
+
+                public boolean isNullAllowed(String field) {
+                    return true;
+                }
+
+                public boolean isOneToMany() {
+                    return false;
+                }
+
+                public boolean isUnique(String field) {
+                    if (field.equals("id"))
+                        return true;
+                    return false;
+                }
+
+                public SQLiteConflictClause onConflict(String field) {
+                    return SQLiteConflictClause.IGNORE;
+                }
+
+                public boolean shouldIndex(String field) {
+                    return false;
+                }
+
+                public boolean shouldPKAutoIncrement() {
+                    return true;
+                }
+            };
+        }
         return new SQLiteTableCreator() {
-
-            public boolean shouldPKAutoIncrement() {
-                return false;
+            public String getParentColumnName() {
+                return null;
             }
 
-            public boolean shouldIndex(String field) {
-                return false;
+            public SQLiteType getParentType() {
+                return null;
             }
 
-            public SQLiteConflictClause onConflict(String field) {
-                return SQLiteConflictClause.IGNORE;
+            public String getPrimaryKey() {
+                return null;
+            }
+
+            public String[] getTableFields() {
+                return new String[] {
+                        "track_likes", "set_date", "show_artist", "show_id", "show_title", "id",
+                        "set_link", "track_plays", "title", "duration", "set_likes", "small_image",
+                        "file", "description", "likes", "medium_image", "show_alias"
+                };
+            }
+
+            public String getTableName() {
+                return "sets";
+            }
+
+            public String[] getTriggers() {
+                return null;
+            }
+
+            public SQLiteType getType(String field) {
+                return SQLiteType.TEXT;
+            }
+
+            public boolean isNullAllowed(String field) {
+                return true;
+            }
+
+            public boolean isOneToMany() {
+                return false;
             }
 
             public boolean isUnique(String field) {
@@ -43,53 +130,23 @@ public class ModTwitter extends ModularProvider {
                 return false;
             }
 
-            public boolean isOneToMany() {
+            public SQLiteConflictClause onConflict(String field) {
+                return SQLiteConflictClause.IGNORE;
+            }
+
+            public boolean shouldIndex(String field) {
                 return false;
             }
 
-            public boolean isNullAllowed(String field) {
+            public boolean shouldPKAutoIncrement() {
                 return true;
-            }
-
-            public SQLiteType getType(String field) {
-                return SQLiteType.TEXT;
-            }
-
-            public String getTableName() {
-                return "feed";
-            }
-
-            public String[] getTableFields() {
-                return new String[] {
-                        "profile_image_url", "created_at", "from_user", "to_user_id", "text", "id",
-                        "from_user_id", "geo", "iso_language_code", "source"
-                };
-            }
-
-            public String getPrimaryKey() {
-                return null;
-            }
-
-            public String getParentColumnName() {
-                // TODO Auto-generated method stub
-                return null;
-            }
-
-            public SQLiteType getParentType() {
-                // TODO Auto-generated method stub
-                return null;
-            }
-
-            public String[] getTriggers() {
-                // TODO Auto-generated method stub
-                return null;
             }
         };
     }
 
     @Override
     public String getType(Uri arg0) {
-        return null;
+        return "vnd.android.cursor.dir/vnd.test.tracks";
     }
 
 }

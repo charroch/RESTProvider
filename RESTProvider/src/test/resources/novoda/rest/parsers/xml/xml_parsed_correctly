@@ -1,0 +1,32 @@
+Narrative:
+
+In order to insert a XML into the database
+As a response parser
+it should parse and insert the XML into database correctly
+
+Given the following XML:
+---
+<?xml version="1.0" encoding="UTF-8" ?>
+<result>
+    <status>0</status>
+    <statusMessage>status</statusMessage>
+    <children>
+        <child>one</child>
+        <child>two</child>
+    </children>
+    <animals>
+        <type>tiger</type>
+        <type>rabbit</type>
+        <type>squirrel</type>
+    </animals>
+    <name>A</name>
+</result>
+---
+When I configure the root node to be "result"
+And I configure a one to many relationship on node "children"
+And the relationship "children" is configured with root node "children"
+And I configure a one to many relationship on node "animals"
+And the relationship "animals" is configured with root node "animals"
+Then I should get a count of 1
+And I should get a count for 1 child of 3
+And I should get a count for 2 child of 2

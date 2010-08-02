@@ -11,6 +11,8 @@ import org.apache.http.client.ClientProtocolException;
 import org.apache.http.client.ResponseHandler;
 import org.apache.http.entity.BufferedHttpEntity;
 
+import android.net.Uri;
+
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.Map;
@@ -64,22 +66,50 @@ public abstract class NodeParser<T extends Node<?>> implements ResponseHandler<T
     }
 
     public static class Builder {
+
+        Options option;
+
+        Builder builder;
+
+        public Builder() {
+            option = new Options();
+        }
+
         public Builder withRootNode(String root) {
+            option.rootNode = root;
             return this;
         }
 
         public Builder withNodeName(String nodeName) {
+            option.nodeName = nodeName;
             return this;
         }
 
-        public Builder withMappedFields(Map<String, String> mapepr) {
+        public Builder withMappedFields(Map<String, String> mapper) {
+            option.mapper = mapper;
             return this;
         }
 
-        public <Y extends NodeParser<?>> NodeParser<?> build(Class<Y> klass) {
-            Y t = null;
+        public Builder withTableName(String table) {
+            option.table = table;
+            return this;
+        }
+
+        public Builder withChildren(Map<String, Options> children) {
+            option.children.putAll(children);
+            return this;
+        }
+
+        public Builder withInsertUri(Uri uri) {
+            option.insertUri = uri;
+            return this;
+        }
+
+        public <T extends NodeParser<?>> NodeParser<?> build(Class<T> klass) {
+            T t = null;
             try {
                 t = klass.newInstance();
+                t.options = this.option;
             } catch (InstantiationException e) {
                 e.printStackTrace();
             } catch (IllegalAccessException e) {

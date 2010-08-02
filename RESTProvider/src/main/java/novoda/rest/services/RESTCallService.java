@@ -12,6 +12,7 @@ import android.content.ContentValues;
 import android.content.Intent;
 import android.net.Uri;
 import android.os.Bundle;
+import android.util.Log;
 
 import java.io.IOException;
 
@@ -62,7 +63,6 @@ public abstract class RESTCallService extends IntentService implements UriReques
             final String sortOrder = bundle.getString(BUNDLE_SORT_ORDER);
             ContentProviderClient client = getContentResolver().acquireContentProviderClient(uri);
             ModularProvider provider = (ModularProvider) client.getLocalContentProvider();
-
             try {
                 Node<?> root = httpClient.execute(getRequest(uri, INSERT, getQueryParams(uri,
                         projection, selection, selectionArg, sortOrder)), getParser(uri));
@@ -71,26 +71,37 @@ public abstract class RESTCallService extends IntentService implements UriReques
                 e.printStackTrace();
             }
         }
+        getBaseContext().getContentResolver().notifyChange(uri, null);
         getBaseContext().sendBroadcast(new Intent("novoda.rest.action.QUERY_COMPLETE"));
     }
 
     private void insertNodeIntoDatabase(Node<?> root, ModularProvider provider) {
         final int size = root.getCount();
         for (int i = 0; i < size; i++) {
-
             Node<?> current = root.getNode(i);
-
+            provider.create(current.getOptions().insertUri);
             ContentValues values = current.getContentValue();
             current.onPreInsert(values);
+            Node<?> f = current.getParent();
 
+            if (f != null) {
+                Log.i(TAG, "child: " + f.getIdFieldName());
+                Log.i(TAG, "child: " + f.getDatabaseId());
+                values.put(f.getIdFieldName(), f.getDatabaseId());
+            }
+
+            Log.i(TAG, values.toString());
             long id = provider.insert(current.getTableName(), values);
             current.onPostInsert(id);
 
-            for (Node<?> child : current.getChildren()) {
-                insertNodeIntoDatabase(child, provider);
+            if (id > 0) {
+                for (Node<?> child : current.getChildren()) {
+                    insertNodeIntoDatabase(child, provider);
+                }
             }
         }
     }
+
     private static void setupHttpClient() {
         httpClient = AndroidHttpClient.newInstance("Android/RESTProvider");
     }

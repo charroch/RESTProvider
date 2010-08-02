@@ -76,7 +76,6 @@ public abstract class ModularProvider extends ContentProvider {
     @Override
     public Cursor query(Uri uri, String[] projection, String selection, String[] selectionArgs,
             String sortOrder) {
-
         Log.i(TAG, getTableCreator(uri).getTableName());
         dbHelper.createTable(getTableCreator(uri));
 
@@ -97,14 +96,17 @@ public abstract class ModularProvider extends ContentProvider {
 
         c.setNotificationUri(getContext().getContentResolver(), uri);
 
-        Intent intent = new Intent(getContext(), getService().getClass());
-        intent.setAction(RESTCallService.ACTION_QUERY);
-        intent.setData(uri);
-        intent.putExtra(RESTCallService.BUNDLE_PROJECTION, projection);
-        intent.putExtra(RESTCallService.BUNDLE_SELECTION, selection);
-        intent.putExtra(RESTCallService.BUNDLE_SELECTION_ARG, selectionArgs);
-        intent.putExtra(RESTCallService.BUNDLE_SORT_ORDER, sortOrder);
-        getContext().startService(intent);
+        String query = uri.getQueryParameter("query");
+        if (query.equals("remote")) {
+            Intent intent = new Intent(getContext(), getService().getClass());
+            intent.setAction(RESTCallService.ACTION_QUERY);
+            intent.setData(uri);
+            intent.putExtra(RESTCallService.BUNDLE_PROJECTION, projection);
+            intent.putExtra(RESTCallService.BUNDLE_SELECTION, selection);
+            intent.putExtra(RESTCallService.BUNDLE_SELECTION_ARG, selectionArgs);
+            intent.putExtra(RESTCallService.BUNDLE_SORT_ORDER, sortOrder);
+            getContext().startService(intent);
+        }
         return c;
     }
 
@@ -228,6 +230,6 @@ public abstract class ModularProvider extends ContentProvider {
     }
 
     public long insert(String tableName, ContentValues values) {
-       return dbHelper.getWritableDatabase().insert(tableName, "", values);
+        return dbHelper.getWritableDatabase().insert(tableName, "", values);
     }
 }

@@ -30,12 +30,47 @@ public class TwitterFeedExampleProvider extends ModularProvider {
     @Override
     protected SQLiteTableCreator getTableCreator(Uri uri) {
         return new SQLiteTableCreator() {
+            public String getParentColumnName() {
+                return null;
+            }
 
-            public boolean shouldPKAutoIncrement() {
+            public SQLiteType getParentType() {
+                return null;
+            }
+
+            public String getPrimaryKey() {
+                return null;
+            }
+
+            public String[] getTableFields() {
+                return new String[] {
+                        "track_likes", "set_date", "show_artist", "show_id", "show_title", "id",
+                        "set_link", "track_plays", "title", "duration", "set_likes", "small_image",
+                        "file", "description", "likes", "medium_image", "show_alias"
+                };
+            }
+
+            public String getTableName() {
+                return "sets";
+            }
+
+            public String[] getTriggers() {
+                return null;
+            }
+
+            public SQLiteType getType(String field) {
+                return SQLiteType.TEXT;
+            }
+
+            public boolean isNullAllowed(String field) {
+                return true;
+            }
+
+            public boolean isOneToMany() {
                 return false;
             }
 
-            public boolean shouldIndex(String field) {
+            public boolean isUnique(String field) {
                 return false;
             }
 
@@ -43,50 +78,12 @@ public class TwitterFeedExampleProvider extends ModularProvider {
                 return SQLiteConflictClause.IGNORE;
             }
 
-            public boolean isUnique(String field) {
+            public boolean shouldIndex(String field) {
                 return false;
             }
 
-            public boolean isOneToMany() {
-                return false;
-            }
-
-            public boolean isNullAllowed(String field) {
+            public boolean shouldPKAutoIncrement() {
                 return true;
-            }
-
-            public SQLiteType getType(String field) {
-                return SQLiteType.TEXT;
-            }
-
-            public String getTableName() {
-                return "feed";
-            }
-
-            public String[] getTableFields() {
-                return new String[] {
-                        "profile_image_url", "created_at", "from_user", "to_user_id", "text", "id",
-                        "from_user_id", "geo", "iso_language_code", "source"
-                };
-            }
-
-            public String getPrimaryKey() {
-                return "id";
-            }
-
-            public String getParentColumnName() {
-                // TODO Auto-generated method stub
-                return null;
-            }
-
-            public SQLiteType getParentType() {
-                // TODO Auto-generated method stub
-                return null;
-            }
-
-            public String[] getTriggers() {
-                // TODO Auto-generated method stub
-                return null;
             }
         };
     }

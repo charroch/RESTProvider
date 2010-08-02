@@ -69,8 +69,10 @@ public class ModularSQLiteOpenHelper extends SQLiteOpenHelper {
         if (createdTable.contains(creator.getTableName())) {
             Log.v(TAG, "Table " + creator.getTableName() + " already in DB.");
         } else {
+            Log.v(TAG, "Will create table " + creator.getTableName());
             createStatements.put(creator.getTableName(), creator);
             getWritableDatabase().needUpgrade(++dbVersion);
+            onUpgrade(getWritableDatabase(), 0, 1);
         }
     }
 }

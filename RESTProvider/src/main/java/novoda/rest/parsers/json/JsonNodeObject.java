@@ -29,7 +29,6 @@ public class JsonNodeObject extends Node<JsonNode> {
         while (fields.hasNext()) {
             field = fields.next();
             // Do some XPath stuff here
-            
             if (getOptions().children.containsKey(field)){
                 continue;
             }
@@ -45,11 +44,6 @@ public class JsonNodeObject extends Node<JsonNode> {
         else if (getOptions().rootNode != null)
             return getOptions().rootNode;
         throw new IllegalStateException("Can not have a node without a table name");
-    }
-
-    public String[] getColumns() {
-        data.getFieldNames();
-        return null;
     }
 
     @Override
@@ -71,7 +65,7 @@ public class JsonNodeObject extends Node<JsonNode> {
     public Node<JsonNode> getNode(int index) {
         if (isArray) {
             JsonNodeObject o = new JsonNodeObject(data.get(index));
-            o.setParent(this);
+            o.setParent(this.getParent());
             Options options = getOptions();
             options.rootNode = null;
             o.applyOptions(options);
