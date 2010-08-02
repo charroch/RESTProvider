@@ -17,7 +17,6 @@
 package novoda.rest;
 
 import novoda.rest.database.SQLiteTableCreator;
-import novoda.rest.parsers.Node;
 import novoda.rest.parsers.NodeParser;
 
 import org.apache.http.NameValuePair;
@@ -28,7 +27,6 @@ import android.net.Uri;
 
 import java.util.List;
 
-// TODO: Auto-generated Javadoc
 /**
  * The Interface UriRequestMap.
  */
@@ -82,5 +80,5 @@ public interface UriRequestMap {
 
     public abstract SQLiteTableCreator getTableCreator(Uri uri);
 
-    public abstract <T extends Node<?>> NodeParser<T> getParser(Uri uri);
+    public abstract NodeParser<?> getParser(Uri uri);
 }

@@ -1,6 +1,23 @@
 Scenario: 
-Given the following JSON: {"parent": "dady", "children": [{"id": 1, "value": "john"},{"id": 2, "value": "doe"}]}
-When I have a JsonFactory
-Then I should have a parent node with 1 children
-The parent node should contain field "parent" with value "dady"
-The child node from field "children" with index 0 should contain field [id, value] and value [1, john]  
+Given the following JSON:
+---
+{"root":[
+			{
+            	"node": "one",
+            	"children": [
+            		 {"name": "carl"},{"name": "john"}
+            	],
+            	"value": 1
+            },
+            {
+            	"node": "two",
+            	"children": [
+            		 {"name": "carlito"},{"name": "doe"}
+            	],
+            	"value": 2
+            }
+]}
+---
+When I apply the following options: {root:"root", nodename: ""}
+And I apply the following children options: {}
+Then I should have a node with a count of 2

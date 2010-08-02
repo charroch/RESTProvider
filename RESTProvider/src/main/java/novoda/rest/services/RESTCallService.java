@@ -2,14 +2,13 @@
 package novoda.rest.services;
 
 import novoda.rest.UriRequestMap;
-import novoda.rest.net.JsonInserter;
-import novoda.rest.net.Node;
-import novoda.rest.net.ResponseTree;
+import novoda.rest.parsers.Node;
 import novoda.rest.providers.ModularProvider;
 import novoda.rest.utils.AndroidHttpClient;
 
 import android.app.IntentService;
 import android.content.ContentProviderClient;
+import android.content.ContentValues;
 import android.content.Intent;
 import android.net.Uri;
 import android.os.Bundle;
@@ -61,33 +60,37 @@ public abstract class RESTCallService extends IntentService implements UriReques
             final String selection = bundle.getString(BUNDLE_SELECTION);
             final String[] selectionArg = bundle.getStringArray(BUNDLE_SELECTION_ARG);
             final String sortOrder = bundle.getString(BUNDLE_SORT_ORDER);
-            ContentProviderClient client = getContentResolver()            .acquireContentProviderClient(uri);
+            ContentProviderClient client = getContentResolver().acquireContentProviderClient(uri);
             ModularProvider provider = (ModularProvider) client.getLocalContentProvider();
-//            try {
-//                List<SQLiteInserter> inserters = httpClient.execute(getRequest(uri, INSERT,
-//                        getQueryParams(uri, projection, selection, selectionArg, sortOrder)),
-//                        getQueryInserter(uri));
-//                for (SQLiteInserter inserter : inserters) {
-//                    provider.insert(inserter, uri);
-//                }
-//            } catch (IOException e) {
-//                e.printStackTrace();
-//            }
 
             try {
-                ResponseTree<JsonInserter> tree = httpClient.execute(getRequest(uri, INSERT, getQueryParams(uri,
-                        projection, selection, selectionArg, sortOrder)), getResponseTree(uri));
-                for (Node<JsonInserter> node : tree.toList()) {
-                    provider.create(node.getUri());
-                    provider.insert(node.data, node.getUri());
-                }
+                Node<?> root = httpClient.execute(getRequest(uri, INSERT, getQueryParams(uri,
+                        projection, selection, selectionArg, sortOrder)), getParser(uri));
+                insertNodeIntoDatabase(root, provider);
             } catch (IOException e) {
-
+                e.printStackTrace();
             }
         }
         getBaseContext().sendBroadcast(new Intent("novoda.rest.action.QUERY_COMPLETE"));
     }
 
+    private void insertNodeIntoDatabase(Node<?> root, ModularProvider provider) {
+        final int size = root.getCount();
+        for (int i = 0; i < size; i++) {
+
+            Node<?> current = root.getNode(i);
+
+            ContentValues values = current.getContentValue();
+            current.onPreInsert(values);
+
+            long id = provider.insert(current.getTableName(), values);
+            current.onPostInsert(id);
+
+            for (Node<?> child : current.getChildren()) {
+                insertNodeIntoDatabase(child, provider);
+            }
+        }
+    }
     private static void setupHttpClient() {
         httpClient = AndroidHttpClient.newInstance("Android/RESTProvider");
     }

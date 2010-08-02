@@ -1,13 +1,13 @@
 
 package novoda.rest.parsers;
 
-import novoda.rest.parsers.NodeFactory.Options;
-
 import android.content.ContentValues;
+import android.net.Uri;
 
 import java.util.ArrayList;
-import java.util.Iterator;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 /**
  * Simple Tree object with back reference to the parent Node. It enables tree
@@ -16,14 +16,31 @@ import java.util.List;
  * an Object in JSON. For each Node, we should be able to insert it into the
  * database by extracting the necessary data.
  */
-public abstract class Node<T> implements Iterator<Node<T>> {
+public abstract class Node<T> {
+
+    /**
+     *  
+     */
+    public static class Options {
+        public String rootNode;
+
+        public String nodeName;
+
+        public String table;
+        
+        public Uri insertUri;
+
+        public Map<String, String> mapper = new HashMap<String, String>();
+
+        public Map<String, Options> children = new HashMap<String, Options>();
+    }
 
     /*
      * The representation of a node within the response object. This will be
      * specific to each format and lets implementator the chance to parse the
      * object into understandable content values.
      */
-    T data;
+    protected T data;
 
     /*
      * The inserted row id in the database. It is populated after an insert.
@@ -42,7 +59,7 @@ public abstract class Node<T> implements Iterator<Node<T>> {
      * Keep track of the parent
      */
     private Node<T> parent;
-    
+
     private Options options;
 
     public T getData() {
@@ -103,7 +120,7 @@ public abstract class Node<T> implements Iterator<Node<T>> {
     }
 
     public String getIdFieldName() {
-        return idFieldName;
+        return getTableName() + "_id";
     }
 
     public void setParent(Node<T> parent) {
@@ -114,11 +131,6 @@ public abstract class Node<T> implements Iterator<Node<T>> {
         return parent;
     }
 
-    @Override
-    public void remove() {
-        // Do nothing.
-    }
-
     public void setOptions(Options options) {
         this.options = options;
     }
@@ -126,22 +138,32 @@ public abstract class Node<T> implements Iterator<Node<T>> {
     public Options getOptions() {
         return options;
     }
-    
+
     /**
      * @return The values to be inserted into the DB for this node
      */
-    abstract ContentValues getContentValue();
+    abstract public ContentValues getContentValue();
 
     /**
      * @return the table Name for which this row will be inserted
      */
-    abstract String getTableName();
+    abstract public String getTableName();
 
     /**
      * @return true if we should insert the node into DB, false otherwise
      */
-    abstract boolean shouldInsert();
+    abstract public boolean shouldInsert();
 
-    abstract void applyOptions(Options option);
+    /**
+     * @return the amount of nodes within this level of the tree
+     */
+    abstract public int getCount();
 
+    /**
+     * @param index
+     * @return the node at the specified index
+     */
+    abstract public Node<T> getNode(int index);
+    
+    abstract public void applyOptions(Options options);
 }

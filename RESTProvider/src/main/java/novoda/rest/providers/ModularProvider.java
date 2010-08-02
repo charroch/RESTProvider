@@ -226,4 +226,8 @@ public abstract class ModularProvider extends ContentProvider {
         }
         return "".getBytes();
     }
+
+    public long insert(String tableName, ContentValues values) {
+       return dbHelper.getWritableDatabase().insert(tableName, "", values);
+    }
 }
