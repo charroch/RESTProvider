@@ -16,7 +16,7 @@ public class XmlNodeObject extends Node<XMLNode> {
 
     public XmlNodeObject(XMLNode node) {
         this.data = node;
-        //isArray = node.isArray();
+        isArray = node.isArray();
     }
 
     @Override
@@ -25,6 +25,9 @@ public class XmlNodeObject extends Node<XMLNode> {
         if (options.rootNode != null) {
             data = data.path(options.rootNode);
             isArray = data.isArray();
+        }
+        if (options.nodeName != null) {
+            //data = data.path(options.nodeName);
         }
         if (options.children != null) {
             if (isArray) {

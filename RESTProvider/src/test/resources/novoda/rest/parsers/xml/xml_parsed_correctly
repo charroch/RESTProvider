@@ -1,7 +1,7 @@
 Narrative:
 
 In order to insert a XML into the database
-As a response parser
+Knowing the options to parse the XML using rootNode as the root node to be parsed, nodename if any to the root node of each item within an array and mapper to map the children
 it should parse and insert the XML into database correctly
 
 Given the following XML:
@@ -30,3 +30,40 @@ And the relationship "animals" is configured with root node "animals"
 Then I should get a count of 1
 And I should get a count for 1 child of 3
 And I should get a count for 2 child of 2
+
+
+Given the following XML:
+---
+<response> 
+    <status>0</status> 
+    <statusMessage>test</statusMessage> 
+    <children> 
+        <child_item> 
+            <action>70</action> 
+            <headline>REST provider is awesome</headline> 
+            <subtext>yes it is</subtext> 
+        </child_item>
+        <child_item> 
+            <action>710</action> 
+            <headline>REST provider is ok</headline> 
+            <subtext>no it s awesome</subtext>
+        </child_item> 
+    </children>
+    <time>0</time> 
+</response> 
+---
+When I configure the root node to be "response"
+And I configure a one to many relationship on node "children"
+And the relationship "children" is configured with root node "children"
+And the relationship "children" is configured with node name "child_item"
+Then I should get a count of 1
+And I should get a count for 1 child of 2
+And I should get following results:
+|status|statusMessage|time|
+|0|test|0|
+
+And I should get foolowing results for child 1:
+|action|headline|subtext|
+|70|REST provider is awesome|yes it is|
+|710|REST provider is ok|no it s awesome|
+
