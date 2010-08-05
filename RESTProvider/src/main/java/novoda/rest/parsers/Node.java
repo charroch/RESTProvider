@@ -93,7 +93,7 @@ public abstract class Node<T> {
      * Many, we will add the parent's field name and the id of the parent's row
      * with the new values to be inserted.
      */
-    public void onPreInsert(ContentValues values) {
+    public void onPreInsert(final ContentValues values) {
         if (parent != null && parent.databaseId > 0) {
             values.put(parent.getIdFieldName(), parent.getDatabaseId());
         }

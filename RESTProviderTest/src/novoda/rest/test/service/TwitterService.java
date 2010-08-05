@@ -45,6 +45,8 @@ public class TwitterService extends RESTCallService {
         o.insertUri = Uri.parse("content://test");
         Map<String, Options> map = new HashMap<String, Options>();
         map.put("tracks", o);
+        
+        
         return new JsonNodeParser.Builder().withRootNode("sets").withTableName("sets")
                 .withChildren(map).build(JsonNodeParser.class);
     }
@@ -55,7 +57,7 @@ public class TwitterService extends RESTCallService {
     }
 
     public HttpUriRequest getRequest(Uri uri, int type, List<NameValuePair> params) {
-        return new HttpGet("http://mugasha.com/api/private/sets?extended=yes&filter=newest");
+        return new HttpGet("http://mugasha.com/api/private/single_set?set=839");
     }
 
     public SQLiteTableCreator getTableCreator(Uri uri) {

@@ -19,8 +19,7 @@ public class MockJsonFactory {
 			throws ClientProtocolException, IOException {
 	    
 		MockHttpResponse response = new MockHttpResponse(json);
-		return new JsonCursor(root, useId, rootId).withForeignKey(fk)
-				.handleResponse(response);
+		return null;
 		
 	}
 

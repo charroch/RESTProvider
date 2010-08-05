@@ -19,9 +19,9 @@ public class ModTwitter extends ModularProvider {
     protected RESTCallService getService() {
         return new TwitterService();
     }
-
     @Override
     protected SQLiteTableCreator getTableCreator(Uri uri) {
+        
         if (uri != null && uri.compareTo(Uri.parse("content://test")) == 0) {
             return new SQLiteTableCreator() {
                 public String getParentColumnName() {

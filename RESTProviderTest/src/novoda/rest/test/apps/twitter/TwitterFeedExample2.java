@@ -28,7 +28,7 @@ public class TwitterFeedExample2 extends ListActivity {
             }
         };
 
-        Cursor cur = managedQuery(Uri.parse("content://novoda.rest.test.twitter2/feed?query=remote"), null,
+        Cursor cur = managedQuery(Uri.parse("content://novoda.rest.test.twitter2/feed/1/tracks"), null,
                 null, null, null);
         setListAdapter(new SimpleCursorAdapter(this, android.R.layout.simple_list_item_2, cur,
                 new String[] {

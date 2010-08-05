@@ -9,8 +9,6 @@
 		<provider android:name="novoda.rest.test.apps.twitter.TwitterFeedExampleProvider"
 			android:authorities="novoda.rest.test.twitter" />
 
-		<provider android:name="novoda.rest.test.apps.linkedin.LinkedInProvider"
-			android:authorities="novoda.rest.test.linkedin" />
 
 		<provider android:name="novoda.rest.test.apps.twitter.ModTwitter"
 			android:authorities="novoda.rest.test.twitter2" />

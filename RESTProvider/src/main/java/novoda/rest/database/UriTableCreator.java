@@ -1,11 +1,12 @@
 
 package novoda.rest.database;
 
-import android.net.Uri;
-
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
+
+import novoda.rest.parsers.Node;
+import android.net.Uri;
 
 public abstract class UriTableCreator implements SQLiteTableCreator {
 
@@ -13,10 +14,10 @@ public abstract class UriTableCreator implements SQLiteTableCreator {
 
     private List<String> pathSegments;
 
-    public UriTableCreator() {
+    protected UriTableCreator() {
     }
 
-    public UriTableCreator(final Uri uri) {
+    protected UriTableCreator(final Uri uri) {
         this.setUri(uri);
     }
 
@@ -46,6 +47,10 @@ public abstract class UriTableCreator implements SQLiteTableCreator {
 
     @Override
     public String[] getTriggers() {
+        if (isOneToMany()) {
+            getParentColumnName();
+            
+        }
         return null;
     }
 
@@ -103,5 +108,13 @@ public abstract class UriTableCreator implements SQLiteTableCreator {
 
     public Uri getUri() {
         return uri;
+    }
+
+    public static SQLiteTableCreator fromUri(final Uri uri) {
+        return null;
+    }
+
+    public static SQLiteTableCreator fromUriAndNode(final Uri uri, Node<?> node) {
+        return null;
     }
 }

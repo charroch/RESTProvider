@@ -57,6 +57,7 @@ public class ModularSQLiteOpenHelper extends SQLiteOpenHelper {
         for (Entry<String, SQLiteTableCreator> entry : createStatements.entrySet()) {
             if (createdTable.contains(entry.getKey())) {
                 Log.v(TAG, "Table " + entry.getKey() + " already in DB.");
+                // todo alter
             } else {
                 Log.v(TAG, "Creating table: " + entry.getKey());
                 db.execSQL(DatabaseUtils.getCreateStatement(entry.getValue()));
@@ -72,7 +73,7 @@ public class ModularSQLiteOpenHelper extends SQLiteOpenHelper {
             Log.v(TAG, "Will create table " + creator.getTableName());
             createStatements.put(creator.getTableName(), creator);
             getWritableDatabase().needUpgrade(++dbVersion);
-            onUpgrade(getWritableDatabase(), 0, 1);
+           // onUpgrade(getWritableDatabase(), 0, 1);
         }
     }
 }
