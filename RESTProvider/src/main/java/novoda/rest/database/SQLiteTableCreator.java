@@ -23,11 +23,17 @@ public interface SQLiteTableCreator {
 
     public boolean isUnique(final String field);
 
+    // Could all this be put in a SQLiteTableCreator?
     public boolean isOneToMany();
     
     public String getParentColumnName();
     
     public SQLiteType getParentType();
+    
+    public String getParentTableName();
+    
+    public String getParentPrimaryKey();
+    // End
 
     public boolean shouldIndex(final String field);
 

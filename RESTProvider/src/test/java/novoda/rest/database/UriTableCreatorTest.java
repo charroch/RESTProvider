@@ -1,6 +1,7 @@
+
 package novoda.rest.database;
 
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertEquals;
 import novoda.rest.RESTProvider;
 
 import org.junit.Before;
@@ -12,30 +13,35 @@ import org.mockito.runners.MockitoJUnitRunner;
 import android.net.Uri;
 
 import java.io.IOException;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.List;
 
 @RunWith(MockitoJUnitRunner.class)
 public class UriTableCreatorTest {
+    private UriTableCreator cut;
+
     @Before
     public void initRequestMocks() throws IOException {
         MockitoAnnotations.initMocks(this);
         RESTProvider.DEBUG = false;
-    }
-
-    @Test
-    public void testParentTableName() throws Exception {
-        UriTableCreator c = new UriTableCreator(Uri.parse("content://uri/parent/2/child")) {
+        cut = new UriTableCreator(Uri.parse("content://uri/parent/2/child")) {
             @Override
             public String[] getTableFields() {
                 return null;
             }
         };
-        assertEquals(c.getParentColumnName(), "parent_id");
-        assertEquals(c.getTableName(), "child");
-        c.setUri(Uri.parse("content://uri/parent/#/child"));
-        assertEquals(c.getParentColumnName(), "parent_id");
-        assertEquals(c.getTableName(), "child");
+    }
+
+    @Test
+    public void testParentTableName() throws Exception {
+        assertEquals(cut.getParentColumnName(), "parent_id");
+        assertEquals(cut.getTableName(), "child");
+        cut.setUri(Uri.parse("content://uri/parent/#/child"));
+        assertEquals(cut.getParentColumnName(), "parent_id");
+        assertEquals(cut.getTableName(), "child");
+    }
+
+    @Test
+    public void testTrigger() throws Exception {
+        final String expected = "CREATE TRIGGER delete_parent BEFORE DELETE ON parent FOR EACH ROW BEGIN DELETE from child WHERE parent_id = OLD._id; END;";
+        assertEquals(expected, SQLiteUtil.getDeleteTrigger("parent", "_id", "child", "parent_id"));
     }
 }

@@ -9,7 +9,6 @@ import novoda.rest.parsers.Node;
 import android.net.Uri;
 
 public abstract class UriTableCreator implements SQLiteTableCreator {
-
     private Uri uri;
 
     private List<String> pathSegments;
@@ -31,6 +30,14 @@ public abstract class UriTableCreator implements SQLiteTableCreator {
     }
 
     @Override
+    public String getParentTableName() {
+        if (isOneToMany()) {
+            return pathSegments.get(pathSegments.size() - 3);
+        }
+        return null;
+    }
+
+    @Override
     public SQLiteType getParentType() {
         return SQLiteType.INTEGER;
     }
@@ -45,13 +52,24 @@ public abstract class UriTableCreator implements SQLiteTableCreator {
         return pathSegments.get(pathSegments.size() - 1);
     }
 
+    /**
+     * By default, we will delete all relationship on INSERT, UPDATE, DELETE as
+     * we would expect the parent node to contain the one to many relationship
+     * and reinsert the children into the database. This is a safe approach
+     * rather then updating or appending values.
+     */
     @Override
     public String[] getTriggers() {
         if (isOneToMany()) {
-            getParentColumnName();
-            
+            return SQLiteUtil.getTriggers(getParentTableName(), getParentPrimaryKey(),
+                    getTableName(), getParentColumnName());
         }
         return null;
+    }
+
+    @Override
+    public String getParentPrimaryKey() {
+        return "_id";
     }
 
     @Override
@@ -115,6 +133,10 @@ public abstract class UriTableCreator implements SQLiteTableCreator {
     }
 
     public static SQLiteTableCreator fromUriAndNode(final Uri uri, Node<?> node) {
+        return null;
+    }
+    
+    public String createAlterStatement(Node<?> node) {
         return null;
     }
 }
