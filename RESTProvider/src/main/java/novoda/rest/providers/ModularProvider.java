@@ -3,8 +3,9 @@ package novoda.rest.providers;
 
 import novoda.rest.cursors.EmptyCursor;
 import novoda.rest.database.ModularSQLiteOpenHelper;
-import novoda.rest.database.SQLiteTableCreator;
 import novoda.rest.database.SQLiteInserter;
+import novoda.rest.database.SQLiteTableCreator;
+import novoda.rest.database.UriQueryBuilder;
 import novoda.rest.services.RESTCallService;
 import novoda.rest.utils.DatabaseUtils;
 
@@ -76,28 +77,23 @@ public abstract class ModularProvider extends ContentProvider {
     @Override
     public Cursor query(Uri uri, String[] projection, String selection, String[] selectionArgs,
             String sortOrder) {
-        Log.i(TAG, getTableCreator(uri).getTableName());
-        dbHelper.createTable(getTableCreator(uri));
 
-        SQLiteQueryBuilder qBuilder = new SQLiteQueryBuilder();
-        qBuilder.setTables(getTableCreator(uri).getTableName());
-
+        SQLiteQueryBuilder qBuilder = UriQueryBuilder.fromUri(uri);
+        
         // Make the query.
         Cursor c = null;
         try {
             c = qBuilder.query(dbHelper.getReadableDatabase(), projection, selection,
                     selectionArgs, null, null, sortOrder);
         } catch (SQLiteException e) {
-            Log.i(TAG, "no table created yet");
+            Log.i(TAG, "no table created yet for uri " + uri.toString());
             if (e.getMessage().contains("no such table")) {
                 c = new EmptyCursor();
             }
         }
-
         c.setNotificationUri(getContext().getContentResolver(), uri);
-
         String query = uri.getQueryParameter("query");
-        if (query.equals("remote")) {
+        if (true) {
             Intent intent = new Intent(getContext(), getService().getClass());
             intent.setAction(RESTCallService.ACTION_QUERY);
             intent.setData(uri);
@@ -112,6 +108,7 @@ public abstract class ModularProvider extends ContentProvider {
 
     protected abstract RESTCallService getService();
 
+    //TODO ??
     protected abstract SQLiteTableCreator getTableCreator(final Uri uri);
 
     protected SQLiteOpenHelper getSQLiteOpenHelper(Context context) {
@@ -124,8 +121,7 @@ public abstract class ModularProvider extends ContentProvider {
     }
 
     public void create(SQLiteTableCreator creator) {
-        dbHelper.getWritableDatabase().compileStatement(DatabaseUtils.getCreateStatement(creator))
-                .execute();
+        dbHelper.createTable(creator);
     }
 
     public void create(Uri creator) {

@@ -5,7 +5,6 @@ import novoda.rest.database.SQLiteTableCreator;
 import novoda.rest.database.SQLiteType;
 
 import android.content.ContentValues;
-import android.net.Uri;
 
 import java.util.Map.Entry;
 

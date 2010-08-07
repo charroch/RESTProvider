@@ -27,7 +27,7 @@ public abstract class Node<T> {
         public String nodeName;
 
         public String table;
-        
+
         public Uri insertUri;
 
         public Map<String, String> mapper = new HashMap<String, String>();
@@ -164,6 +164,8 @@ public abstract class Node<T> {
      * @return the node at the specified index
      */
     abstract public Node<T> getNode(int index);
-    
+
     abstract public void applyOptions(Options options);
+
+    abstract public String[] getColumns();
 }

@@ -22,21 +22,24 @@ public class UriTableCreatorTest {
     public void initRequestMocks() throws IOException {
         MockitoAnnotations.initMocks(this);
         RESTProvider.DEBUG = false;
-        cut = new UriTableCreator(Uri.parse("content://uri/parent/2/child")) {
-            @Override
-            public String[] getTableFields() {
-                return null;
-            }
-        };
+        cut = new UriTableCreator(Uri.parse("content://uri/parent/2/child"));
     }
 
     @Test
     public void testParentTableName() throws Exception {
         assertEquals(cut.getParentColumnName(), "parent_id");
         assertEquals(cut.getTableName(), "child");
+        
         cut.setUri(Uri.parse("content://uri/parent/#/child"));
         assertEquals(cut.getParentColumnName(), "parent_id");
         assertEquals(cut.getTableName(), "child");
+
+        cut.setUri(Uri.parse("content://uri/parent/#/child/"));
+        assertEquals(cut.getParentColumnName(), "parent_id");
+        assertEquals(cut.getTableName(), "child");
+        
+        cut.setUri(Uri.parse("content://uri/parent"));
+        assertEquals(cut.getTableName(), "parent");
     }
 
     @Test

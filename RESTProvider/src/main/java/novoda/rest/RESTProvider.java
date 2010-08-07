@@ -3,7 +3,6 @@ package novoda.rest;
 
 import novoda.rest.auth.OAuthOnSharedPreferenceChangeListener;
 import novoda.rest.cursors.ErrorCursor;
-import novoda.rest.cursors.One2ManyMapping;
 import novoda.rest.interceptors.OAuthInterceptor;
 import novoda.rest.interceptors.OAuthPreferences;
 import novoda.rest.logging.DebugLogConfig;
@@ -37,7 +36,6 @@ import android.util.Log;
 
 import java.io.IOException;
 import java.net.ConnectException;
-import java.util.Arrays;
 
 /**
  * Note: some code is taken from droidfu by Mathias Kaeppler:

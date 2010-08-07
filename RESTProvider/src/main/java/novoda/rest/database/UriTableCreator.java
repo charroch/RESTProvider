@@ -1,14 +1,16 @@
 
 package novoda.rest.database;
 
+import novoda.rest.parsers.Node;
+
+import android.net.Uri;
+
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
-import novoda.rest.parsers.Node;
-import android.net.Uri;
+public class UriTableCreator implements SQLiteTableCreator {
 
-public abstract class UriTableCreator implements SQLiteTableCreator {
     private Uri uri;
 
     private List<String> pathSegments;
@@ -74,6 +76,9 @@ public abstract class UriTableCreator implements SQLiteTableCreator {
 
     @Override
     public SQLiteType getType(String field) {
+        if (field.equals("_id")) {
+            return SQLiteType.INTEGER;
+        }
         return SQLiteType.TEXT;
     }
 
@@ -110,7 +115,7 @@ public abstract class UriTableCreator implements SQLiteTableCreator {
 
     @Override
     public boolean shouldPKAutoIncrement() {
-        if (getPrimaryKey() == null) {
+        if (getPrimaryKey() == null || getPrimaryKey().equals("_id")) {
             return true;
         }
         return false;
@@ -129,14 +134,32 @@ public abstract class UriTableCreator implements SQLiteTableCreator {
     }
 
     public static SQLiteTableCreator fromUri(final Uri uri) {
-        return null;
+        UriTableCreator utc = new UriTableCreator(uri) {
+        };
+        return utc;
     }
 
-    public static SQLiteTableCreator fromUriAndNode(final Uri uri, Node<?> node) {
-        return null;
+    public static SQLiteTableCreator fromNode(final Node<?> node) {
+        if (node.getOptions().insertUri == null) {
+            throw new IllegalStateException("can not create a table without a URI attach to a node");
+        }
+        return new UriTableCreator(node.getOptions().insertUri) {
+            @Override
+            public String[] getTableFields() {
+                return node.getColumns();
+            }
+        };
     }
-    
+
     public String createAlterStatement(Node<?> node) {
-        return null;
+        throw new UnsupportedOperationException("not implemented");
+    }
+
+    // TODO?
+    @Override
+    public String[] getTableFields() {
+        return new String[] {
+            getPrimaryKey()
+        };
     }
 }

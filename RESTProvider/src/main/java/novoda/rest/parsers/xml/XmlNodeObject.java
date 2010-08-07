@@ -6,6 +6,7 @@ import novoda.rest.parsers.Node;
 
 import android.content.ContentValues;
 
+import java.util.List;
 import java.util.Map.Entry;
 
 public class XmlNodeObject extends Node<XMLNode> {
@@ -99,5 +100,14 @@ public class XmlNodeObject extends Node<XMLNode> {
     @Override
     public boolean shouldInsert() {
         return true;
+    }
+
+    @Override
+    public String[] getColumns() {
+        List<String> fields = data.getFieldsName(); 
+        if (getParent() != null) {
+            fields.add(getParent().getTableName() + "_id");
+        }
+        return fields.toArray(new String[]{});
     }
 }

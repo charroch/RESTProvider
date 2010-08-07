@@ -114,6 +114,16 @@ public class TwitterService extends RESTCallService {
                 public boolean shouldPKAutoIncrement() {
                     return false;
                 }
+
+                public String getParentPrimaryKey() {
+                    // TODO Auto-generated method stub
+                    return null;
+                }
+
+                public String getParentTableName() {
+                    // TODO Auto-generated method stub
+                    return null;
+                }
             };
         }
         
@@ -171,6 +181,16 @@ public class TwitterService extends RESTCallService {
 
             public boolean shouldPKAutoIncrement() {
                 return true;
+            }
+
+            public String getParentPrimaryKey() {
+                // TODO Auto-generated method stub
+                return null;
+            }
+
+            public String getParentTableName() {
+                // TODO Auto-generated method stub
+                return null;
             }
         };
     }

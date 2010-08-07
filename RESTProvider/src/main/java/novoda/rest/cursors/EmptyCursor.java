@@ -9,7 +9,6 @@ import android.database.AbstractCursor;
 import android.database.CharArrayBuffer;
 import android.database.ContentObserver;
 import android.database.CursorWindow;
-import android.database.DataSetObservable;
 import android.database.DataSetObserver;
 import android.net.Uri;
 import android.os.Bundle;
@@ -239,5 +238,4 @@ public class EmptyCursor extends AbstractCursor {
     public void unregisterDataSetObserver(DataSetObserver observer) {
         super.unregisterDataSetObserver(observer);
     }
-
 }

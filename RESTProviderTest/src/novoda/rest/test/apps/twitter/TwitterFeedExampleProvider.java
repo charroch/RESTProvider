@@ -85,6 +85,16 @@ public class TwitterFeedExampleProvider extends ModularProvider {
             public boolean shouldPKAutoIncrement() {
                 return true;
             }
+
+            public String getParentPrimaryKey() {
+                // TODO Auto-generated method stub
+                return null;
+            }
+
+            public String getParentTableName() {
+                // TODO Auto-generated method stub
+                return null;
+            }
         };
     }
 

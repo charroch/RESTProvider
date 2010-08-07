@@ -7,7 +7,9 @@ import org.codehaus.jackson.JsonNode;
 
 import android.content.ContentValues;
 
+import java.util.ArrayList;
 import java.util.Iterator;
+import java.util.List;
 import java.util.Map.Entry;
 
 public class JsonNodeObject extends Node<JsonNode> {
@@ -84,9 +86,7 @@ public class JsonNodeObject extends Node<JsonNode> {
         }
         if (options.children != null) {
             if (isArray) {
-//                for (int i = 0; i < getCount(); i++) {
-//                    applyOptionsChild(options, (JsonNodeObject) getNode(i));
-//                }
+                // do nothing
             } else {
                 applyOptionsChild(options, this);
             }
@@ -97,15 +97,27 @@ public class JsonNodeObject extends Node<JsonNode> {
     }
     
     public void applyOptionsChild(Options options, JsonNodeObject node) {
-        
         for (Entry<String, Options> entry : options.children.entrySet()) {
-            
             JsonNode child = node.data.path(entry.getKey());
             JsonNodeObject childNode = new JsonNodeObject(child);
-            
             childNode.applyOptions(entry.getValue());
             node.addChild(childNode);
-            
         }
+    }
+    
+    @Override
+    public String[] getColumns() {
+        Iterator<String> fields = data.getFieldNames();
+        List<String> values = new ArrayList<String>();
+        String field = null;
+        while (fields.hasNext()) {
+            field = fields.next();
+            // Do some XPath stuff here
+            if (getOptions().children.containsKey(field)){
+                continue;
+            }
+            values.add(field);
+        }
+        return values.toArray(new String[]{});
     }
 }

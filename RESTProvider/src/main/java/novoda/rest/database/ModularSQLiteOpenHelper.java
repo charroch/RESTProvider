@@ -25,14 +25,15 @@ public class ModularSQLiteOpenHelper extends SQLiteOpenHelper {
 
     private static final String CREATE_TABLE_STATUS = "CREATE TABLE IF NOT EXISTS "
             + TABLE_STATUS_NAME + "(_id INTEGER PRIMARY KEY AUTOINCREMENT,"
-            + " uri TEXT NOT NULL, " + "status INTEGER NOT NULL, " + "createdAt INTEGER NOT NULL, "
+            + " uri TEXT NOT NULL, " + "status INTEGER NOT NULL, " + "etag TEXT, "
+            + "lastModified TEXT, " + "contentLenght INTEGER, " + "createdAt INTEGER NOT NULL, "
             + "updatedAt INTEGER);";
 
     private List<String> createdTable = new ArrayList<String>();
 
     private Map<String, SQLiteTableCreator> createStatements = new HashMap<String, SQLiteTableCreator>();
 
-    private static int dbVersion = 2;
+    private static int dbVersion = 3;
 
     public ModularSQLiteOpenHelper(Context context) {
         super(context, new StringBuilder(context.getApplicationInfo().packageName).append(".db")
@@ -60,7 +61,13 @@ public class ModularSQLiteOpenHelper extends SQLiteOpenHelper {
                 // todo alter
             } else {
                 Log.v(TAG, "Creating table: " + entry.getKey());
-                db.execSQL(DatabaseUtils.getCreateStatement(entry.getValue()));
+                SQLiteTableCreator creator = entry.getValue();
+                db.execSQL(DatabaseUtils.getCreateStatement(creator));
+                if (creator.isOneToMany()) {
+                    for (String trigger : creator.getTriggers()) {
+                        db.execSQL(trigger);
+                    }
+                }
                 createdTable.add(entry.getKey());
             }
         }
@@ -73,7 +80,27 @@ public class ModularSQLiteOpenHelper extends SQLiteOpenHelper {
             Log.v(TAG, "Will create table " + creator.getTableName());
             createStatements.put(creator.getTableName(), creator);
             getWritableDatabase().needUpgrade(++dbVersion);
-           // onUpgrade(getWritableDatabase(), 0, 1);
+            onUpgrade(getWritableDatabase(), 0, 99);
         }
+    }
+
+    /**
+     * Method to return the columns and type for a specific table
+     * 
+     * @param table, the table name against which we want the columns
+     * @return a map containing all columns and their type
+     */
+    public Map<String, SQLiteType> getColumnsForTable(final String table) {
+        Cursor cur = getReadableDatabase().rawQuery(
+                new StringBuilder("PRAGMA table_info('").append(table).append("')").toString(),
+                null);
+        Map<String, SQLiteType> ret = new HashMap<String, SQLiteType>(cur.getCount());
+        while (cur.moveToNext()) {
+            // TODO should we get something else then SQLiteTypes?
+            ret.put(cur.getString(cur.getColumnIndexOrThrow("name")), SQLiteType.valueOf(cur
+                    .getString(cur.getColumnIndexOrThrow("type"))));
+        }
+        cur.close();
+        return ret;
     }
 }

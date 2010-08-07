@@ -2,6 +2,7 @@
 package novoda.rest.services;
 
 import novoda.rest.UriRequestMap;
+import novoda.rest.database.UriTableCreator;
 import novoda.rest.parsers.Node;
 import novoda.rest.providers.ModularProvider;
 import novoda.rest.utils.AndroidHttpClient;
@@ -68,7 +69,7 @@ public abstract class RESTCallService extends IntentService implements UriReques
                         projection, selection, selectionArg, sortOrder)), getParser(uri));
                 insertNodeIntoDatabase(root, provider);
             } catch (IOException e) {
-                e.printStackTrace();
+                Log.e(TAG, "something went wrong", e);
             }
         }
         getBaseContext().getContentResolver().notifyChange(uri, null);
@@ -79,7 +80,9 @@ public abstract class RESTCallService extends IntentService implements UriReques
         final int size = root.getCount();
         for (int i = 0; i < size; i++) {
             Node<?> current = root.getNode(i);
-            provider.create(current.getOptions().insertUri);
+
+            provider.create(UriTableCreator.fromNode(current));
+            
             ContentValues values = current.getContentValue();
             current.onPreInsert(values);
             Node<?> f = current.getParent();

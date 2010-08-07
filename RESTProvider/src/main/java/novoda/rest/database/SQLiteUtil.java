@@ -1,6 +1,7 @@
 
 package novoda.rest.database;
 
+
 public class SQLiteUtil {
 
     private static final short DELETE = 0;
@@ -13,10 +14,11 @@ public class SQLiteUtil {
             final String childTable, final String parentFKName) {
         return new String[] {
                 getUpdateTrigger(parentTable, parentPKName, childTable, parentFKName),
-                getInsertTrigger(parentTable, parentPKName, childTable, parentFKName),
-                getDeleteTrigger(parentTable, parentPKName, childTable, parentFKName)};
+                //getInsertTrigger(parentTable, parentPKName, childTable, parentFKName),
+                getDeleteTrigger(parentTable, parentPKName, childTable, parentFKName)
+        };
     }
-    
+
     public static String getUpdateTrigger(final String parentTable, final String parentPKName,
             final String childTable, final String parentFKName) {
         return SQLiteUtil.getTrigger(UPDATE, parentTable, parentPKName, childTable, parentFKName);
@@ -52,7 +54,7 @@ public class SQLiteUtil {
         }
         buf.append(typeString.toLowerCase()).append("_").append(parentTable);
         buf.append(" BEFORE ").append(typeString).append(" ON ").append(parentTable).append(
-                " FOR EACH ROW BEGIN ").append(typeString).append(" from ").append(childTable)
+                " FOR EACH ROW BEGIN ").append("DELETE").append(" from ").append(childTable)
                 .append(" WHERE ").append(parentFKName).append(" = OLD.").append(parentPKName)
                 .append("; END;");
         return buf.toString();
