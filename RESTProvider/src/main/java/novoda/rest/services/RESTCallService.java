@@ -4,13 +4,12 @@ package novoda.rest.services;
 import novoda.rest.UriRequestMap;
 import novoda.rest.database.CachingStrategy;
 import novoda.rest.database.ModularSQLiteOpenHelper;
+import novoda.rest.database.SQLiteTableCreator;
 import novoda.rest.database.UriTableCreator;
 import novoda.rest.parsers.Node;
-import novoda.rest.providers.ModularProvider;
 import novoda.rest.utils.AndroidHttpClient;
 
 import android.app.IntentService;
-import android.content.ContentProviderClient;
 import android.content.ContentValues;
 import android.content.Intent;
 import android.net.Uri;
@@ -19,21 +18,13 @@ import android.util.Log;
 
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 
 public abstract class RESTCallService extends IntentService implements UriRequestMap,
         CachingStrategy {
 
     private static final String TAG = RESTCallService.class.getSimpleName();
-
-    public RESTCallService() {
-        this(TAG);
-    }
-
-    public RESTCallService(String name) {
-        super(name);
-        // dbHelper = new ModularSQLiteOpenHelper(getBaseContext());
-    }
 
     public static final String BUNDLE_SORT_ORDER = "sortOrder";
 
@@ -51,20 +42,33 @@ public abstract class RESTCallService extends IntentService implements UriReques
 
     public static final String ACTION_DELETE = "novoda.rest.action.ACTION_DELETE";
 
-    protected static AndroidHttpClient httpClient;
-
-    private ModularSQLiteOpenHelper dbHelper;
-
     static {
         setupHttpClient();
     }
 
+    private static void setupHttpClient() {
+        httpClient = AndroidHttpClient.newInstance("Android/RESTProvider");
+    }
+
+    public RESTCallService() {
+        this(TAG);
+    }
+
+    public RESTCallService(String name) {
+        super(name);
+    }
+
+    protected static AndroidHttpClient httpClient;
+
+    private ModularSQLiteOpenHelper dbHelper;
+
     @Override
     protected void onHandleIntent(Intent intent) {
+
         if (dbHelper == null) {
             dbHelper = new ModularSQLiteOpenHelper(getBaseContext());
         }
-        
+
         Bundle bundle = intent.getExtras();
 
         final Uri uri = intent.getData();
@@ -75,17 +79,21 @@ public abstract class RESTCallService extends IntentService implements UriReques
             final String selection = bundle.getString(BUNDLE_SELECTION);
             final String[] selectionArg = bundle.getStringArray(BUNDLE_SELECTION_ARG);
             final String sortOrder = bundle.getString(BUNDLE_SORT_ORDER);
-            ContentProviderClient client = getContentResolver().acquireContentProviderClient(uri);
-            ModularProvider provider = (ModularProvider) client.getLocalContentProvider();
             try {
                 Node<?> root = httpClient.execute(getRequest(uri, INSERT, getQueryParams(uri,
                         projection, selection, selectionArg, sortOrder)), getParser(uri));
 
-                if (onNewResults(uri) == CachingStrategy.REPLACE) {
+                if (onNewResults(uri) == CachingStrategy.REPLACE
+                        && dbHelper.isTableCreated(root.getTableName())) {
                     dbHelper.getWritableDatabase().delete(root.getTableName(), null, null);
                 }
 
-                insertNodeIntoDatabase(root, provider);
+                insertNodeIntoDatabase(root);
+
+                if (listener != null) {
+                    listener.onFinish(uri);
+                }
+
             } catch (IOException e) {
                 Log.e(TAG, "something went wrong", e);
             }
@@ -94,12 +102,26 @@ public abstract class RESTCallService extends IntentService implements UriReques
         getBaseContext().sendBroadcast(new Intent("novoda.rest.action.QUERY_COMPLETE"));
     }
 
-    private void insertNodeIntoDatabase(Node<?> root, ModularProvider provider) {
+    @Override
+    public void onDestroy() {
+        httpClient.close();
+        super.onDestroy();
+    }
+
+    private void insertNodeIntoDatabase(Node<?> root) {
         final int size = root.getCount();
         for (int i = 0; i < size; i++) {
             Node<?> current = root.getNode(i);
 
-            provider.create(UriTableCreator.fromNode(current));
+            SQLiteTableCreator creator = UriTableCreator.fromNode(current);
+
+            if (listener != null) {
+                listener.onPreTableCreate(creator);
+                Log.i(TAG, Arrays.toString(creator.getTableFields()));
+                Log.i(TAG, creator +" ");
+            }
+
+            dbHelper.createTable(creator);
 
             ContentValues values = current.getContentValue();
             current.onPreInsert(values);
@@ -109,22 +131,25 @@ public abstract class RESTCallService extends IntentService implements UriReques
                 values.put(f.getIdFieldName(), f.getDatabaseId());
             }
 
-            long id = provider.insert(current.getTableName(), values);
+            if (listener != null) {
+                listener.onPreInsert(root.getOptions().insertUri, values);
+            }
+
+            long id = dbHelper.getWritableDatabase().insert(current.getTableName(), "", values);
             current.onPostInsert(id);
             if (id > 0) {
                 for (Node<?> child : current.getChildren()) {
-                    insertNodeIntoDatabase(child, provider);
+                    insertNodeIntoDatabase(child);
                 }
             }
         }
     }
 
-    private static void setupHttpClient() {
-        httpClient = AndroidHttpClient.newInstance("Android/RESTProvider");
+    public void setInsertTransactionListener(InsertTransactionListener listener) {
+        this.listener = listener;
     }
 
-    public void setInsertTransactionListener(InsertTransactionListener listener) {
-    }
+    private InsertTransactionListener listener;
 
     public void addNodeProcessor(NodeProcessor processor) {
         this.addNodeProcessor(-1, processor);

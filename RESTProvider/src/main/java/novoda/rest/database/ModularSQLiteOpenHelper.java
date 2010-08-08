@@ -105,6 +105,17 @@ public class ModularSQLiteOpenHelper extends SQLiteOpenHelper implements ETag {
         return ret;
     }
 
+    /**
+     * Utility method to check if a table has been created in the database or
+     * not.
+     * 
+     * @param tableName, the table to check if created or not
+     * @return true if the table has been created. false otherwise
+     */
+    public boolean isTableCreated(final String tableName) {
+        return createStatements.containsKey(tableName);
+    }
+
     @Override
     public String getEntityTag(String request) {
         // TODO Auto-generated method stub
@@ -120,6 +131,5 @@ public class ModularSQLiteOpenHelper extends SQLiteOpenHelper implements ETag {
     @Override
     public void save(String getRequest, String lastModified, String etag) {
         // TODO Auto-generated method stub
-        
     }
 }
