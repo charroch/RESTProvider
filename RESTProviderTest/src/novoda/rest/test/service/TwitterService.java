@@ -200,4 +200,9 @@ public class TwitterService extends RESTCallService {
         return null;
     }
 
+    public int onNewResults(Uri uri) {
+        // TODO Auto-generated method stub
+        return 0;
+    }
+
 }

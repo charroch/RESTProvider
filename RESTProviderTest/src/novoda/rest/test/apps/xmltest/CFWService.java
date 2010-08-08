@@ -1,6 +1,7 @@
 
 package novoda.rest.test.apps.xmltest;
 
+import novoda.rest.database.CachingStrategy;
 import novoda.rest.database.SQLiteTableCreator;
 import novoda.rest.database.UriTableCreator;
 import novoda.rest.parsers.NodeParser;
@@ -61,5 +62,9 @@ public class CFWService extends RESTCallService {
     public List<NameValuePair> getUpdateParams(Uri uri, ContentValues values, String selection,
             String[] selectionArg) {
         return null;
+    }
+
+    public int onNewResults(Uri uri) {
+        return CachingStrategy.REPLACE;
     }
 }

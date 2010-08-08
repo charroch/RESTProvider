@@ -2,6 +2,8 @@
 package novoda.rest.services;
 
 import novoda.rest.UriRequestMap;
+import novoda.rest.database.CachingStrategy;
+import novoda.rest.database.ModularSQLiteOpenHelper;
 import novoda.rest.database.UriTableCreator;
 import novoda.rest.parsers.Node;
 import novoda.rest.providers.ModularProvider;
@@ -16,8 +18,11 @@ import android.os.Bundle;
 import android.util.Log;
 
 import java.io.IOException;
+import java.util.ArrayList;
+import java.util.List;
 
-public abstract class RESTCallService extends IntentService implements UriRequestMap {
+public abstract class RESTCallService extends IntentService implements UriRequestMap,
+        CachingStrategy {
 
     private static final String TAG = RESTCallService.class.getSimpleName();
 
@@ -27,6 +32,7 @@ public abstract class RESTCallService extends IntentService implements UriReques
 
     public RESTCallService(String name) {
         super(name);
+        // dbHelper = new ModularSQLiteOpenHelper(getBaseContext());
     }
 
     public static final String BUNDLE_SORT_ORDER = "sortOrder";
@@ -47,15 +53,22 @@ public abstract class RESTCallService extends IntentService implements UriReques
 
     protected static AndroidHttpClient httpClient;
 
+    private ModularSQLiteOpenHelper dbHelper;
+
     static {
         setupHttpClient();
     }
 
     @Override
     protected void onHandleIntent(Intent intent) {
+        if (dbHelper == null) {
+            dbHelper = new ModularSQLiteOpenHelper(getBaseContext());
+        }
+        
         Bundle bundle = intent.getExtras();
-        Uri uri = intent.getData();
-        String action = intent.getAction();
+
+        final Uri uri = intent.getData();
+        final String action = intent.getAction();
 
         if (action.equals(ACTION_QUERY)) {
             final String[] projection = bundle.getStringArray(BUNDLE_PROJECTION);
@@ -67,6 +80,11 @@ public abstract class RESTCallService extends IntentService implements UriReques
             try {
                 Node<?> root = httpClient.execute(getRequest(uri, INSERT, getQueryParams(uri,
                         projection, selection, selectionArg, sortOrder)), getParser(uri));
+
+                if (onNewResults(uri) == CachingStrategy.REPLACE) {
+                    dbHelper.getWritableDatabase().delete(root.getTableName(), null, null);
+                }
+
                 insertNodeIntoDatabase(root, provider);
             } catch (IOException e) {
                 Log.e(TAG, "something went wrong", e);
@@ -82,21 +100,17 @@ public abstract class RESTCallService extends IntentService implements UriReques
             Node<?> current = root.getNode(i);
 
             provider.create(UriTableCreator.fromNode(current));
-            
+
             ContentValues values = current.getContentValue();
             current.onPreInsert(values);
             Node<?> f = current.getParent();
 
             if (f != null) {
-                Log.i(TAG, "child: " + f.getIdFieldName());
-                Log.i(TAG, "child: " + f.getDatabaseId());
                 values.put(f.getIdFieldName(), f.getDatabaseId());
             }
 
-            Log.i(TAG, values.toString());
             long id = provider.insert(current.getTableName(), values);
             current.onPostInsert(id);
-
             if (id > 0) {
                 for (Node<?> child : current.getChildren()) {
                     insertNodeIntoDatabase(child, provider);
@@ -108,4 +122,24 @@ public abstract class RESTCallService extends IntentService implements UriReques
     private static void setupHttpClient() {
         httpClient = AndroidHttpClient.newInstance("Android/RESTProvider");
     }
+
+    public void setInsertTransactionListener(InsertTransactionListener listener) {
+    }
+
+    public void addNodeProcessor(NodeProcessor processor) {
+        this.addNodeProcessor(-1, processor);
+    }
+
+    public void addNodeProcessor(int index, NodeProcessor processor) {
+        if (nodeProcessor == null) {
+            nodeProcessor = new ArrayList<NodeProcessor>();
+        }
+        if (index < 0) {
+            nodeProcessor.add(processor);
+        } else {
+            nodeProcessor.add(index, processor);
+        }
+    }
+
+    private List<NodeProcessor> nodeProcessor;
 }

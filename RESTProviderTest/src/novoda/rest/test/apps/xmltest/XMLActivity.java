@@ -12,6 +12,7 @@ public class XMLActivity extends Activity {
     protected void onCreate(Bundle savedInstanceState) {
         Cursor cur = getContentResolver().query(Uri.parse("content://novoda.rest.test.xml/response"), null, null, null, null);
         DatabaseUtils.dumpCursor(cur);
+        cur.close();
         super.onCreate(savedInstanceState);
     }
 }

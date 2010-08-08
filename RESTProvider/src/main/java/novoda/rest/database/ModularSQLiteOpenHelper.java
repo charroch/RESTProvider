@@ -1,6 +1,7 @@
 
 package novoda.rest.database;
 
+import novoda.rest.net.ETag;
 import novoda.rest.utils.DatabaseUtils;
 
 import android.content.Context;
@@ -15,7 +16,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 
-public class ModularSQLiteOpenHelper extends SQLiteOpenHelper {
+public class ModularSQLiteOpenHelper extends SQLiteOpenHelper implements ETag {
 
     private static final String TAG = ModularSQLiteOpenHelper.class.getSimpleName();
 
@@ -102,5 +103,23 @@ public class ModularSQLiteOpenHelper extends SQLiteOpenHelper {
         }
         cur.close();
         return ret;
+    }
+
+    @Override
+    public String getEntityTag(String request) {
+        // TODO Auto-generated method stub
+        return null;
+    }
+
+    @Override
+    public String getLastModified(String request) {
+        // TODO Auto-generated method stub
+        return null;
+    }
+
+    @Override
+    public void save(String getRequest, String lastModified, String etag) {
+        // TODO Auto-generated method stub
+        
     }
 }
