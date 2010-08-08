@@ -38,8 +38,7 @@ public class CFWService extends RESTCallService {
         
         this.setInsertTransactionListener(new InsertTransactionListener() {
             
-            public void onPreTableCreate(SQLiteTableCreator creator) {
-                creator = new SQLiteTableCreatorWrapper(creator);
+            public void onPreTableCreate(SQLiteTableCreatorWrapper creator) {
                 ((SQLiteTableCreatorWrapper)creator).appendColumns(new String[] {"task"});
                 Log.i("TEST", "TEHIS s" + Arrays.toString(creator.getTableFields()));
             }

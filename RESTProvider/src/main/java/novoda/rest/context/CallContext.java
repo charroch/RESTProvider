@@ -26,7 +26,21 @@ public class CallContext implements Parcelable {
     WeakReference<Node<?>> node;
 
     Uri uri;
-    
+
+    int type;
+
+    String action;
+
+    Uri callingUri;
+
+    String[] projection;
+
+    String selection;
+
+    String[] selectionArg;
+
+    String sortOrder;
+
     ETag etag;
 
     @Override

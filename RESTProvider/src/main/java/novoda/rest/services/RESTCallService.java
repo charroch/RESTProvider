@@ -5,6 +5,7 @@ import novoda.rest.UriRequestMap;
 import novoda.rest.database.CachingStrategy;
 import novoda.rest.database.ModularSQLiteOpenHelper;
 import novoda.rest.database.SQLiteTableCreator;
+import novoda.rest.database.SQLiteTableCreatorWrapper;
 import novoda.rest.database.UriTableCreator;
 import novoda.rest.parsers.Node;
 import novoda.rest.utils.AndroidHttpClient;
@@ -113,12 +114,13 @@ public abstract class RESTCallService extends IntentService implements UriReques
         for (int i = 0; i < size; i++) {
             Node<?> current = root.getNode(i);
 
-            SQLiteTableCreator creator = UriTableCreator.fromNode(current);
+            SQLiteTableCreatorWrapper creator = new SQLiteTableCreatorWrapper(UriTableCreator
+                    .fromNode(current));
 
             if (listener != null) {
                 listener.onPreTableCreate(creator);
                 Log.i(TAG, Arrays.toString(creator.getTableFields()));
-                Log.i(TAG, creator +" ");
+                Log.i(TAG, creator + " ");
             }
 
             dbHelper.createTable(creator);

@@ -1,13 +1,13 @@
 
 package novoda.rest.services;
 
-import novoda.rest.database.SQLiteTableCreator;
+import novoda.rest.database.SQLiteTableCreatorWrapper;
 
 import android.content.ContentValues;
 import android.net.Uri;
 
 public interface InsertTransactionListener {
-    public void onPreTableCreate(SQLiteTableCreator creator);
+    public void onPreTableCreate(SQLiteTableCreatorWrapper creator);
 
     public void onPreInsert(final Uri uri, ContentValues values);
 
