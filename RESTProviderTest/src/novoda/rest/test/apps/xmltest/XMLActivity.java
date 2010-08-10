@@ -10,7 +10,7 @@ import android.os.Bundle;
 public class XMLActivity extends Activity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
-        Cursor cur = getContentResolver().query(Uri.parse("status://novoda.rest.test.xml/response"), null, null, null, null);
+        Cursor cur = getContentResolver().query(Uri.parse("content://novoda.rest.test.xml/response/1"), null, null, null, null);
         DatabaseUtils.dumpCursor(cur);
         cur.close();
         super.onCreate(savedInstanceState);

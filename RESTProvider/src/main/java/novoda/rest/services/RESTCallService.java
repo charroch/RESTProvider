@@ -4,11 +4,14 @@ package novoda.rest.services;
 import novoda.rest.UriRequestMap;
 import novoda.rest.database.CachingStrategy;
 import novoda.rest.database.ModularSQLiteOpenHelper;
-import novoda.rest.database.SQLiteTableCreator;
 import novoda.rest.database.SQLiteTableCreatorWrapper;
 import novoda.rest.database.UriTableCreator;
 import novoda.rest.parsers.Node;
+import novoda.rest.parsers.NodeParser;
 import novoda.rest.utils.AndroidHttpClient;
+
+import org.apache.http.HttpStatus;
+import org.apache.http.client.methods.HttpUriRequest;
 
 import android.app.IntentService;
 import android.content.ContentValues;
@@ -64,11 +67,15 @@ public abstract class RESTCallService extends IntentService implements UriReques
     private ModularSQLiteOpenHelper dbHelper;
 
     @Override
-    protected void onHandleIntent(Intent intent) {
-
+    public void onCreate() {
         if (dbHelper == null) {
             dbHelper = new ModularSQLiteOpenHelper(getBaseContext());
         }
+        super.onCreate();
+    }
+
+    @Override
+    protected void onHandleIntent(Intent intent) {
 
         Bundle bundle = intent.getExtras();
 
@@ -81,26 +88,58 @@ public abstract class RESTCallService extends IntentService implements UriReques
             final String[] selectionArg = bundle.getStringArray(BUNDLE_SELECTION_ARG);
             final String sortOrder = bundle.getString(BUNDLE_SORT_ORDER);
             try {
-                Node<?> root = httpClient.execute(getRequest(uri, INSERT, getQueryParams(uri,
-                        projection, selection, selectionArg, sortOrder)), getParser(uri));
+                QueryCallInfo info = null;
 
-                if (onNewResults(uri) == CachingStrategy.REPLACE
-                        && dbHelper.isTableCreated(root.getTableName())) {
-                    dbHelper.getWritableDatabase().delete(root.getTableName(), null, null);
+                HttpUriRequest request = getRequest(uri, INSERT, getQueryParams(uri, projection,
+                        selection, selectionArg, sortOrder));
+
+                NodeParser<?> parser = getParser(uri);
+
+                onPreCall(info, request, parser);
+
+                Node<?> root = httpClient.execute(request, parser);
+
+                if (parser.getStatusCode() == HttpStatus.SC_NOT_MODIFIED) {
+                    contentNotModified();
+                } else {
+                    onPostCall(info, root);
+
+                    if (onNewResults(uri) == CachingStrategy.REPLACE
+                            && dbHelper.isTableCreated(root.getTableName())) {
+                        dbHelper.getWritableDatabase().delete(root.getTableName(), null, null);
+                    }
+
+                    insertNodeIntoDatabase(root);
+
+                    if (listener != null) {
+                        listener.onFinish(uri);
+                    }
                 }
-
-                insertNodeIntoDatabase(root);
-
-                if (listener != null) {
-                    listener.onFinish(uri);
-                }
-
             } catch (IOException e) {
                 Log.e(TAG, "something went wrong", e);
             }
         }
         getBaseContext().getContentResolver().notifyChange(uri, null);
         getBaseContext().sendBroadcast(new Intent("novoda.rest.action.QUERY_COMPLETE"));
+    }
+
+    private void contentNotModified() {
+    }
+
+    private void onPostCall(QueryCallInfo info, Node<?> root) {
+        // TODO Auto-generated method stub
+
+    }
+
+    private void onPreCall(QueryCallInfo info, HttpUriRequest request, NodeParser<?> parser) {
+//        String etag = info.etag.etag;
+//        String lastModified = info.etag.lastModified;
+//
+//        request.setHeader(new BasicHeader(ETag.IF_NONE_MATCH, etag));
+//        request.setHeader(new BasicHeader(ETag.LAST_MODIFIED, lastModified));
+        // TODO Auto-generated method stub
+        // TODO set ETag, set GZip
+
     }
 
     @Override

@@ -14,7 +14,6 @@ import android.content.ContentValues;
 import android.content.Context;
 import android.content.Intent;
 import android.database.Cursor;
-import android.database.DatabaseUtils.InsertHelper;
 import android.database.sqlite.SQLiteException;
 import android.database.sqlite.SQLiteOpenHelper;
 import android.database.sqlite.SQLiteQueryBuilder;
@@ -41,30 +40,8 @@ public abstract class ModularProvider extends ContentProvider {
 
     @Override
     public Uri insert(Uri uri, ContentValues values) {
-        long ret = -1;
-        try {
-
-            ret = dbHelper.getWritableDatabase()
-                    .insertOrThrow(uri.getLastPathSegment(), "", values);
-
-        } catch (SQLiteException e) {
-            if (e.getMessage().contains("no such table")) {
-                // FIXME potential stack overflow
-                Log.v(TAG, "creating table: " + uri.getLastPathSegment());
-
-                DatabaseUtils.InsertHelper i = new InsertHelper(dbHelper.getWritableDatabase(),
-                        "test");
-
-                dbHelper.getWritableDatabase().execSQL(
-                        DatabaseUtils.contentValuestoTableCreate(values, getTableCreator(uri)
-                                .getTableName()));
-                return insert(uri, values);
-            }
-        }
-        if (ret != -1) {
-            getContext().getContentResolver().notifyChange(uri, null);
-            return uri.buildUpon().appendEncodedPath("" + ret).build();
-        }
+        // Do some sync logic here?
+        // if 
         throw new SQLiteException("Can not insert");
     }
 

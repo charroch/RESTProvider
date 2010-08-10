@@ -14,6 +14,8 @@ public class QueryCallInfo extends CallInfo implements Parcelable {
 
     public String sortOrder;
 
+    public String url;
+
     private QueryCallInfo(Parcel parcel) {
         super(parcel);
         parcel.readStringArray(projection);

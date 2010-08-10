@@ -26,9 +26,11 @@ public class ModularSQLiteOpenHelper extends SQLiteOpenHelper implements ETag {
 
     private static final String CREATE_TABLE_STATUS = "CREATE TABLE IF NOT EXISTS "
             + TABLE_STATUS_NAME + "(_id INTEGER PRIMARY KEY AUTOINCREMENT,"
-            + " uri TEXT NOT NULL, " + "status INTEGER NOT NULL, " + "etag TEXT, "
+            + " url TEXT NOT NULL, " + "status INTEGER NOT NULL, " + "etag TEXT, "
             + "lastModified TEXT, " + "contentLenght INTEGER, " + "createdAt INTEGER NOT NULL, "
             + "updatedAt INTEGER);";
+    
+    private static final String CREATE_TRIGGER_INSERT = ""; 
 
     private List<String> createdTable = new ArrayList<String>();
 
@@ -59,7 +61,6 @@ public class ModularSQLiteOpenHelper extends SQLiteOpenHelper implements ETag {
         for (Entry<String, SQLiteTableCreator> entry : createStatements.entrySet()) {
             if (createdTable.contains(entry.getKey())) {
                 Log.v(TAG, "Table " + entry.getKey() + " already in DB.");
-                // todo alter
             } else {
                 Log.v(TAG, "Creating table: " + entry.getKey());
                 SQLiteTableCreator creator = entry.getValue();
@@ -118,18 +119,15 @@ public class ModularSQLiteOpenHelper extends SQLiteOpenHelper implements ETag {
 
     @Override
     public String getEntityTag(String request) {
-        // TODO Auto-generated method stub
         return null;
     }
 
     @Override
     public String getLastModified(String request) {
-        // TODO Auto-generated method stub
         return null;
     }
 
     @Override
     public void save(String getRequest, String lastModified, String etag) {
-        // TODO Auto-generated method stub
     }
 }

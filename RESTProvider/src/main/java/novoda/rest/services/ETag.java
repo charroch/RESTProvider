@@ -23,6 +23,9 @@ public class ETag implements Parcelable {
         lastModified = parcel.readString();
     }
 
+    public ETag() {
+    }
+
     @Override
     public int describeContents() {
         return 0;

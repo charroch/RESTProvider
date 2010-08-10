@@ -1,9 +1,11 @@
 
 package novoda.rest.parsers;
 
+
 import novoda.rest.exception.ParserException;
 import novoda.rest.parsers.Node.Options;
 
+import org.apache.http.Header;
 import org.apache.http.HttpEntity;
 import org.apache.http.HttpResponse;
 import org.apache.http.HttpStatus;
@@ -16,6 +18,7 @@ import android.net.Uri;
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.Map;
+import java.util.zip.GZIPInputStream;
 
 public abstract class NodeParser<T extends Node<?>> implements ResponseHandler<T> {
 
@@ -37,20 +40,33 @@ public abstract class NodeParser<T extends Node<?>> implements ResponseHandler<T
         return HttpStatus.SC_OK;
     }
 
+    int statusCode = -1;
+
+    public int getStatusCode() {
+        return statusCode;
+    }
+
     @Override
     public T handleResponse(HttpResponse response) throws ClientProtocolException, IOException {
         if (response == null) {
             throw new IOException("Response can not be null");
         }
-
         final int statusCode = response.getStatusLine().getStatusCode();
         HttpEntity entity = null;
+        InputStream in = null;
         try {
+            this.statusCode = statusCode;
             if (statusCode == getExpectedResponse()) {
+                Header contentEncoding = response.getFirstHeader("Content-Encoding");
                 entity = new BufferedHttpEntity(response.getEntity());
-                return parse(entity.getContent(), options);
+                in = entity.getContent();
+                if (contentEncoding != null && contentEncoding.getValue().equalsIgnoreCase("gzip")) {
+                    in = new GZIPInputStream(in);
+                }
+                return parse(in, options);
             } else if (statusCode == HttpStatus.SC_NOT_MODIFIED) {
-                // TODO add etag support
+                // special case;
+                return null;
             }
         } catch (IllegalStateException e) {
             e.printStackTrace();
@@ -60,7 +76,6 @@ public abstract class NodeParser<T extends Node<?>> implements ResponseHandler<T
             if (entity != null) {
                 entity.consumeContent();
             }
-            // Should we broadcast?
         }
         throw new ParserException("unknown error");
     }
