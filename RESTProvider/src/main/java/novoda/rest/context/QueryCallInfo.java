@@ -1,6 +1,9 @@
 
-package novoda.rest.services;
+package novoda.rest.context;
 
+import novoda.rest.database.DatabaseUtils;
+import novoda.rest.services.CallInfo;
+import novoda.rest.services.ETag;
 import android.os.Parcel;
 import android.os.Parcelable;
 
@@ -43,10 +46,11 @@ public class QueryCallInfo extends CallInfo implements Parcelable {
         public QueryCallInfo createFromParcel(Parcel parcel) {
             return new QueryCallInfo(parcel);
         }
-
+        
         @Override
         public QueryCallInfo[] newArray(int size) {
             return new QueryCallInfo[size];
         }
     };
+
 }

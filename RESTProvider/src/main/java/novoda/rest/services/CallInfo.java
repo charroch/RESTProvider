@@ -114,6 +114,8 @@ public class CallInfo implements Parcelable {
      */
     public ETag etag;
 
+    public String url;
+
     @Override
     public int describeContents() {
         return 0;
@@ -130,6 +132,7 @@ public class CallInfo implements Parcelable {
         parcel.writeString(action);
         parcel.writeParcelable(insertingUri, parcelableFlags);
         parcel.writeParcelable(etag, parcelableFlags);
+        parcel.writeString(url);
     }
 
     public static final Parcelable.Creator<CallInfo> CREATOR = new Parcelable.Creator<CallInfo>() {
@@ -154,5 +157,6 @@ public class CallInfo implements Parcelable {
         action = source.readString();
         insertingUri = source.readParcelable(null);
         etag = source.readParcelable(null);
+        url = source.readString();
     }
 }

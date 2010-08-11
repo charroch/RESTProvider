@@ -2,6 +2,7 @@
 package novoda.rest.services;
 
 import novoda.rest.UriRequestMap;
+import novoda.rest.context.QueryCallInfo;
 import novoda.rest.database.CachingStrategy;
 import novoda.rest.database.ModularSQLiteOpenHelper;
 import novoda.rest.database.SQLiteTableCreatorWrapper;

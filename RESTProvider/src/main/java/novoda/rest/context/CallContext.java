@@ -4,7 +4,6 @@ package novoda.rest.context;
 import novoda.rest.database.DatabaseUtils;
 import novoda.rest.services.CallInfo;
 import novoda.rest.services.ETag;
-import novoda.rest.services.QueryCallInfo;
 import novoda.rest.utils.AndroidHttpClient;
 
 import org.apache.http.NameValuePair;
@@ -37,7 +36,7 @@ public abstract class CallContext {
         this.dbHelper = dbHelper;
     }
 
-    public final SQLiteOpenHelper getDbHelper() {
+    public final SQLiteOpenHelper getDBHelper() {
         return dbHelper;
     }
 
@@ -60,19 +59,11 @@ public abstract class CallContext {
     protected void setGzipEncoding(boolean active) {
     }
 
-    protected synchronized ETag getEtag() {
-        if (this instanceof QueryCallContext) {
-            return DatabaseUtils.etagForQuery(dbHelper.getReadableDatabase(),
-                    ((QueryCallInfo) info).url);
-        }
-        throw new IllegalStateException("ETag is only available for Query calls");
-    }
-
-    public void setInfo(CallInfo info) {
+    public void setCallInfo(CallInfo info) {
         this.info = info;
     }
 
-    public CallInfo getInfo() {
+    public CallInfo getCallInfo() {
         return info;
     }
 }
