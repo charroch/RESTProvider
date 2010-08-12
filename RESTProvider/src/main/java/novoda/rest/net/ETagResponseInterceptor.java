@@ -1,6 +1,8 @@
 
 package novoda.rest.net;
 
+import novoda.rest.services.ETag;
+
 import org.apache.http.Header;
 import org.apache.http.HttpException;
 import org.apache.http.HttpHost;
@@ -43,7 +45,7 @@ public class ETagResponseInterceptor implements HttpResponseInterceptor {
                     .getAttribute(ExecutionContext.HTTP_TARGET_HOST);
 
             final String request = targetHost.toURI().concat(reqWrapper.getRequestLine().getUri());
-            etag.save(request, lastModified.getValue(), etagHeader.getValue());
+           // etag.save(request, lastModified.getValue(), etagHeader.getValue());
         }
     }
 

@@ -16,11 +16,21 @@ public class CallResult implements Parcelable {
 
     public int status;
 
+    /**
+     * HTTP status code as received from the server call. This is useful for not
+     * modified ETag support.
+     */
+    public int httpStatusCode;
+
     public String message;
 
     public CallInfo call;
 
     private CallResult(Parcel parcel) {
+    }
+
+    public CallResult(int httpStatusCode) {
+        this.httpStatusCode = httpStatusCode;
     }
 
     @Override

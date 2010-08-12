@@ -1,30 +1,31 @@
 
 package novoda.rest.context;
 
-import novoda.rest.database.DatabaseUtils;
+import java.util.List;
+
+import novoda.rest.database.ModularSQLiteOpenHelper;
 import novoda.rest.services.CallInfo;
-import novoda.rest.services.ETag;
 import novoda.rest.utils.AndroidHttpClient;
 
 import org.apache.http.NameValuePair;
 import org.apache.http.client.HttpClient;
 import org.apache.http.client.methods.HttpUriRequest;
+import org.apache.http.protocol.HttpContext;
 
 import android.content.Context;
-import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteOpenHelper;
-
-import java.util.List;
 
 public abstract class CallContext {
 
     private static final String USER_AGENT = "android/RESTProvider";
 
-    private SQLiteOpenHelper dbHelper;
+    protected ModularSQLiteOpenHelper dbHelper;
 
     private Context context;
 
     private CallInfo info;
+    
+    protected HttpContext httpContext;
 
     public abstract HttpUriRequest getRequest(CallInfo info);
 
@@ -32,7 +33,7 @@ public abstract class CallContext {
 
     public abstract CallResult execute();
 
-    public void setDbHelper(SQLiteOpenHelper dbHelper) {
+    public void setDbHelper(ModularSQLiteOpenHelper dbHelper) {
         this.dbHelper = dbHelper;
     }
 

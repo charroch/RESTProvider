@@ -17,7 +17,7 @@ public interface CachingStrategy {
     public static int APPEND = 1;
 
     /*
-     * Does not cache. Just returns a Response into a Cursor.
+     * Does not cache. Just returns a Response into a Cursor. NOT SUPPORTED YET
      */
     public static int TRANSIENT = 2;
 
@@ -25,4 +25,7 @@ public interface CachingStrategy {
      * What to do when new results comes in.
      */
     public int onNewResults(Uri uri);
+    public int onNewResults();
+
+    public boolean shouldDeleteChildren();
 }

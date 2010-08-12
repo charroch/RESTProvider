@@ -1,22 +1,20 @@
 
 package novoda.rest.database;
 
-import novoda.rest.net.ETag;
-import novoda.rest.utils.DatabaseUtils;
-
-import android.content.Context;
-import android.database.Cursor;
-import android.database.sqlite.SQLiteDatabase;
-import android.database.sqlite.SQLiteOpenHelper;
-import android.util.Log;
-
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 
-public class ModularSQLiteOpenHelper extends SQLiteOpenHelper implements ETag {
+import novoda.rest.utils.DatabaseUtils;
+import android.content.Context;
+import android.database.Cursor;
+import android.database.sqlite.SQLiteDatabase;
+import android.database.sqlite.SQLiteOpenHelper;
+import android.util.Log;
+
+public class ModularSQLiteOpenHelper extends SQLiteOpenHelper {
 
     private static final String TAG = ModularSQLiteOpenHelper.class.getSimpleName();
 
@@ -29,8 +27,8 @@ public class ModularSQLiteOpenHelper extends SQLiteOpenHelper implements ETag {
             + " url TEXT NOT NULL, " + "status INTEGER NOT NULL, " + "etag TEXT, "
             + "lastModified TEXT, " + "contentLenght INTEGER, " + "createdAt INTEGER NOT NULL, "
             + "updatedAt INTEGER);";
-    
-    private static final String CREATE_TRIGGER_INSERT = ""; 
+
+    private static final String CREATE_TRIGGER_INSERT = "";
 
     private List<String> createdTable = new ArrayList<String>();
 
@@ -117,17 +115,4 @@ public class ModularSQLiteOpenHelper extends SQLiteOpenHelper implements ETag {
         return createStatements.containsKey(tableName);
     }
 
-    @Override
-    public String getEntityTag(String request) {
-        return null;
-    }
-
-    @Override
-    public String getLastModified(String request) {
-        return null;
-    }
-
-    @Override
-    public void save(String getRequest, String lastModified, String etag) {
-    }
 }
