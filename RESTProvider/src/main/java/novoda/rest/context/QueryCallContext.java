@@ -1,8 +1,6 @@
 
 package novoda.rest.context;
 
-import java.io.IOException;
-
 import novoda.rest.database.CachingStrategy;
 import novoda.rest.database.DatabaseUtils;
 import novoda.rest.database.SQLiteTableCreatorWrapper;
@@ -17,16 +15,18 @@ import org.apache.http.client.methods.HttpUriRequest;
 
 import android.content.ContentValues;
 import android.net.Uri;
+import android.util.Pair;
+
+import java.io.IOException;
 
 public abstract class QueryCallContext extends CallContext {
 
-    public abstract NodeParser<?> getParser();
-
     @Override
     public CallResult execute() {
-
-        HttpUriRequest request = getRequest(getCallInfo());
-        NodeParser<?> parser = getParser();
+        onStart();
+        final HttpUriRequest request = getRequest(getCallInfo());
+        final NodeParser<?> parser = getParser();
+        final CachingStrategy strategy = getCachingStrategy();
 
         onPreCall(request, parser);
 
@@ -38,9 +38,13 @@ public abstract class QueryCallContext extends CallContext {
             } else {
                 onPostCall(rootNode);
 
-                if (getCachingStrategy().onNewResults() == CachingStrategy.REPLACE
+                if (strategy.onNewResults(this) == CachingStrategy.REPLACE
                         && dbHelper.isTableCreated(rootNode.getTableName())) {
-                    dbHelper.getWritableDatabase().delete(rootNode.getTableName(), null, null);
+
+                    final Pair<String, String[]> where = strategy.getWhereClause(this);
+                    dbHelper.getWritableDatabase().delete(rootNode.getTableName(), where.first,
+                            where.second);
+
                 }
 
                 insertNodeIntoDatabase(rootNode);
@@ -54,8 +58,12 @@ public abstract class QueryCallContext extends CallContext {
         return null;
     }
 
+    private void onStart() {
+        // TODO
+    }
+
     private void onFinish() {
-        // TODO should be passed to superclass
+        // TODO
     }
 
     private void onPostCall(Node<?> rootNode) {
@@ -66,10 +74,9 @@ public abstract class QueryCallContext extends CallContext {
         // TODO
     }
 
-    private CachingStrategy getCachingStrategy() {
-        // TODO
-        return null;
-    }
+    abstract CachingStrategy getCachingStrategy();
+
+    abstract NodeParser<?> getParser();
 
     protected synchronized ETag getEtag() {
         return DatabaseUtils.etagForQuery(getDBHelper().getReadableDatabase(), getCallInfo().url);

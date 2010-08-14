@@ -1,0 +1,4 @@
+<?xml version="1.0" encoding="utf-8"?>
+<service xmlns:rest="http://novoda.github.com/RESTProvider/apk/res"
+	rest:name="test.com">
+</service>

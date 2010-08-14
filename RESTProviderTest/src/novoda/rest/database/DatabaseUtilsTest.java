@@ -3,7 +3,6 @@ package novoda.rest.database;
 
 import novoda.rest.services.ETag;
 
-import android.content.ContentValues;
 import android.database.sqlite.SQLiteDatabase;
 import android.test.AndroidTestCase;
 
@@ -35,10 +34,4 @@ public class DatabaseUtilsTest extends AndroidTestCase {
         assertEquals(e.etag, "");
         assertEquals(e.lastModified, "");
     }
-    
-    private void insertEtag(String etag, String lastModified, String query) {
-        ContentValues values = new ContentValues();
-        db.insert("call_status", null, values);
-    }
-
 }

@@ -87,7 +87,12 @@ public abstract class ModularProvider extends ContentProvider {
 
     //TODO ??
     protected abstract SQLiteTableCreator getTableCreator(final Uri uri);
-
+    
+    protected java.net.URI getRemoteURI(final Uri uri) {
+        return null;
+    }
+    
+    
     protected SQLiteOpenHelper getSQLiteOpenHelper(Context context) {
         return new ModularSQLiteOpenHelper(context);
     }

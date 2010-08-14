@@ -1,8 +1,6 @@
 
 package novoda.rest.context;
 
-import java.util.List;
-
 import novoda.rest.database.ModularSQLiteOpenHelper;
 import novoda.rest.services.CallInfo;
 import novoda.rest.utils.AndroidHttpClient;
@@ -15,7 +13,9 @@ import org.apache.http.protocol.HttpContext;
 import android.content.Context;
 import android.database.sqlite.SQLiteOpenHelper;
 
-public abstract class CallContext {
+import java.util.List;
+
+public abstract class CallContext implements Runnable {
 
     private static final String USER_AGENT = "android/RESTProvider";
 
@@ -24,7 +24,7 @@ public abstract class CallContext {
     private Context context;
 
     private CallInfo info;
-    
+
     protected HttpContext httpContext;
 
     public abstract HttpUriRequest getRequest(CallInfo info);
@@ -66,5 +66,14 @@ public abstract class CallContext {
 
     public CallInfo getCallInfo() {
         return info;
+    }
+
+    protected void finish() {
+        throw new UnsupportedOperationException("not implemented");
+    }
+    
+    @Override
+    public void run() {
+        execute();
     }
 }

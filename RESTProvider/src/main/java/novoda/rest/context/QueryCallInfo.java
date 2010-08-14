@@ -1,9 +1,8 @@
 
 package novoda.rest.context;
 
-import novoda.rest.database.DatabaseUtils;
 import novoda.rest.services.CallInfo;
-import novoda.rest.services.ETag;
+
 import android.os.Parcel;
 import android.os.Parcelable;
 

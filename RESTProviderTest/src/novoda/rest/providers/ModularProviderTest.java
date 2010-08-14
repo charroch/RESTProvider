@@ -3,10 +3,9 @@ package novoda.rest.providers;
 import android.content.ContentValues;
 import android.database.Cursor;
 import android.net.Uri;
-import novoda.rest.providers.ModularProvider;
-import novoda.rest.test.providers.ProviderTestCase3;
+import android.test.ProviderTestCase2;
 
-public class ModularProviderTest extends ProviderTestCase3<ModularProvider> {
+public class ModularProviderTest extends ProviderTestCase2<ModularProvider> {
 
     public ModularProviderTest(Class<ModularProvider> providerClass, String providerAuthority) {
         super(providerClass, providerAuthority);
