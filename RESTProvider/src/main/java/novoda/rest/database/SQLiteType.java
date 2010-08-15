@@ -1,4 +1,3 @@
-
 package novoda.rest.database;
 
 public enum SQLiteType {

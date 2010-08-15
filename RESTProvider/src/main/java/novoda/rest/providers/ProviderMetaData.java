@@ -15,11 +15,15 @@ public class ProviderMetaData implements Parcelable {
 
     private static final String SERVICE_TAG_ATR_NAME = "name";
 
+    private static final String CLAG_TAG_ATR_ENDPOINT = "endpoint";
+
     private static final String SERVICE_TAG = "service";
 
+    private static final String CLAG_TAG = "clag";
+
     public String serviceClassName;
-    
-    public int xml;
+
+    public ClagMetaData clag;
 
     public ProviderMetaData(Parcel parcel) {
         serviceClassName = parcel.readString();
@@ -58,7 +62,6 @@ public class ProviderMetaData implements Parcelable {
     };
 
     /* Processing XML methods */
-
     private void processDocument(XmlResourceParser xpp) throws XmlPullParserException, IOException {
         int eventType = xpp.getEventType();
         do {
@@ -67,8 +70,13 @@ public class ProviderMetaData implements Parcelable {
                 xpp.close();
             } else if (eventType == XmlResourceParser.START_TAG) {
 
+                // Default <service> tag
                 if (xpp.getName().equals(SERVICE_TAG)) {
                     processServiceTag(xpp);
+                }
+
+                if (xpp.getName().equals(CLAG_TAG)) {
+                    processClagTag(xpp);
                 }
 
             } else if (eventType == XmlResourceParser.END_TAG) {
@@ -77,6 +85,16 @@ public class ProviderMetaData implements Parcelable {
             }
             eventType = xpp.next();
         } while (eventType != XmlResourceParser.END_DOCUMENT);
+    }
+
+    /*
+     * Process the <clag> tag
+     */
+    private void processClagTag(XmlResourceParser xpp) {
+        Parcel parcel = Parcel.obtain();
+        parcel.writeString(xpp.getAttributeValue(NAMESPACE, CLAG_TAG_ATR_ENDPOINT));
+        clag = ClagMetaData.CREATOR.createFromParcel(parcel);
+        parcel.recycle();
     }
 
     /*

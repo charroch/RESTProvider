@@ -1,7 +1,10 @@
 
 package novoda.rest.providers;
 
+import novoda.rest.context.QueryCallInfo;
+import novoda.rest.database.ModularSQLiteOpenHelper;
 import novoda.rest.utils.Logger;
+import novoda.rest.utils.UriUtils;
 
 import org.xmlpull.v1.XmlPullParserException;
 
@@ -20,20 +23,33 @@ public class RESTProvider extends ContentProvider implements IRESTProvider {
 
     private static final String METADATA_NAME = "novoda.rest";
 
-    private ProviderMetaData metaData;
+    protected ProviderMetaData metaData;
 
     private Logger log;
+
+    ModularSQLiteOpenHelper db;
+
+    IRESTProvider remoteProvider;
+
+    private ProviderInfo providerInfo;
 
     @Override
     public boolean onCreate() {
         log = Logger.getLogger(this.getClass());
         try {
-            final ProviderInfo info = getContext().getPackageManager().resolveContentProvider(
+            providerInfo = getContext().getPackageManager().resolveContentProvider(
                     this.getClass().getCanonicalName(), PackageManager.GET_META_DATA);
 
-            final XmlResourceParser xml = info.loadXmlMetaData(getContext().getPackageManager(),
-                    METADATA_NAME);
+            final XmlResourceParser xml = providerInfo.loadXmlMetaData(getContext()
+                    .getPackageManager(), METADATA_NAME);
+
             metaData = ProviderMetaData.loadFromXML(xml);
+
+            if (metaData.clag != null) {
+                // create clag wrapper;
+                remoteProvider = new ClagProvider();
+            }
+
         } catch (XmlPullParserException e) {
             if (Logger.isErrorEnabled()) {
                 log.error("metada not well defined", e);
@@ -56,7 +72,7 @@ public class RESTProvider extends ContentProvider implements IRESTProvider {
     }
 
     @Override
-    public String getType(Uri arg0) {
+    public String getType(Uri uri) {
         return null;
     }
 
@@ -66,7 +82,12 @@ public class RESTProvider extends ContentProvider implements IRESTProvider {
     }
 
     @Override
-    public Cursor query(Uri arg0, String[] arg1, String arg2, String[] arg3, String arg4) {
+    public Cursor query(Uri uri, String[] projection, String selection, String[] selectionArgs,
+            String sortOrder) {
+        
+        if (UriUtils.isItem(getBaseURI(), uri)) {
+            
+        }
         return null;
     }
 
@@ -76,7 +97,7 @@ public class RESTProvider extends ContentProvider implements IRESTProvider {
     }
 
     @Override
-    public final Service getService() {
+    public Service getService() {
         if (metaData == null) {
             throw new IllegalStateException("No metadata attached to the provider,"
                     + " have you provided a meta-data tag in the manifest?");
@@ -93,5 +114,22 @@ public class RESTProvider extends ContentProvider implements IRESTProvider {
             e.printStackTrace();
         }
         throw new RuntimeException("Can not load service class");
+    }
+
+    @Override
+    public void query(QueryCallInfo query) {
+    }
+
+    /**
+     * Method which returns the authority of the provider. This is useful for
+     * default URI mapping. If your authority differs from conventions (i.e.
+     * content://<authority>/somevalue/<tablename> intead of
+     * content://<authority>/<tableName>) overwrite this method.
+     * 
+     * @return the authority of this provider, by default the one defined in the
+     *         manifest for this provider
+     */
+    public String getBaseURI() {
+        return providerInfo.authority;
     }
 }

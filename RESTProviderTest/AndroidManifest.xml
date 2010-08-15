@@ -12,6 +12,11 @@
 			<meta-data android:name="novoda.rest" android:resource="@xml/description" />
 		</provider>
 
+		<provider android:name="novoda.rest.providers.RESTProvider"
+			android:authorities="novoda.rest.clag">
+			<meta-data android:name="novoda.rest" android:resource="@xml/description" />
+		</provider>
+
 		<service android:name="novoda.rest.services.RemoteCallService">
 			<action android:name="novoda.rest.action.ACTION_QUERY" />
 		</service>

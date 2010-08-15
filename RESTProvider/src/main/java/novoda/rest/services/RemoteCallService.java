@@ -13,7 +13,6 @@ import android.os.Looper;
 import android.os.Message;
 
 import java.util.HashMap;
-import java.util.concurrent.LinkedBlockingDeque;
 
 public class RemoteCallService extends Service {
     private volatile Looper mServiceLooper;
@@ -28,8 +27,8 @@ public class RemoteCallService extends Service {
 
     private final class ServiceHandler extends Handler {
 
-        public ServiceHandler(Looper looper, Handler.Callback callback) {
-            super(looper, callback);
+        public ServiceHandler(Looper looper) {
+            super(looper);
         }
 
         @Override
@@ -39,15 +38,6 @@ public class RemoteCallService extends Service {
         }
 
     }
-
-    private Handler.Callback callback = new Handler.Callback() {
-
-        @Override
-        public boolean handleMessage(Message msg) {
-            return false;
-        }
-
-    };
 
     /**
      * Creates an RemoteCallService. Invoked by your subclass's constructor.
@@ -73,7 +63,7 @@ public class RemoteCallService extends Service {
         thread.start();
 
         mServiceLooper = thread.getLooper();
-        mServiceHandler = new ServiceHandler(mServiceLooper, callback);
+        mServiceHandler = new ServiceHandler(mServiceLooper);
     }
 
     public void setIntentRedelivery(boolean enabled) {
@@ -102,8 +92,15 @@ public class RemoteCallService extends Service {
     public IBinder onBind(Intent intent) {
         return null;
     }
-
-    public int getPercentil() {
-        return -1;
-    }
+    
+    /**
+     */
+//    private final IRemoteCallService.Stub mBinder = new IRemoteCallService.Stub() {
+//        public void registerCallback(IRemoteServiceCallback cb) {
+//            if (cb != null) mCallbacks.register(cb);
+//        }
+//        public void unregisterCallback(IRemoteServiceCallback cb) {
+//            if (cb != null) mCallbacks.unregister(cb);
+//        }
+//    };
 }

@@ -1,0 +1,13 @@
+Given the following JSON:
+---
+{	
+	"name":"Example",
+ 	"columns":[
+ 		{"name":"title","type":"text"}, 
+ 		{"name":"description","type":"text"},
+ 		{"name":"cost","type":"integer"},
+		{"name":"id","type":"integer", "key": "true"}
+ 	]
+}
+---
+Then I should get a SQL create statement like: "CREATE TABLE IF NOT EXISTS Example (_id INTEGER PRIMARY KEY AUTOINCREMENT, title TEXT, description TEXT, cost INTEGER, id INTEGER NOT NULL UNIQUE);"
