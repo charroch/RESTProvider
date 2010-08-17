@@ -39,7 +39,7 @@ public class CallResult implements Parcelable {
     }
 
     @Override
-    public void writeToParcel(Parcel arg0, int arg1) {
+    public void writeToParcel(Parcel parcel, int arg1) {
     }
 
     public static final Parcelable.Creator<CallResult> CREATOR = new Parcelable.Creator<CallResult>() {

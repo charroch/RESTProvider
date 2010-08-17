@@ -7,6 +7,7 @@ import novoda.rest.database.SQLiteTableCreatorWrapper;
 import novoda.rest.database.UriTableCreator;
 import novoda.rest.parsers.Node;
 import novoda.rest.parsers.NodeParser;
+import novoda.rest.services.CallInfo;
 import novoda.rest.services.ETag;
 
 import org.apache.http.HttpStatus;
@@ -14,6 +15,7 @@ import org.apache.http.client.ClientProtocolException;
 import org.apache.http.client.methods.HttpUriRequest;
 
 import android.content.ContentValues;
+import android.content.Context;
 import android.net.Uri;
 import android.util.Pair;
 
@@ -21,8 +23,12 @@ import java.io.IOException;
 
 public abstract class QueryCallContext extends CallContext {
 
+    public QueryCallContext(Context context) {
+        super(context);
+    }
+
     @Override
-    public CallResult execute() {
+    public CallResult call() {
         onStart();
         final HttpUriRequest request = getRequest(getCallInfo());
         final NodeParser<?> parser = getParser();
@@ -74,9 +80,9 @@ public abstract class QueryCallContext extends CallContext {
         // TODO
     }
 
-    abstract CachingStrategy getCachingStrategy();
+    public abstract CachingStrategy getCachingStrategy();
 
-    abstract NodeParser<?> getParser();
+    public abstract NodeParser<?> getParser();
 
     protected synchronized ETag getEtag() {
         return DatabaseUtils.etagForQuery(getDBHelper().getReadableDatabase(), getCallInfo().url);

@@ -3,6 +3,7 @@ package novoda.rest.providers;
 
 import novoda.rest.context.QueryCallInfo;
 import novoda.rest.database.ModularSQLiteOpenHelper;
+import novoda.rest.services.RESTCallService;
 import novoda.rest.utils.Logger;
 import novoda.rest.utils.UriUtils;
 
@@ -11,13 +12,16 @@ import org.xmlpull.v1.XmlPullParserException;
 import android.app.Service;
 import android.content.ContentProvider;
 import android.content.ContentValues;
+import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.content.pm.ProviderInfo;
 import android.content.res.XmlResourceParser;
 import android.database.Cursor;
 import android.net.Uri;
+import android.util.Log;
 
 import java.io.IOException;
+import java.util.List;
 
 public class RESTProvider extends ContentProvider implements IRESTProvider {
 
@@ -37,33 +41,42 @@ public class RESTProvider extends ContentProvider implements IRESTProvider {
     public boolean onCreate() {
         log = Logger.getLogger(this.getClass());
         try {
-            providerInfo = getContext().getPackageManager().resolveContentProvider(
-                    this.getClass().getCanonicalName(), PackageManager.GET_META_DATA);
-
-            final XmlResourceParser xml = providerInfo.loadXmlMetaData(getContext()
-                    .getPackageManager(), METADATA_NAME);
-
-            metaData = ProviderMetaData.loadFromXML(xml);
+            providerInfo = getProviderInfo();
+            metaData = getMetaData();
 
             if (metaData.clag != null) {
                 // create clag wrapper;
-                remoteProvider = new ClagProvider();
+                //remoteProvider = new ClagProvider();
+                Log.i("TSA", "tgus " + metaData.clag.endpoint);
+                Intent intent = new Intent(getContext(), getService().getClass());
+                intent.putExtra("clag", metaData.clag);
+                getContext().startService(intent);
             }
+            return true;
+        } catch (Exception e){
+            Log.e("TS", "something went wrong", e);
+        }
+        return false;
+    }
 
-        } catch (XmlPullParserException e) {
-            if (Logger.isErrorEnabled()) {
-                log.error("metada not well defined", e);
-            }
-        } catch (IOException e) {
-            if (Logger.isWarnEnabled()) {
-                log.warn("no metadata defined");
-            }
-        } catch (NullPointerException e) {
-            if (Logger.isWarnEnabled()) {
-                log.warn("no metadata defined");
+    private ProviderMetaData getMetaData() throws XmlPullParserException, IOException {
+        final XmlResourceParser xml = providerInfo.loadXmlMetaData(
+                getContext().getPackageManager(), METADATA_NAME);
+        return ProviderMetaData.loadFromXML(xml);
+    }
+
+    protected ProviderInfo getProviderInfo() {
+        // Get all providers associated with this process id. This might not
+        // work with multi-process calls.
+        List<ProviderInfo> providerInfo = getContext().getPackageManager().queryContentProviders(
+                getContext().getPackageManager().getNameForUid(android.os.Process.myUid()),
+                android.os.Process.myUid(), 0);
+        for (ProviderInfo info : providerInfo) {
+            if (getClass().getName().equals(info.name)) {
+                return getContext().getPackageManager().resolveContentProvider(info.authority, PackageManager.GET_META_DATA);
             }
         }
-        return true;
+        return null;
     }
 
     @Override
@@ -84,9 +97,8 @@ public class RESTProvider extends ContentProvider implements IRESTProvider {
     @Override
     public Cursor query(Uri uri, String[] projection, String selection, String[] selectionArgs,
             String sortOrder) {
-        
         if (UriUtils.isItem(getBaseURI(), uri)) {
-            
+
         }
         return null;
     }
@@ -97,23 +109,12 @@ public class RESTProvider extends ContentProvider implements IRESTProvider {
     }
 
     @Override
-    public Service getService() {
-        if (metaData == null) {
+    public Service getService() throws InstantiationException, IllegalAccessException, ClassNotFoundException {
+        if (metaData == null || metaData.serviceClassName == null) {
             throw new IllegalStateException("No metadata attached to the provider,"
                     + " have you provided a meta-data tag in the manifest?");
         }
-        try {
-            // TODO check service within the manifest to ensure it responds to
-            // the correct intents?
-            return (Service) Class.forName(metaData.serviceClassName).newInstance();
-        } catch (InstantiationException e) {
-            e.printStackTrace();
-        } catch (IllegalAccessException e) {
-            e.printStackTrace();
-        } catch (ClassNotFoundException e) {
-            e.printStackTrace();
-        }
-        throw new RuntimeException("Can not load service class");
+        return (Service) Class.forName(metaData.serviceClassName).newInstance();
     }
 
     @Override
@@ -130,6 +131,6 @@ public class RESTProvider extends ContentProvider implements IRESTProvider {
      *         manifest for this provider
      */
     public String getBaseURI() {
-        return providerInfo.authority;
+        return "";
     }
 }

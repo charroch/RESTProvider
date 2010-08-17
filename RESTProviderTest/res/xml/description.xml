@@ -1,11 +1,12 @@
 <?xml version="1.0" encoding="utf-8"?>
 <service xmlns:rest="http://novoda.github.com/RESTProvider/apk/res"
-	rest:name="novoda.rest.services.RemoteCallService">
-	
+	rest:name="novoda.rest.services.DefaultRemoteCallService">
+
 	<clag rest:endpoint="http://facebook-pipes.appspot.com/data/" />
-	
+
 	<!--
 		Placeholder to declare SQLite create/trigger statements Have our own
 		namespace?
 	-->
+
 </service>

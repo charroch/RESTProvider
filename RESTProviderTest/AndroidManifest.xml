@@ -7,17 +7,20 @@
 
 		<uses-library android:name="android.test.runner" />
 
+<!-- 
 		<provider android:name="novoda.rest.providers.TestProvider"
-			android:authorities="novoda.rest.test">
-			<meta-data android:name="novoda.rest" android:resource="@xml/description" />
+			android:authorities="novoda.rest.testfewfew">
+			<meta-data android:name="novoda.rest"
+				android:value=".services.DefaultRemoteCallService" />
 		</provider>
+-->
 
 		<provider android:name="novoda.rest.providers.RESTProvider"
 			android:authorities="novoda.rest.clag">
 			<meta-data android:name="novoda.rest" android:resource="@xml/description" />
 		</provider>
 
-		<service android:name="novoda.rest.services.RemoteCallService">
+		<service android:name="novoda.rest.services.DefaultRemoteCallService">
 			<action android:name="novoda.rest.action.ACTION_QUERY" />
 		</service>
 

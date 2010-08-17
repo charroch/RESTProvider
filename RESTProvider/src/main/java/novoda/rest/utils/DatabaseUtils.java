@@ -35,9 +35,9 @@ public class DatabaseUtils extends android.database.DatabaseUtils {
         }
 
         StringBuilder sql = new StringBuilder();
-        sql.append("CREATE TABLE IF NOT EXISTS ").append(creator.getTableName()).append(" (")
-                .append(primaryKey).append(" ").append(primaryKeyType.name())
-                .append(" PRIMARY KEY").append(((shouldAutoincrement) ? " AUTOINCREMENT " : " "));
+        sql.append("CREATE TABLE IF NOT EXISTS ").append("\"" + creator.getTableName() + "\"")
+                .append(" (").append(primaryKey).append(" ").append(primaryKeyType.name()).append(
+                        " PRIMARY KEY").append(((shouldAutoincrement) ? " AUTOINCREMENT " : " "));
 
         for (String f : creator.getTableFields()) {
             if (f.equals(primaryKey)) {

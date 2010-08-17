@@ -8,14 +8,17 @@ public class ClagMetaData implements Parcelable {
 
     public String endpoint;
 
-    private ClagMetaData(Parcel parcel) {
-        endpoint = parcel.readString();
+    private ClagMetaData(Parcel in) {
+        endpoint = in.readString();
+    }
+
+    public ClagMetaData() {
     }
 
     public static final Parcelable.Creator<ClagMetaData> CREATOR = new Parcelable.Creator<ClagMetaData>() {
         @Override
-        public ClagMetaData createFromParcel(Parcel parcel) {
-            return new ClagMetaData(parcel);
+        public ClagMetaData createFromParcel(Parcel in) {
+            return new ClagMetaData(in);
         }
 
         @Override

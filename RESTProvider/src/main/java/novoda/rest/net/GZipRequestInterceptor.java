@@ -16,5 +16,4 @@ public class GZipRequestInterceptor implements HttpRequestInterceptor {
             request.addHeader("Accept-Encoding", "gzip");
         }
     }
-
 }

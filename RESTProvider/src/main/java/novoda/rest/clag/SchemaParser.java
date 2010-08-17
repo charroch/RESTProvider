@@ -53,9 +53,13 @@ public class SchemaParser implements SQLiteTableCreator {
             FieldOptions options = new FieldOptions();
 
             // getting type
-            if (!temp.path(FIELD_TYPE).isMissingNode()) {
-                options.type = SQLiteType.valueOf(temp.path(FIELD_TYPE).getTextValue()
+            if (!temp.path(FIELD_TYPE).isMissingNode()
+                    || temp.path(FIELD_TYPE).getValueAsText() != null) {
+                options.type = SQLiteType.valueOf(temp.path(FIELD_TYPE).getValueAsText()
                         .toUpperCase());
+                if (options.type == null || options.type == SQLiteType.NULL) {
+                    options.type = SQLiteType.TEXT;
+                }
             }
 
             // TODO getting unique
@@ -68,7 +72,8 @@ public class SchemaParser implements SQLiteTableCreator {
                 options.notNull = false;
             }
 
-            map.put(temp.path(FIELD_NAME).getTextValue(), options);
+            // TODO move it to the DatabaseUtils
+            map.put("\"" + temp.path(FIELD_NAME).getTextValue() + "\"", options);
         }
     }
 

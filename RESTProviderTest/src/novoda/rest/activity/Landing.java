@@ -9,8 +9,6 @@ public class Landing extends Activity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-
-        getContentResolver().query(Uri.parse("content://novoda.rest.clag/Story"), null, null, null,
-                null);
+        getContentResolver().query(Uri.parse("content://novoda.rest.clag"), null, null, null, null);
     }
 }

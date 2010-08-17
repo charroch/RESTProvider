@@ -15,15 +15,12 @@ import org.apache.http.entity.HttpEntityWrapper;
 import org.apache.http.protocol.HttpContext;
 
 public class GZipResponseInterceptor implements HttpResponseInterceptor {
-
     @Override
     public void process(HttpResponse response, HttpContext context) throws HttpException,
             IOException {
-
         if (response == null) {
             throw new IOException("response can not be null");
         }
-
         final HttpEntity entity = response.getEntity();
         final Header header = entity.getContentEncoding();
         if (header != null) {

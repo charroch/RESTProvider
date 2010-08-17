@@ -11,7 +11,17 @@ import android.os.Parcelable;
  * Information you can retrieve for a specific HTTP call which is intended to be
  * inserted into SQLite.
  */
-public class CallInfo implements Parcelable {
+public class CallInfo implements Parcelable, Comparable<CallInfo> {
+
+    public static final int LOW = 0;
+
+    public static final int NORMAL = 1;
+
+    public static final int HIGH = 2;
+
+    public static final int IMMEDIATE = 3;
+    
+    private int priority = NORMAL;
 
     /**
      * The query has been complete and inserted into database correctly
@@ -158,5 +168,13 @@ public class CallInfo implements Parcelable {
         insertingUri = source.readParcelable(null);
         etag = source.readParcelable(null);
         url = source.readString();
+    }
+
+    public CallInfo() {
+    }
+
+    @Override
+    public int compareTo(CallInfo info) {
+        return new Integer(this.priority).compareTo(new Integer(info.priority));
     }
 }

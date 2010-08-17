@@ -6,6 +6,7 @@ import org.xmlpull.v1.XmlPullParserException;
 import android.content.res.XmlResourceParser;
 import android.os.Parcel;
 import android.os.Parcelable;
+import android.util.Log;
 
 import java.io.IOException;
 
@@ -44,6 +45,10 @@ public class ProviderMetaData implements Parcelable {
 
     public static ProviderMetaData loadFromXML(XmlResourceParser xml)
             throws XmlPullParserException, IOException {
+        if (xml == null) {
+            throw new IOException("xml is null");
+        }
+        
         ProviderMetaData m = new ProviderMetaData();
         m.processDocument(xml);
         return m;
@@ -91,10 +96,8 @@ public class ProviderMetaData implements Parcelable {
      * Process the <clag> tag
      */
     private void processClagTag(XmlResourceParser xpp) {
-        Parcel parcel = Parcel.obtain();
-        parcel.writeString(xpp.getAttributeValue(NAMESPACE, CLAG_TAG_ATR_ENDPOINT));
-        clag = ClagMetaData.CREATOR.createFromParcel(parcel);
-        parcel.recycle();
+        clag = new ClagMetaData();
+        clag.endpoint = xpp.getAttributeValue(NAMESPACE, CLAG_TAG_ATR_ENDPOINT);
     }
 
     /*

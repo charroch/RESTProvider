@@ -1,15 +1,16 @@
 package novoda.rest.services;
 
+import android.content.Intent;
 import android.test.ServiceTestCase;
 
-public class RemoteCallServiceTest extends ServiceTestCase<RemoteCallService> {
+public class RemoteCallServiceTest extends ServiceTestCase<DefaultRemoteCallService> {
 
-    public RemoteCallServiceTest(Class<RemoteCallService> serviceClass) {
+    public RemoteCallServiceTest(Class<DefaultRemoteCallService> serviceClass) {
         super(serviceClass);
     }
     
     public RemoteCallServiceTest() {
-        super(RemoteCallService.class);
+        super(DefaultRemoteCallService.class);
     }
 
     @Override
@@ -18,6 +19,7 @@ public class RemoteCallServiceTest extends ServiceTestCase<RemoteCallService> {
     }
     
     public void testTrue() throws Exception {
-        assertTrue(true);
+        ((DefaultRemoteCallService)getService()).onHandleIntent(new Intent());
+        assertNotNull(getService().getCallResult(null));
     }
 }

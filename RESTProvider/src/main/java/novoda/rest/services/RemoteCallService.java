@@ -2,6 +2,8 @@
 package novoda.rest.services;
 
 import novoda.rest.context.CallContext;
+import novoda.rest.context.CallResult;
+import novoda.rest.context.QueryCallInfo;
 
 import android.app.Service;
 import android.content.Intent;
@@ -11,10 +13,11 @@ import android.os.HandlerThread;
 import android.os.IBinder;
 import android.os.Looper;
 import android.os.Message;
+import android.os.RemoteException;
 
 import java.util.HashMap;
 
-public class RemoteCallService extends Service {
+public abstract class RemoteCallService extends Service {
     private volatile Looper mServiceLooper;
 
     private volatile ServiceHandler mServiceHandler;
@@ -36,7 +39,6 @@ public class RemoteCallService extends Service {
             onHandleIntent((Intent) msg.obj);
             stopSelf(msg.arg1);
         }
-
     }
 
     /**
@@ -85,7 +87,12 @@ public class RemoteCallService extends Service {
     }
 
     public void onHandleIntent(Intent intent) {
-        // handle intent here
+        CallContext context = getCallContext((CallInfo) intent.getParcelableExtra("callInfo"));
+        try {
+            context.call();
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
     }
 
     @Override
@@ -96,11 +103,50 @@ public class RemoteCallService extends Service {
     /**
      */
 //    private final IRemoteCallService.Stub mBinder = new IRemoteCallService.Stub() {
-//        public void registerCallback(IRemoteServiceCallback cb) {
-//            if (cb != null) mCallbacks.register(cb);
+//        @Override
+//        public void delete() throws RemoteException {
+//            // TODO Auto-generated method stub
+//            
 //        }
-//        public void unregisterCallback(IRemoteServiceCallback cb) {
-//            if (cb != null) mCallbacks.unregister(cb);
+//        @Override
+//        public void insert() throws RemoteException {
+//            // TODO Auto-generated method stub
+//            
+//        }
+//        @Override
+//        public void query(QueryCallInfo query) throws RemoteException {
+//            // TODO Auto-generated method stub
+//            
+//        }
+//        @Override
+//        public void registerCallback() throws RemoteException {
+//            // TODO Auto-generated method stub
+//            
+//        }
+//        @Override
+//        public void unregisterCallback() throws RemoteException {
+//            // TODO Auto-generated method stub
+//            
+//        }
+//        @Override
+//        public void update() throws RemoteException {
+//            // TODO Auto-generated method stub
+//            
 //        }
 //    };
+    
+    public abstract CallContext getCallContext(CallInfo info);
+    
+    public CallInfo getCallResult(CallInfo info) {
+        Message msg = mServiceHandler.obtainMessage();
+        return (CallInfo) msg.obj;
+    }
+    
+    public CallResult[] getAllResult() {
+        return null;
+    }
+    
+    public int gettotallenght() {
+        return -1;
+    }
 }
