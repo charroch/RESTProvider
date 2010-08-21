@@ -7,14 +7,6 @@
 
 		<uses-library android:name="android.test.runner" />
 
-<!-- 
-		<provider android:name="novoda.rest.providers.TestProvider"
-			android:authorities="novoda.rest.testfewfew">
-			<meta-data android:name="novoda.rest"
-				android:value=".services.DefaultRemoteCallService" />
-		</provider>
--->
-
 		<provider android:name="novoda.rest.providers.RESTProvider"
 			android:authorities="novoda.rest.clag">
 			<meta-data android:name="novoda.rest" android:resource="@xml/description" />
@@ -31,10 +23,12 @@
 			</intent-filter>
 		</activity>
 
-	</application>
-	<uses-sdk android:minSdkVersion="8" />
-	<instrumentation android:targetPackage="novoda.rest.test"
-		android:name="android.test.InstrumentationTestRunner" />
+		<service android:name=".services.TestService" />
 
+	</application>
 	<uses-permission android:name="android.permission.INTERNET" />
+	<instrumentation android:name="android.test.BespokeInstrumentationTestRunner"
+		android:targetPackage="novoda.rest.test" />
+
+	<uses-sdk android:minSdkVersion="8" />
 </manifest> 
