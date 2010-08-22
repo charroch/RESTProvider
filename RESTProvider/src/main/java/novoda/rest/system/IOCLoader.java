@@ -19,7 +19,7 @@ public class IOCLoader {
         this.pm = context.getPackageManager();
     }
 
-    public ServiceInfo getServiceInfo(String service) {
+    public ServiceInfo getServiceInfo(final String service) {
         try {
             ComponentName component = new ComponentName(context, getService(service).getClass());
             return pm.getServiceInfo(component, PackageManager.GET_META_DATA);
@@ -28,7 +28,7 @@ public class IOCLoader {
         }
     }
 
-    public Service getService(final String name) {
+    /* package */Service getService(final String name) {
         try {
             return (Service) Class.forName(appendPackageToName(name)).newInstance();
         } catch (Exception e) {
@@ -36,7 +36,7 @@ public class IOCLoader {
         }
     }
 
-    private String appendPackageToName(String name) {
+    private String appendPackageToName(final String name) {
         if (name.toCharArray()[0] == '.') {
             return new StringBuilder(context.getPackageName()).append(name).toString();
         }

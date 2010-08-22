@@ -29,8 +29,6 @@ public class RESTProvider extends ContentProvider implements IRESTProvider {
 
     protected ProviderMetaData metaData;
 
-    private Logger log;
-
     ModularSQLiteOpenHelper db;
 
     IRESTProvider remoteProvider;
@@ -39,7 +37,6 @@ public class RESTProvider extends ContentProvider implements IRESTProvider {
 
     @Override
     public boolean onCreate() {
-        log = Logger.getLogger(this.getClass());
         try {
             providerInfo = getProviderInfo();
             metaData = getMetaData();
