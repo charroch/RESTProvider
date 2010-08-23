@@ -1,12 +1,28 @@
 <?xml version="1.0" encoding="utf-8"?>
-<service xmlns:rest="http://novoda.github.com/RESTProvider/apk/res"
+<service
+	xmlns:rest="http://novoda.github.com/RESTProvider/apk/res"
+	rest:endpoint=""
+	rest:format="JSON|XML"
 	rest:name="novoda.rest.services.DefaultRemoteCallService">
 
-	<clag rest:endpoint="http://facebook-pipes.appspot.com/data/" />
+	<mapper>
+		<!-- mapping URI to Http Request -->
+	</mapper>
+
+	<sqlite
+		rest:schema="">
+		<mapper>
+			<!-- uri to sql table? -->
+			<!-- table name to JSON field -->
+		</mapper>
+	</sqlite>
+
+
+	<clag
+		rest:endpoint="http://facebook-pipes.appspot.com/data/" />
 
 	<!--
 		Placeholder to declare SQLite create/trigger statements Have our own
 		namespace?
 	-->
-
 </service>

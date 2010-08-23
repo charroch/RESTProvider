@@ -1,25 +1,29 @@
 
 package novoda.rest.clag;
 
+import java.io.IOException;
+import java.io.InputStream;
+
 import novoda.rest.context.CallContext;
 import novoda.rest.context.CallInfo;
-import novoda.rest.context.CallResult;
 import novoda.rest.database.SQLiteTableCreator;
 import novoda.rest.exception.ParserException;
 import novoda.rest.providers.ClagMetaData;
 
-import org.apache.http.HttpResponse;
 import org.apache.http.client.methods.HttpGet;
 import org.apache.http.client.methods.HttpUriRequest;
 import org.codehaus.jackson.JsonNode;
+import org.codehaus.jackson.JsonProcessingException;
+import org.codehaus.jackson.map.ObjectMapper;
 
 import android.content.Context;
-
-import java.io.InputStream;
+import android.database.sqlite.SQLiteOpenHelper;
 
 public class InitService extends CallContext<JsonNode> {
 
     private ClagMetaData data;
+
+    private static ObjectMapper mapper = new ObjectMapper();
 
     public InitService(ClagMetaData data, Context context) {
         super(context);
@@ -27,28 +31,29 @@ public class InitService extends CallContext<JsonNode> {
     }
 
     @Override
-    public HttpUriRequest getRequest(CallInfo info) {
+    public
+     HttpUriRequest getRequest(final CallInfo info) {
         return new HttpGet(data.endpoint);
     }
 
     @Override
-    public CallResult call() throws Exception {
-        HttpResponse response = getHttpClient().execute(getRequest(null));
-        ServiceDescriptionParser parser = new ServiceDescriptionParser();
+    public JsonNode parse(InputStream in) throws ParserException {
         try {
-            ServiceDescription d = parser.parse(response.getEntity().getContent());
-            for (SQLiteTableCreator c : d.schemas) {
-                getDBHelper().createTable(c);
-            }
-        } finally {
-            response.getEntity().consumeContent();
+            return mapper.readTree(in);
+        } catch (JsonProcessingException e) {
+            throw new ParserException("JSON processing exception");
+        } catch (IOException e) {
+            throw new ParserException("IO Exception");
         }
-        close();
-        return null;
     }
 
     @Override
-    public JsonNode parse(InputStream in) throws ParserException {
-        return null;
+    public void handle(CallInfo info, JsonNode data, SQLiteOpenHelper db) {
+        ServiceDescriptionParser parser = new ServiceDescriptionParser();
+        ServiceDescription d = parser.parse(data);
+        for (SQLiteTableCreator c : d.schemas) {
+            getDBHelper().createTable(c);
+        }
+        close();
     }
 }

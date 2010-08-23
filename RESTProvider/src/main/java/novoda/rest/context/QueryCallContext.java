@@ -20,14 +20,14 @@ import android.content.Context;
 import android.net.Uri;
 import android.util.Pair;
 
-public abstract class QueryCallContext extends CallContext<Node<?>> {
+public abstract class QueryCallContext<T> extends CallContext<Node<T>> {
 
     public QueryCallContext(Context context) {
         super(context);
     }
 
     @Override
-    public CallResult call() {
+    public Node<T> call() {
         onStart();
         final HttpUriRequest request = getRequest(getCallInfo());
         final NodeParser<?> parser = getParser();
@@ -36,10 +36,10 @@ public abstract class QueryCallContext extends CallContext<Node<?>> {
         onPreCall(request, parser);
 
         try {
-            Node<?> rootNode = getHttpClient().execute(request, parser);
+            Node<T> rootNode = (Node<T>)getHttpClient().execute(request, parser);
 
             if (parser.getStatusCode() == HttpStatus.SC_NOT_MODIFIED) {
-                return new CallResult(HttpStatus.SC_NOT_MODIFIED);
+                return null;
             } else {
                 onPostCall(rootNode);
 
@@ -71,7 +71,7 @@ public abstract class QueryCallContext extends CallContext<Node<?>> {
         // TODO
     }
 
-    private void onPostCall(Node<?> rootNode) {
+    private void onPostCall(Node<T> rootNode) {
         // TODO
     }
 
@@ -87,10 +87,10 @@ public abstract class QueryCallContext extends CallContext<Node<?>> {
         return DatabaseUtils.etagForQuery(getDBHelper().getReadableDatabase(), getCallInfo().url);
     }
 
-    private void insertNodeIntoDatabase(Node<?> root) {
-        final int size = root.getCount();
+    private void insertNodeIntoDatabase(Node<?> child2) {
+        final int size = child2.getCount();
         for (int i = 0; i < size; i++) {
-            Node<?> current = root.getNode(i);
+            Node<?> current = child2.getNode(i);
 
             SQLiteTableCreatorWrapper creator = new SQLiteTableCreatorWrapper(UriTableCreator
                     .fromNode(current));
@@ -101,13 +101,13 @@ public abstract class QueryCallContext extends CallContext<Node<?>> {
 
             ContentValues values = current.getContentValue();
             current.onPreInsert(values);
-            Node<?> f = current.getParent();
+            Node<T> f = (Node<T>)current.getParent();
 
             if (f != null) {
                 values.put(f.getIdFieldName(), f.getDatabaseId());
             }
 
-            onPreInsert(root.getOptions().insertUri, values);
+            onPreInsert(child2.getOptions().insertUri, values);
 
             long id = dbHelper.getWritableDatabase().insert(current.getTableName(), "", values);
             current.onPostInsert(id);
