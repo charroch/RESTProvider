@@ -2,6 +2,7 @@
 package novoda.rest.services;
 
 import novoda.rest.context.CallContext;
+import novoda.rest.context.CallInfo;
 import novoda.rest.context.CallResult;
 import novoda.rest.context.QueryCallInfo;
 
@@ -135,7 +136,7 @@ public abstract class RemoteCallService extends Service {
 //        }
 //    };
     
-    public abstract CallContext getCallContext(CallInfo info);
+    public abstract CallContext<?> getCallContext(CallInfo info);
     
     public CallInfo getCallResult(CallInfo info) {
         Message msg = mServiceHandler.obtainMessage();

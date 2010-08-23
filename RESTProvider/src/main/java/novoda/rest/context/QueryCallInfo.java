@@ -1,8 +1,8 @@
 
 package novoda.rest.context;
 
-import novoda.rest.services.CallInfo;
 
+import novoda.rest.services.ETag;
 import android.os.Parcel;
 import android.os.Parcelable;
 
@@ -16,7 +16,7 @@ public class QueryCallInfo extends CallInfo implements Parcelable {
 
     public String sortOrder;
 
-    public String url;
+    public ETag etag;
 
     private QueryCallInfo(Parcel parcel) {
         super(parcel);

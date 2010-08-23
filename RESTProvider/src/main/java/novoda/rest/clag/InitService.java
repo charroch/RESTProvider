@@ -2,11 +2,11 @@
 package novoda.rest.clag;
 
 import novoda.rest.context.CallContext;
+import novoda.rest.context.CallInfo;
 import novoda.rest.context.CallResult;
 import novoda.rest.database.SQLiteTableCreator;
 import novoda.rest.exception.ParserException;
 import novoda.rest.providers.ClagMetaData;
-import novoda.rest.services.CallInfo;
 
 import org.apache.http.HttpResponse;
 import org.apache.http.client.methods.HttpGet;

@@ -3,23 +3,26 @@ package novoda.rest.context;
 
 import novoda.rest.clag.Parser;
 import novoda.rest.database.ModularSQLiteOpenHelper;
-import novoda.rest.services.CallInfo;
 import novoda.rest.utils.AndroidHttpClient;
 
+import org.apache.http.HttpResponse;
+import org.apache.http.client.ClientProtocolException;
 import org.apache.http.client.HttpClient;
+import org.apache.http.client.ResponseHandler;
 import org.apache.http.client.methods.HttpUriRequest;
 import org.apache.http.protocol.HttpContext;
 
 import android.content.Context;
 import android.util.Log;
 
+import java.io.IOException;
 import java.util.concurrent.Callable;
 
 /**
  * @author acsia
  */
 public abstract class CallContext<T> implements Callable<CallResult>, Comparable<CallContext<T>>,
-        Parser<T> {
+        Parser<T>, ResponseHandler<T> {
 
     private static final String USER_AGENT = "android/RESTProvider";
 
@@ -31,7 +34,7 @@ public abstract class CallContext<T> implements Callable<CallResult>, Comparable
 
     protected HttpContext httpContext;
 
-    private android.net.http.AndroidHttpClient client;
+    private HttpClient client;
 
     public abstract HttpUriRequest getRequest(CallInfo info);
 
@@ -62,17 +65,19 @@ public abstract class CallContext<T> implements Callable<CallResult>, Comparable
         try {
             if (client == null) {
                 client = android.net.http.AndroidHttpClient.newInstance(USER_AGENT, getContext());
-                client.enableCurlLogging("curl", Log.DEBUG);
+                ((android.net.http.AndroidHttpClient)client).enableCurlLogging("curl", Log.DEBUG);
             }
-            return client;
         } catch (RuntimeException e) {
-            return AndroidHttpClient.newInstance(USER_AGENT);
+            if (client == null) {
+                client = AndroidHttpClient.newInstance(USER_AGENT);
+            }
         }
+        return client;
     }
 
     public void close() {
         if (client != null)
-            client.close();
+            client.getConnectionManager().shutdown();
     }
 
     protected void setGzipEncoding(boolean active) {
@@ -95,4 +100,13 @@ public abstract class CallContext<T> implements Callable<CallResult>, Comparable
         return getCallInfo().compareTo(another.getCallInfo());
     }
 
+    @Override
+    public T handleResponse(HttpResponse response) throws ClientProtocolException, IOException {
+
+        return null;
+    }
+
+    public void handle(T response) {
+        // handling of response
+    }
 }

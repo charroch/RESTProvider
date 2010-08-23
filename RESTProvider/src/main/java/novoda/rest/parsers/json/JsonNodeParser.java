@@ -13,9 +13,7 @@ import novoda.rest.parsers.NodeParser;
 import novoda.rest.parsers.Node.Options;
 
 public class JsonNodeParser extends NodeParser<JsonNodeObject> {
-    
     static ObjectMapper oMapper = new ObjectMapper();
-
     @Override
     public JsonNodeObject parse(InputStream response, Options options) throws ParserException {
         try {
@@ -30,5 +28,4 @@ public class JsonNodeParser extends NodeParser<JsonNodeObject> {
         }
         throw new ParserException("unknown error");
     }
-
 }

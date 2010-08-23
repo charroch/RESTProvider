@@ -1,8 +1,10 @@
 
-package novoda.rest.services;
+package novoda.rest.context;
+
+import java.util.concurrent.Callable;
 
 import novoda.rest.parsers.Node;
-
+import novoda.rest.services.RESTCallService;
 import android.net.Uri;
 import android.os.Parcel;
 import android.os.Parcelable;
@@ -11,7 +13,7 @@ import android.os.Parcelable;
  * Information you can retrieve for a specific HTTP call which is intended to be
  * inserted into SQLite.
  */
-public class CallInfo implements Parcelable, Comparable<CallInfo> {
+public class CallInfo implements Parcelable, Comparable<CallInfo>, Callable<CallResult> {
 
     public static final int LOW = 0;
 
@@ -119,11 +121,6 @@ public class CallInfo implements Parcelable, Comparable<CallInfo> {
      */
     public Uri insertingUri;
 
-    /**
-     * The ETag of the request.
-     */
-    public ETag etag;
-
     public String url;
 
     @Override
@@ -141,7 +138,6 @@ public class CallInfo implements Parcelable, Comparable<CallInfo> {
         parcel.writeParcelable(originatingUri, parcelableFlags);
         parcel.writeString(action);
         parcel.writeParcelable(insertingUri, parcelableFlags);
-        parcel.writeParcelable(etag, parcelableFlags);
         parcel.writeString(url);
     }
 
@@ -166,7 +162,6 @@ public class CallInfo implements Parcelable, Comparable<CallInfo> {
         originatingUri = source.readParcelable(null);
         action = source.readString();
         insertingUri = source.readParcelable(null);
-        etag = source.readParcelable(null);
         url = source.readString();
     }
 
@@ -176,5 +171,10 @@ public class CallInfo implements Parcelable, Comparable<CallInfo> {
     @Override
     public int compareTo(CallInfo info) {
         return new Integer(this.priority).compareTo(new Integer(info.priority));
+    }
+
+    @Override
+    public CallResult call() throws Exception {
+        return null;
     }
 }

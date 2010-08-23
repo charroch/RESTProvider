@@ -1,5 +1,6 @@
 package novoda.rest.services;
 
+import novoda.rest.context.CallInfo;
 import novoda.rest.parsers.Node;
 
 public interface NodeProcessor {

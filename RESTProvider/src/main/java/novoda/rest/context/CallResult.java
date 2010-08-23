@@ -1,7 +1,6 @@
 
 package novoda.rest.context;
 
-import novoda.rest.services.CallInfo;
 
 import android.os.Parcel;
 import android.os.Parcelable;

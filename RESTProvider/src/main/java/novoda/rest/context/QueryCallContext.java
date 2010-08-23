@@ -1,13 +1,14 @@
 
 package novoda.rest.context;
 
+import java.io.IOException;
+
 import novoda.rest.database.CachingStrategy;
 import novoda.rest.database.DatabaseUtils;
 import novoda.rest.database.SQLiteTableCreatorWrapper;
 import novoda.rest.database.UriTableCreator;
 import novoda.rest.parsers.Node;
 import novoda.rest.parsers.NodeParser;
-import novoda.rest.services.CallInfo;
 import novoda.rest.services.ETag;
 
 import org.apache.http.HttpStatus;
@@ -19,9 +20,7 @@ import android.content.Context;
 import android.net.Uri;
 import android.util.Pair;
 
-import java.io.IOException;
-
-public abstract class QueryCallContext extends CallContext {
+public abstract class QueryCallContext extends CallContext<Node<?>> {
 
     public QueryCallContext(Context context) {
         super(context);
