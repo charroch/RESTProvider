@@ -1,14 +1,13 @@
 
-package novoda.rest.providers;
+package novoda.rest.configuration;
+
+import java.io.IOException;
 
 import org.xmlpull.v1.XmlPullParserException;
 
 import android.content.res.XmlResourceParser;
 import android.os.Parcel;
 import android.os.Parcelable;
-import android.util.Log;
-
-import java.io.IOException;
 
 public class ProviderMetaData implements Parcelable {
 

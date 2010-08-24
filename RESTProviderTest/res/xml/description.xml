@@ -1,28 +1,34 @@
 <?xml version="1.0" encoding="utf-8"?>
 <service
 	xmlns:rest="http://novoda.github.com/RESTProvider/apk/res"
-	rest:endpoint=""
+	rest:endpoint="http://twitter.com/api"
 	rest:format="JSON|XML"
 	rest:name="novoda.rest.services.DefaultRemoteCallService">
 
-	<mapper>
+	<!-- By convention <URI>/school will map to <endpoint>/school -->
+	<urimapper>
+		<property
+			rest:uri="schools/#"
+			rest:type="POST/GET/PUT/DELETE"
+			rest:url="append to endpoint|give direct link" />
+
 		<!-- mapping URI to Http Request -->
-	</mapper>
+	</urimapper>
 
 	<sqlite
-		rest:schema="">
-		<mapper>
-			<!-- uri to sql table? -->
-			<!-- table name to JSON field -->
-		</mapper>
+		rest:schema="@raw/sql_insert">
+
+		<property
+			rest:uri="schools/#"
+			rest:name="title"
+			rest:type="TEXT|INTGER|SQLiteType"
+			rest:unique="true"
+			rest:allow_null="true"
+			rest:on_conflict="SQLiteOnConflict" />
 	</sqlite>
-
-
-	<clag
-		rest:endpoint="http://facebook-pipes.appspot.com/data/" />
-
-	<!--
-		Placeholder to declare SQLite create/trigger statements Have our own
-		namespace?
-	-->
+	
+	<clag>
+		<!-- clag specific options -->
+	</clag>
+	
 </service>

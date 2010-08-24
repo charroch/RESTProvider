@@ -1,6 +1,7 @@
 
 package novoda.rest.providers;
 
+import novoda.rest.configuration.ProviderMetaData;
 import novoda.rest.context.QueryCallInfo;
 import novoda.rest.database.ModularSQLiteOpenHelper;
 import novoda.rest.services.RESTCallService;

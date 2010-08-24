@@ -4,11 +4,11 @@ package novoda.rest.clag;
 import java.io.IOException;
 import java.io.InputStream;
 
+import novoda.rest.configuration.ClagMetaData;
 import novoda.rest.context.CallContext;
 import novoda.rest.context.CallInfo;
 import novoda.rest.database.SQLiteTableCreator;
 import novoda.rest.exception.ParserException;
-import novoda.rest.providers.ClagMetaData;
 
 import org.apache.http.client.methods.HttpGet;
 import org.apache.http.client.methods.HttpUriRequest;

@@ -1,6 +1,7 @@
 
 package novoda.rest.providers;
 
+import novoda.rest.configuration.ProviderMetaData;
 import novoda.rest.test.R;
 
 import android.test.InstrumentationTestCase;

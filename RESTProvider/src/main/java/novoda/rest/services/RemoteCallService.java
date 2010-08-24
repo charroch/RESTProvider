@@ -3,10 +3,12 @@ package novoda.rest.services;
 
 import org.codehaus.jackson.JsonNode;
 
+import novoda.rest.configuration.RESTServiceInfo;
 import novoda.rest.context.CallContext;
 import novoda.rest.context.CallInfo;
 import novoda.rest.os.Worker;
 import android.app.Service;
+import android.content.Context;
 import android.content.Intent;
 import android.os.Handler;
 import android.os.HandlerThread;
@@ -24,6 +26,8 @@ public abstract class RemoteCallService extends Service implements IRemoteCallSe
     private boolean mRedelivery;
 
     private Worker<JsonNode> worker;
+
+    private Context mContext;
 
     private final class ServiceHandler extends Handler {
 
@@ -136,5 +140,10 @@ public abstract class RemoteCallService extends Service implements IRemoteCallSe
     public CallInfo getCallResult(CallInfo info) {
         Message msg = mServiceHandler.obtainMessage();
         return (CallInfo)msg.obj;
+    }
+    
+    public void attachInfo(Context context, RESTServiceInfo serviceInfo) {
+        mContext = context;
+        
     }
 }
