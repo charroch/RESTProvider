@@ -17,7 +17,6 @@
 package com.android.internal.util;
 
 import java.lang.reflect.Array;
-import java.util.Collection;
 
 // XXX these should be changed to reflect the actual memory allocator we use.
 // it looks like right now objects want to be powers of 2 minus 8
