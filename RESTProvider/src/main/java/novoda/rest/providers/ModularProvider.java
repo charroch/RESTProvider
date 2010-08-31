@@ -210,7 +210,5 @@ public abstract class ModularProvider extends ContentProvider {
     public long insert(String tableName, ContentValues values) {
         return dbHelper.getWritableDatabase().insert(tableName, "", values);
     }
-    
-    public SyncStrategy getSyncStrategy(Uri uri){
-        return null;};
+  
 }

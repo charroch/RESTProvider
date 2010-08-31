@@ -5,7 +5,8 @@
 	rest:format="JSON|XML"
 	rest:name="novoda.rest.services.DefaultRemoteCallService">
 
-	<!-- By convention <URI>/school will map to <endpoint>/school -->
+	<!-- By convention <URI>/school will map to <endpoint>/school; POST maps 
+		to inserts, GET to query, DELETE to delete, PUT to update -->
 	<urimapper>
 		<property
 			rest:uri="schools/#"
@@ -17,8 +18,7 @@
 
 	<sqlite
 		rest:schema="@raw/sql_insert">
-
-		<property
+		<table
 			rest:uri="schools/#"
 			rest:name="title"
 			rest:type="TEXT|INTGER|SQLiteType"
@@ -26,9 +26,9 @@
 			rest:allow_null="true"
 			rest:on_conflict="SQLiteOnConflict" />
 	</sqlite>
-	
+
 	<clag>
 		<!-- clag specific options -->
 	</clag>
-	
+
 </service>

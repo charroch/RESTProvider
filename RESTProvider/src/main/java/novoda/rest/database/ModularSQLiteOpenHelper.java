@@ -28,8 +28,6 @@ public class ModularSQLiteOpenHelper extends SQLiteOpenHelper {
             + "lastModified TEXT, " + "contentLenght INTEGER, " + "createdAt INTEGER NOT NULL, "
             + "updatedAt INTEGER);";
 
-    private static final String CREATE_TRIGGER_INSERT = "";
-
     private List<String> createdTable = new ArrayList<String>();
 
     private Map<String, SQLiteTableCreator> createStatements = new HashMap<String, SQLiteTableCreator>();
@@ -85,20 +83,20 @@ public class ModularSQLiteOpenHelper extends SQLiteOpenHelper {
     }
 
     /**
-     * Method to return the columns and type for a specific table
+     * Method to return the columns and type for a specific table. This only
+     * supports value defined in SQLType
      * 
-     * @param table, the table name against which we want the columns
+     * @param table , the table name against which we want the columns
      * @return a map containing all columns and their type
      */
     public Map<String, SQLiteType> getColumnsForTable(final String table) {
-        Cursor cur = getReadableDatabase().rawQuery(
+        final Cursor cur = getReadableDatabase().rawQuery(
                 new StringBuilder("PRAGMA table_info('").append(table).append("')").toString(),
                 null);
-        Map<String, SQLiteType> ret = new HashMap<String, SQLiteType>(cur.getCount());
+        final Map<String, SQLiteType> ret = new HashMap<String, SQLiteType>(cur.getCount());
         while (cur.moveToNext()) {
-            // TODO should we get something else then SQLiteTypes?
-            ret.put(cur.getString(cur.getColumnIndexOrThrow("name")), SQLiteType.valueOf(cur
-                    .getString(cur.getColumnIndexOrThrow("type"))));
+            ret.put(cur.getString(cur.getColumnIndexOrThrow("name")),
+                    SQLiteType.valueOf(cur.getString(cur.getColumnIndexOrThrow("type"))));
         }
         cur.close();
         return ret;
@@ -108,7 +106,7 @@ public class ModularSQLiteOpenHelper extends SQLiteOpenHelper {
      * Utility method to check if a table has been created in the database or
      * not.
      * 
-     * @param tableName, the table to check if created or not
+     * @param tableName , the table to check if created or not
      * @return true if the table has been created. false otherwise
      */
     public boolean isTableCreated(final String tableName) {

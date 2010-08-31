@@ -144,6 +144,5 @@ public abstract class RemoteCallService extends Service implements IRemoteCallSe
     
     public void attachInfo(Context context, RESTServiceInfo serviceInfo) {
         mContext = context;
-        
     }
 }

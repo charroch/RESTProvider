@@ -94,7 +94,7 @@ public abstract class RESTCallService extends IntentService implements UriReques
                 HttpUriRequest request = getRequest(uri, INSERT, getQueryParams(uri, projection,
                         selection, selectionArg, sortOrder));
 
-                NodeParser<?> parser = getParser(uri);
+                NodeParser<?> parser = null;//getParser(uri);
 
                 onPreCall(info, request, parser);
 
