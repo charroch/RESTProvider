@@ -1,6 +1,12 @@
 
 package novoda.rest.services;
 
+import java.io.IOException;
+import java.io.UnsupportedEncodingException;
+import java.net.URI;
+import java.net.URISyntaxException;
+import java.util.List;
+
 import novoda.rest.net.UserAgent;
 
 import org.apache.http.HttpEntity;
@@ -19,13 +25,6 @@ import org.apache.http.client.utils.URLEncodedUtils;
 import android.app.IntentService;
 import android.content.Intent;
 import android.net.Uri;
-import android.net.http.AndroidHttpClient;
-
-import java.io.IOException;
-import java.io.UnsupportedEncodingException;
-import java.net.URI;
-import java.net.URISyntaxException;
-import java.util.List;
 
 public abstract class HttpService extends IntentService {
 
@@ -47,6 +46,11 @@ public abstract class HttpService extends IntentService {
 
     public HttpService(String name) {
         super(name);
+        client = getHttpClient();
+    }
+
+    /* package */HttpClient getHttpClient() {
+        return android.net.http.AndroidHttpClient.newInstance(USER_AGENT, getBaseContext());
     }
 
     public HttpService() {
@@ -56,7 +60,6 @@ public abstract class HttpService extends IntentService {
     @Override
     protected void onHandleIntent(Intent intent) {
         this.intent = intent;
-        client = AndroidHttpClient.newInstance(USER_AGENT, getBaseContext());
         final Uri uri = intent.getData();
         final int method = intent.getIntExtra("method", -1);
         final List<ParcelableBasicNameValuePair> params = intent
@@ -68,7 +71,7 @@ public abstract class HttpService extends IntentService {
                 break;
             case POST:
                 request = new HttpPost(uri.toString());
-                ((HttpPost) request).setEntity(getPostEntity(params));
+                ((HttpPost)request).setEntity(getPostEntity(params));
                 break;
             case DELETE:
                 request = new HttpDelete(uri.toString());
@@ -82,8 +85,8 @@ public abstract class HttpService extends IntentService {
                                 + intent.toString());
         }
 
-        onPreCall(request);
         try {
+            onPreCall(request);
             HttpResponse response = client.execute(request);
             onPostCall(response);
             onHandleResponse(response);
@@ -96,9 +99,8 @@ public abstract class HttpService extends IntentService {
 
     private URI getURIFromUri(Uri uri, List<ParcelableBasicNameValuePair> params) {
         try {
-            return URIUtils.createURI(uri.getScheme(), uri.getHost(), uri.getPort(),
-                    uri.getEncodedPath(), URLEncodedUtils.format(params, "UTF-8"),
-                    uri.getFragment());
+            return URIUtils.createURI(uri.getScheme(), uri.getHost(), uri.getPort(), uri
+                    .getEncodedPath(), URLEncodedUtils.format(params, "UTF-8"), uri.getFragment());
         } catch (URISyntaxException e) {
             throw new HttpServiceException();
         }
