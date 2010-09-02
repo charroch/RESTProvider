@@ -7,9 +7,9 @@ import novoda.rest.database.CachingStrategy;
 import novoda.rest.database.DatabaseUtils;
 import novoda.rest.database.SQLiteTableCreatorWrapper;
 import novoda.rest.database.UriTableCreator;
+import novoda.rest.net.ETag;
 import novoda.rest.parsers.Node;
 import novoda.rest.parsers.NodeParser;
-import novoda.rest.services.ETag;
 
 import org.apache.http.HttpStatus;
 import org.apache.http.client.ClientProtocolException;

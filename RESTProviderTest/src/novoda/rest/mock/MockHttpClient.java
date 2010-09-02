@@ -28,6 +28,8 @@ public class MockHttpClient implements HttpClient {
 
     private String params;
 
+    private HttpResponse response;
+
     public MockHttpClient expect(HttpUriRequest expected) {
         this.expected = expected;
         return this;
@@ -48,31 +50,37 @@ public class MockHttpClient implements HttpClient {
         return this;
     }
 
+    public MockHttpClient withResponse(HttpResponse response) {
+        this.response = response;
+        return this;
+    }
+
     @Override
     public HttpResponse execute(HttpUriRequest request) throws IOException, ClientProtocolException {
+        assertRequest(request);
+        return response;
+    }
 
+    private void assertRequest(HttpUriRequest request) throws IOException {
         if (requestType != null) {
             assertEquals("should have save request type", requestType, request.getClass());
         }
-
         if (uri != null) {
             assertEquals("should have same uri", uri, request.getRequestLine().getUri());
         }
-
         if (params != null) {
             if (request instanceof HttpEntityEnclosingRequest) {
                 assertEquals("should have same params within http enclosing request", params,
                         EntityUtils.toString(((HttpEntityEnclosingRequest) request).getEntity()));
             }
         }
-
-        return null;
     }
 
     @Override
     public HttpResponse execute(HttpUriRequest request, HttpContext context) throws IOException,
             ClientProtocolException {
-        throw new UnsupportedOperationException("not implemented");
+        assertRequest(request);
+        return response;
     }
 
     @Override
