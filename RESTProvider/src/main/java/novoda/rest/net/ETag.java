@@ -1,5 +1,5 @@
 
-package novoda.rest.services;
+package novoda.rest.net;
 
 import android.os.Parcel;
 import android.os.Parcelable;

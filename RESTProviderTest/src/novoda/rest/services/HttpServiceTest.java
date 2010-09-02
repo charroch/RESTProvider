@@ -87,7 +87,7 @@ public class HttpServiceTest extends ServiceTestCase<ConcreteHttpService> {
         params.add(new ParcelableBasicNameValuePair("test", "2"));
         params.add(new ParcelableBasicNameValuePair("another", "myString"));
 
-        Intent intent = new Intent(HttpService.ACTION_GET, Uri.parse(BASE_URI));
+        Intent intent = new Intent(HttpService.ACTION_POST, Uri.parse(BASE_URI));
         intent.putParcelableArrayListExtra("params", params);
         getService().onHandleIntent(intent);
     }

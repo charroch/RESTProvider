@@ -2,6 +2,7 @@
 package novoda.rest.services;
 
 import org.apache.http.HttpResponse;
+import org.apache.http.protocol.HttpContext;
 
 import novoda.rest.services.HttpService;
 
@@ -19,6 +20,6 @@ public class ConcreteHttpService extends HttpService {
     }
 
     @Override
-    protected void onHandleResponse(HttpResponse response) {
+    protected void onHandleResponse(HttpResponse response, HttpContext context) {
     }
 }

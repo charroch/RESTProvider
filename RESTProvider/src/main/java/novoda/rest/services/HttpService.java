@@ -1,13 +1,6 @@
 
 package novoda.rest.services;
 
-import java.io.IOException;
-import java.io.UnsupportedEncodingException;
-import java.net.URI;
-import java.net.URISyntaxException;
-import java.util.ArrayList;
-import java.util.List;
-
 import novoda.rest.net.UserAgent;
 
 import org.apache.http.HttpEntity;
@@ -22,11 +15,20 @@ import org.apache.http.client.methods.HttpPut;
 import org.apache.http.client.methods.HttpUriRequest;
 import org.apache.http.client.utils.URIUtils;
 import org.apache.http.client.utils.URLEncodedUtils;
+import org.apache.http.protocol.BasicHttpContext;
+import org.apache.http.protocol.HttpContext;
 
 import android.app.IntentService;
 import android.content.Intent;
 import android.net.Uri;
 import android.util.Log;
+
+import java.io.IOException;
+import java.io.UnsupportedEncodingException;
+import java.net.URI;
+import java.net.URISyntaxException;
+import java.util.ArrayList;
+import java.util.List;
 
 public abstract class HttpService extends IntentService {
 
@@ -54,21 +56,21 @@ public abstract class HttpService extends IntentService {
 
     private HttpUriRequest request;
 
+    private List<HttpServiceWrapper> wrappers;
+
     public HttpService(String name) {
         super(name);
         client = getHttpClient();
-    }
-
-    /* package */HttpClient getHttpClient() {
-        return android.net.http.AndroidHttpClient.newInstance(USER_AGENT, getBaseContext());
-    }
-
-    /* package */void setHttpClient(HttpClient client) {
-        this.client = client;
+        wrappers = new ArrayList<HttpServiceWrapper>();
     }
 
     public HttpService() {
         this(HttpService.class.getSimpleName());
+    }
+
+    @Override
+    public void onDestroy() {
+        super.onDestroy();
     }
 
     @Override
@@ -78,6 +80,12 @@ public abstract class HttpService extends IntentService {
         final Uri uri = intent.getData();
         int method = -1;
 
+        List<ParcelableBasicNameValuePair> params = intent.getParcelableArrayListExtra("params");
+
+        if (params == null) {
+            params = new ArrayList<ParcelableBasicNameValuePair>();
+        }
+
         if (ACTION_GET.equals(intent.getAction())) {
             method = 1;
         } else if (ACTION_POST.equals(intent.getAction())) {
@@ -86,12 +94,6 @@ public abstract class HttpService extends IntentService {
             method = 3;
         } else if (ACTION_UPDATE.equals(intent.getAction())) {
             method = 4;
-        }
-
-        List<ParcelableBasicNameValuePair> params = intent.getParcelableArrayListExtra("params");
-
-        if (params == null) {
-            params = new ArrayList<ParcelableBasicNameValuePair>();
         }
 
         switch (method) {
@@ -115,10 +117,16 @@ public abstract class HttpService extends IntentService {
         }
 
         try {
-            onPreCall(request);
-            HttpResponse response = client.execute(request);
-            onPostCall(response);
-            onHandleResponse(response);
+
+            HttpContext context = getHttpContext();
+            context.setAttribute("intent", intent);
+
+            onPreCall(request, context);
+            HttpResponse response = client.execute(request, context);
+            onPostCall(response, context);
+
+            onHandleResponse(response, context);
+
         } catch (ClientProtocolException e) {
             e.printStackTrace();
         } catch (IOException e) {
@@ -152,6 +160,10 @@ public abstract class HttpService extends IntentService {
         }
     }
 
+    protected HttpContext getHttpContext() {
+        return new BasicHttpContext();
+    }
+
     /**
      * Called before the request goes on the wire. Leaves a chance to the
      * implementor to change the request. If you intent to add interceptors, use
@@ -160,15 +172,33 @@ public abstract class HttpService extends IntentService {
      * @param request, the constructed httpUriRequest from the several options
      *            given by the intent
      */
-    protected void onPreCall(HttpUriRequest request) {
+    protected void onPreCall(HttpUriRequest request, HttpContext context) {
+        for (HttpServiceWrapper wrapper : wrappers) {
+            wrapper.onPreCall(request, context);
+        }
     }
 
-    protected void onPostCall(HttpResponse response) {
+    protected void onPostCall(HttpResponse response, HttpContext context) {
+        for (HttpServiceWrapper wrapper : wrappers) {
+            wrapper.onPostCall(response, context);
+        }
     }
 
     protected Intent getIntent() {
         return intent;
     }
 
-    protected abstract void onHandleResponse(HttpResponse response);
+    public void addHttpServiceWrapper(HttpServiceWrapper wrapper) {
+        wrappers.add(wrapper);
+    }
+
+    protected abstract void onHandleResponse(HttpResponse response, HttpContext context);
+
+    /* package */HttpClient getHttpClient() {
+        return android.net.http.AndroidHttpClient.newInstance(USER_AGENT, getBaseContext());
+    }
+
+    /* package */void setHttpClient(HttpClient client) {
+        this.client = client;
+    }
 }

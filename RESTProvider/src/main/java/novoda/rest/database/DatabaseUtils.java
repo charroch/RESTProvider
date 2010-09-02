@@ -1,7 +1,7 @@
 
 package novoda.rest.database;
 
-import novoda.rest.services.ETag;
+import novoda.rest.net.ETag;
 
 import android.content.ContentValues;
 import android.database.Cursor;

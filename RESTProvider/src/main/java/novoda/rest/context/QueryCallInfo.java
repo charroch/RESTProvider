@@ -2,7 +2,8 @@
 package novoda.rest.context;
 
 
-import novoda.rest.services.ETag;
+import novoda.rest.net.ETag;
+
 import android.os.Parcel;
 import android.os.Parcelable;
 

@@ -9,10 +9,9 @@ import android.content.res.XmlResourceParser;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.Reader;
-import java.util.Queue;
 
 public class StringResourceParser implements XmlResourceParser {
-    
+
     private XmlPullParser xpp;
 
     public StringResourceParser(XmlPullParser xpp) {
