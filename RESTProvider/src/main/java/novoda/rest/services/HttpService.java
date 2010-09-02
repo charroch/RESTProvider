@@ -5,6 +5,7 @@ import java.io.IOException;
 import java.io.UnsupportedEncodingException;
 import java.net.URI;
 import java.net.URISyntaxException;
+import java.util.ArrayList;
 import java.util.List;
 
 import novoda.rest.net.UserAgent;
@@ -25,6 +26,7 @@ import org.apache.http.client.utils.URLEncodedUtils;
 import android.app.IntentService;
 import android.content.Intent;
 import android.net.Uri;
+import android.util.Log;
 
 public abstract class HttpService extends IntentService {
 
@@ -37,6 +39,14 @@ public abstract class HttpService extends IntentService {
     private static final int DELETE = 3;
 
     private static final int PUT = 4;
+
+    public static final String ACTION_GET = "novoda.rest.http.GET_REQUEST";
+
+    public static final String ACTION_POST = "novoda.rest.http.POST_REQUEST";
+
+    public static final String ACTION_UPDATE = "novoda.rest.http.PUT_REQUEST";
+
+    public static final String ACTION_DELETE = "novoda.rest.http.DELETE_REQUEST";
 
     private Intent intent;
 
@@ -53,17 +63,36 @@ public abstract class HttpService extends IntentService {
         return android.net.http.AndroidHttpClient.newInstance(USER_AGENT, getBaseContext());
     }
 
+    /* package */void setHttpClient(HttpClient client) {
+        this.client = client;
+    }
+
     public HttpService() {
         this(HttpService.class.getSimpleName());
     }
 
     @Override
     protected void onHandleIntent(Intent intent) {
+        Log.i("TES", intent.toString());
         this.intent = intent;
         final Uri uri = intent.getData();
-        final int method = intent.getIntExtra("method", -1);
-        final List<ParcelableBasicNameValuePair> params = intent
-                .getParcelableArrayListExtra("params");
+        int method = -1;
+
+        if (ACTION_GET.equals(intent.getAction())) {
+            method = 1;
+        } else if (ACTION_POST.equals(intent.getAction())) {
+            method = 2;
+        } else if (ACTION_DELETE.equals(intent.getAction())) {
+            method = 3;
+        } else if (ACTION_UPDATE.equals(intent.getAction())) {
+            method = 4;
+        }
+
+        List<ParcelableBasicNameValuePair> params = intent.getParcelableArrayListExtra("params");
+
+        if (params == null) {
+            params = new ArrayList<ParcelableBasicNameValuePair>();
+        }
 
         switch (method) {
             case GET:
@@ -71,7 +100,7 @@ public abstract class HttpService extends IntentService {
                 break;
             case POST:
                 request = new HttpPost(uri.toString());
-                ((HttpPost)request).setEntity(getPostEntity(params));
+                ((HttpPost) request).setEntity(getPostEntity(params));
                 break;
             case DELETE:
                 request = new HttpDelete(uri.toString());

@@ -1,110 +1,94 @@
 
 package novoda.rest.services;
 
-import java.io.IOException;
+import novoda.rest.mock.MockHttpClient;
 
-import novoda.rest.services.HttpServiceTest.TestService;
+import org.apache.http.client.methods.HttpDelete;
+import org.apache.http.client.methods.HttpGet;
+import org.apache.http.client.methods.HttpPost;
+import org.apache.http.client.methods.HttpPut;
 
-import org.apache.http.HttpHost;
-import org.apache.http.HttpRequest;
-import org.apache.http.HttpResponse;
-import org.apache.http.client.ClientProtocolException;
-import org.apache.http.client.HttpClient;
-import org.apache.http.client.ResponseHandler;
-import org.apache.http.client.methods.HttpUriRequest;
-import org.apache.http.conn.ClientConnectionManager;
-import org.apache.http.params.HttpParams;
-import org.apache.http.protocol.HttpContext;
-
+import android.content.Intent;
+import android.net.Uri;
 import android.test.ServiceTestCase;
 
-public class HttpServiceTest extends ServiceTestCase<TestService> {
+import java.util.ArrayList;
 
-    public HttpServiceTest(Class<TestService> serviceClass) {
+public class HttpServiceTest extends ServiceTestCase<ConcreteHttpService> {
+
+    private static final String BASE_URI = "http://android.com";
+
+    private static MockHttpClient client;
+
+    public HttpServiceTest(Class<ConcreteHttpService> serviceClass) {
         super(serviceClass);
     }
 
     public HttpServiceTest() {
-        this(TestService.class);
+        this(ConcreteHttpService.class);
     }
 
     @Override
     protected void setUp() throws Exception {
         super.setUp();
         setupService();
+        client = new MockHttpClient();
+        getService().setHttpClient(client);
     }
 
-    public static class TestService extends HttpService {
-        public TestService() {
-            super();
-        }
-
-        public TestService(String tag) {
-            super(tag);
-        }
-
-        @Override
-        protected void onHandleResponse(HttpResponse response) {
-        }
+    @Override
+    protected void tearDown() throws Exception {
+        client = null;
+        super.tearDown();
     }
 
-    public class MockHttpClient implements HttpClient {
-        @Override
-        public HttpResponse execute(HttpUriRequest request) throws IOException,
-                ClientProtocolException {
-            return null;
-        }
+    public void testGetRequest() throws Exception {
+        client.expectType(HttpGet.class);
+        Intent intent = new Intent(HttpService.ACTION_GET, Uri.parse(BASE_URI));
+        getService().onHandleIntent(intent);
+    }
 
-        @Override
-        public HttpResponse execute(HttpUriRequest request, HttpContext context)
-                throws IOException, ClientProtocolException {
-            return null;
-        }
+    public void testPostRequest() throws Exception {
+        client.expectType(HttpPost.class);
+        Intent intent = new Intent(HttpService.ACTION_POST, Uri.parse(BASE_URI));
+        getService().onHandleIntent(intent);
+    }
 
-        @Override
-        public HttpResponse execute(HttpHost target, HttpRequest request) throws IOException,
-                ClientProtocolException {
-            return null;
-        }
+    public void testDeleteRequest() throws Exception {
+        client.expectType(HttpDelete.class);
+        Intent intent = new Intent(HttpService.ACTION_DELETE, Uri.parse(BASE_URI));
+        getService().onHandleIntent(intent);
+    }
 
-        @Override
-        public <T> T execute(HttpUriRequest arg0, ResponseHandler<? extends T> arg1)
-                throws IOException, ClientProtocolException {
-            return null;
-        }
+    public void testPutRequest() throws Exception {
+        client.expectType(HttpPut.class);
+        Intent intent = new Intent(HttpService.ACTION_UPDATE, Uri.parse(BASE_URI));
+        getService().onHandleIntent(intent);
+    }
 
-        @Override
-        public HttpResponse execute(HttpHost target, HttpRequest request, HttpContext context)
-                throws IOException, ClientProtocolException {
-            return null;
-        }
+    public void testGetRequestWithParams() throws Exception {
 
-        @Override
-        public <T> T execute(HttpUriRequest arg0, ResponseHandler<? extends T> arg1,
-                HttpContext arg2) throws IOException, ClientProtocolException {
-            return null;
-        }
+        client.expectUri(BASE_URI + "/?test=2&another=myString");
 
-        @Override
-        public <T> T execute(HttpHost arg0, HttpRequest arg1, ResponseHandler<? extends T> arg2)
-                throws IOException, ClientProtocolException {
-            return null;
-        }
+        ArrayList<ParcelableBasicNameValuePair> params = new ArrayList<ParcelableBasicNameValuePair>();
+        params.add(new ParcelableBasicNameValuePair("test", "2"));
+        params.add(new ParcelableBasicNameValuePair("another", "myString"));
 
-        @Override
-        public <T> T execute(HttpHost arg0, HttpRequest arg1, ResponseHandler<? extends T> arg2,
-                HttpContext arg3) throws IOException, ClientProtocolException {
-            return null;
-        }
+        Intent intent = new Intent(HttpService.ACTION_GET, Uri.parse(BASE_URI));
+        intent.putParcelableArrayListExtra("params", params);
+        getService().onHandleIntent(intent);
+    }
 
-        @Override
-        public ClientConnectionManager getConnectionManager() {
-            return null;
-        }
+    public void testPostRequestWithParams() throws Exception {
 
-        @Override
-        public HttpParams getParams() {
-            return null;
-        }
+        client.expectUri(BASE_URI).expectPostParams("test=2&another=myString");
+
+        ArrayList<ParcelableBasicNameValuePair> params = new ArrayList<ParcelableBasicNameValuePair>();
+        params.add(new ParcelableBasicNameValuePair("test", "2"));
+        params.add(new ParcelableBasicNameValuePair("another", "myString"));
+
+        Intent intent = new Intent(HttpService.ACTION_GET, Uri.parse(BASE_URI));
+        intent.putParcelableArrayListExtra("params", params);
+        getService().onHandleIntent(intent);
     }
 }

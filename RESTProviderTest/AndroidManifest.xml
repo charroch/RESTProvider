@@ -24,6 +24,10 @@
 		</activity>
 
 		<service android:name=".services.TestService" />
+
+		<!-- HttpService test -->
+		<service android:name="novoda.rest.services.ConcreteHttpService" />
+
 	</application>
 	<uses-permission android:name="android.permission.INTERNET" />
 	<instrumentation android:name="android.test.BespokeInstrumentationTestRunner"

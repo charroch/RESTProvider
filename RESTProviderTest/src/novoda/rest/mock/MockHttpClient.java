@@ -1,8 +1,9 @@
 
 package novoda.rest.mock;
 
-import java.io.IOException;
+import static junit.framework.Assert.assertEquals;
 
+import org.apache.http.HttpEntityEnclosingRequest;
 import org.apache.http.HttpHost;
 import org.apache.http.HttpRequest;
 import org.apache.http.HttpResponse;
@@ -13,16 +14,59 @@ import org.apache.http.client.methods.HttpUriRequest;
 import org.apache.http.conn.ClientConnectionManager;
 import org.apache.http.params.HttpParams;
 import org.apache.http.protocol.HttpContext;
+import org.apache.http.util.EntityUtils;
+
+import java.io.IOException;
 
 public class MockHttpClient implements HttpClient {
 
-    public void expect(HttpUriRequest expected) {
+    HttpUriRequest expected;
 
+    private Class<? extends HttpUriRequest> requestType = null;
+
+    private String uri;
+
+    private String params;
+
+    public MockHttpClient expect(HttpUriRequest expected) {
+        this.expected = expected;
+        return this;
+    }
+
+    public MockHttpClient expectType(Class<? extends HttpUriRequest> requestType) {
+        this.requestType = requestType;
+        return this;
+    }
+
+    public MockHttpClient expectUri(String uri) {
+        this.uri = uri;
+        return this;
+    }
+
+    public MockHttpClient expectPostParams(String params) {
+        this.params = params;
+        return this;
     }
 
     @Override
     public HttpResponse execute(HttpUriRequest request) throws IOException, ClientProtocolException {
-        throw new UnsupportedOperationException("not implemented");
+
+        if (requestType != null) {
+            assertEquals("should have save request type", requestType, request.getClass());
+        }
+
+        if (uri != null) {
+            assertEquals("should have same uri", uri, request.getRequestLine().getUri());
+        }
+
+        if (params != null) {
+            if (request instanceof HttpEntityEnclosingRequest) {
+                assertEquals("should have same params within http enclosing request", params,
+                        EntityUtils.toString(((HttpEntityEnclosingRequest) request).getEntity()));
+            }
+        }
+
+        return null;
     }
 
     @Override
@@ -76,5 +120,4 @@ public class MockHttpClient implements HttpClient {
     public HttpParams getParams() {
         throw new UnsupportedOperationException("not implemented");
     }
-
 }
