@@ -6,6 +6,10 @@ import novoda.rest.services.HttpServiceWrapper;
 
 import org.apache.http.Header;
 import org.apache.http.HttpException;
+<<<<<<< HEAD
+=======
+import org.apache.http.HttpHost;
+>>>>>>> e2c788909285e2ccd8decca1603e76b3359e99b6
 import org.apache.http.HttpRequest;
 import org.apache.http.HttpRequestInterceptor;
 import org.apache.http.HttpResponse;
