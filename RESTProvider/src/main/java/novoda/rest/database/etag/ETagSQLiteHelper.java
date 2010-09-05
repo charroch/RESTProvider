@@ -62,8 +62,8 @@ public class ETagSQLiteHelper extends SQLiteOpenHelper {
         long time = System.currentTimeMillis();
 
         final ContentValues values = new ContentValues(3);
-        values.put(ETAG_COLUMN, DatabaseUtils.sqlEscapeString(etag.etag));
-        values.put(LAST_MODIFIED_COLUMN, DatabaseUtils.sqlEscapeString(etag.lastModified));
+        values.put(ETAG_COLUMN, etag.etag);
+        values.put(LAST_MODIFIED_COLUMN, etag.lastModified);
         values.put(URL_COLUMN, uri);
         values.put(UPDATED_COLUMN, time);
 

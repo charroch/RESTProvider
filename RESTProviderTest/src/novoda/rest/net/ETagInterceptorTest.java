@@ -16,11 +16,6 @@ import org.apache.http.protocol.BasicHttpContext;
 import org.apache.http.protocol.ExecutionContext;
 import org.apache.http.protocol.HttpContext;
 
-<<<<<<< HEAD
-=======
-import android.database.Cursor;
-import android.database.DatabaseUtils;
->>>>>>> e2c788909285e2ccd8decca1603e76b3359e99b6
 import android.test.AndroidTestCase;
 import android.test.RenamingDelegatingContext;
 
@@ -40,11 +35,8 @@ public class ETagInterceptorTest extends AndroidTestCase {
 
     @Override
     protected void tearDown() throws Exception {
-<<<<<<< HEAD
         interceptor.helper.getWritableDatabase().delete("etag", null, null);
-=======
         // interceptor.helper.getWritableDatabase().delete("etag", null, null);
->>>>>>> e2c788909285e2ccd8decca1603e76b3359e99b6
         super.tearDown();
     }
 
@@ -74,7 +66,6 @@ public class ETagInterceptorTest extends AndroidTestCase {
         assertTrue("should not give an exception", true);
     }
 
-<<<<<<< HEAD
     public void testGettingEtag() throws Exception {
 
         ETag etag = new ETag();
@@ -120,8 +111,6 @@ public class ETagInterceptorTest extends AndroidTestCase {
         assertTrue(true);
     }
 
-=======
->>>>>>> e2c788909285e2ccd8decca1603e76b3359e99b6
     public void testInsertEtag() throws Exception {
         MockHttpResponse response = new MockHttpResponse() {
             @Override
@@ -152,23 +141,9 @@ public class ETagInterceptorTest extends AndroidTestCase {
         });
         final HttpHost targetHost = new HttpHost("test.com");
         context.setAttribute(ExecutionContext.HTTP_TARGET_HOST, targetHost);
-<<<<<<< HEAD
         interceptor.onPostCall(response, context);
         ETag etag = interceptor.helper.getETag("test.com");
-        assertEquals("'test-etag'", etag.etag);
-        assertEquals("'last-modified'", etag.lastModified);
-=======
-
-        interceptor.onPostCall(response, context);
-
-        Cursor cur = interceptor.helper.getReadableDatabase().query("etag", null, null, null, null,
-                null, null);
-        DatabaseUtils.dumpCursor(cur);
-        cur.close();
-
-        ETag etag = interceptor.helper.getETag("http://test.com");
         assertEquals("test-etag", etag.etag);
         assertEquals("last-modified", etag.lastModified);
->>>>>>> e2c788909285e2ccd8decca1603e76b3359e99b6
     }
 }

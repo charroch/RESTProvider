@@ -87,13 +87,13 @@ public abstract class HttpService extends IntentService {
         }
 
         if (ACTION_GET.equals(intent.getAction())) {
-            method = 1;
+            method = GET;
         } else if (ACTION_POST.equals(intent.getAction())) {
-            method = 2;
+            method = POST;
         } else if (ACTION_DELETE.equals(intent.getAction())) {
-            method = 3;
+            method = DELETE;
         } else if (ACTION_UPDATE.equals(intent.getAction())) {
-            method = 4;
+            method = PUT;
         }
 
         switch (method) {
@@ -136,8 +136,9 @@ public abstract class HttpService extends IntentService {
 
     private URI getURIFromUri(Uri uri, List<ParcelableBasicNameValuePair> params) {
         try {
-            return URIUtils.createURI(uri.getScheme(), uri.getHost(), uri.getPort(), uri
-                    .getEncodedPath(), URLEncodedUtils.format(params, "UTF-8"), uri.getFragment());
+            return URIUtils.createURI(uri.getScheme(), uri.getHost(), uri.getPort(),
+                    uri.getEncodedPath(), URLEncodedUtils.format(params, "UTF-8"),
+                    uri.getFragment());
         } catch (URISyntaxException e) {
             throw new HttpServiceException();
         }
