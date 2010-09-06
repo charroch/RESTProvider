@@ -3,7 +3,7 @@ package novoda.rest.parsers;
 
 
 import novoda.rest.exception.ParserException;
-import novoda.rest.parsers.Node.Options;
+import novoda.rest.parsers.Node.ParsingOptions;
 
 import org.apache.http.Header;
 import org.apache.http.HttpEntity;
@@ -25,9 +25,9 @@ public abstract class NodeParser<T extends Node<?>> implements ResponseHandler<T
     protected NodeParser() {
     }
 
-    Options options;
+    ParsingOptions options;
 
-    abstract public T parse(InputStream response, Options options) throws ParserException;
+    abstract public T parse(InputStream response, ParsingOptions options) throws ParserException;
 
     /**
      * The expected result HTTP response code. Do NOT return NOT MODIFIED (304)
@@ -82,12 +82,12 @@ public abstract class NodeParser<T extends Node<?>> implements ResponseHandler<T
 
     public static class Builder {
 
-        Options option;
+        ParsingOptions option;
 
         Builder builder;
 
         public Builder() {
-            option = new Options();
+            option = new ParsingOptions();
         }
 
         public Builder withRootNode(String root) {
@@ -110,7 +110,7 @@ public abstract class NodeParser<T extends Node<?>> implements ResponseHandler<T
             return this;
         }
 
-        public Builder withChildren(Map<String, Options> children) {
+        public Builder withChildren(Map<String, ParsingOptions> children) {
             option.children.putAll(children);
             return this;
         }

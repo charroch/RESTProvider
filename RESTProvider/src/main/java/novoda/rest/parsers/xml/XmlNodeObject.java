@@ -21,7 +21,7 @@ public class XmlNodeObject extends Node<XMLNode> {
     }
 
     @Override
-    public void applyOptions(Options options) {
+    public void applyOptions(ParsingOptions options) {
         this.setOptions(options);
         if (options.rootNode != null) {
             data = data.path(options.rootNode);
@@ -42,8 +42,8 @@ public class XmlNodeObject extends Node<XMLNode> {
         }
     }
 
-    public void applyOptionsChild(Options options, XmlNodeObject node) {
-        for (Entry<String, Options> entry : options.children.entrySet()) {
+    public void applyOptionsChild(ParsingOptions options, XmlNodeObject node) {
+        for (Entry<String, ParsingOptions> entry : options.children.entrySet()) {
             XMLNode child = node.data.path(entry.getKey());
             XmlNodeObject childNode = new XmlNodeObject(child);
             childNode.applyOptions(entry.getValue());
@@ -79,7 +79,7 @@ public class XmlNodeObject extends Node<XMLNode> {
         if (isArray) {
             XmlNodeObject o = new XmlNodeObject(data.get(index));
             o.setParent(this.getParent());
-            Options options = getOptions();
+            ParsingOptions options = getOptions();
             options.rootNode = null;
             o.applyOptions(options);
             return o;

@@ -4,7 +4,7 @@ package novoda.rest.parsers.xml;
 import novoda.mixml.XMLNode;
 import novoda.rest.exception.ParserException;
 import novoda.rest.parsers.NodeParser;
-import novoda.rest.parsers.Node.Options;
+import novoda.rest.parsers.Node.ParsingOptions;
 
 import org.xml.sax.SAXException;
 
@@ -17,7 +17,7 @@ import javax.xml.parsers.ParserConfigurationException;
 public class XmlNodeParser extends NodeParser<XmlNodeObject> {
 
     @Override
-    public XmlNodeObject parse(InputStream response, Options options) throws ParserException {
+    public XmlNodeObject parse(InputStream response, ParsingOptions options) throws ParserException {
         XMLNode node = new XMLNode();
         try {
             node.parse(response);

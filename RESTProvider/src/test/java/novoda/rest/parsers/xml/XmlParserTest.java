@@ -4,7 +4,7 @@ package novoda.rest.parsers.xml;
 import static org.junit.Assert.assertEquals;
 import novoda.mixml.XMLNode;
 import novoda.rest.parsers.Node;
-import novoda.rest.parsers.Node.Options;
+import novoda.rest.parsers.Node.ParsingOptions;
 
 import org.jbehave.scenario.annotations.Given;
 import org.jbehave.scenario.annotations.Then;
@@ -29,7 +29,7 @@ public class XmlParserTest extends Steps {
 
     private XmlNodeObject xmlNode;
 
-    private Options options = null;
+    private ParsingOptions options = null;
 
     @Given("the following XML:\n---\n$result\n---")
     public void getJson(String result) throws SAXException, IOException,
@@ -37,13 +37,13 @@ public class XmlParserTest extends Steps {
         node = new XMLNode();
         node.parse(new ByteArrayInputStream(result.getBytes()));
         xmlNode = new XmlNodeObject(node);
-        options = new Options();
+        options = new ParsingOptions();
     }
 
     @When("I configure the $type node to be \"$rootNode\"")
     public void setRootNode(String type, String rootNode) {
         if (options == null) {
-            options = new Options();
+            options = new ParsingOptions();
         }
         if (type.equals("root")) {
             options.rootNode = rootNode;
@@ -55,21 +55,21 @@ public class XmlParserTest extends Steps {
     @When("I configure a one to many relationship on node \"$children\"")
     public void setRelationship(String name) {
         if (options == null) {
-            options = new Options();
+            options = new ParsingOptions();
         }
 
         if (options.children == null) {
-            options.children = new HashMap<String, Options>();
+            options.children = new HashMap<String, ParsingOptions>();
         }
-        options.children.put(name, new Options());
+        options.children.put(name, new ParsingOptions());
     }
 
     @When("the relationship \"$children\" is configured with root node \"$rootNode\"")
     public void setRootNodeForChildren(String childName, String root) {
         if (options == null) {
-            options = new Options();
+            options = new ParsingOptions();
         }
-        Options opt = options.children.get(childName);
+        ParsingOptions opt = options.children.get(childName);
         opt.rootNode = root;
         options.children.put(childName, opt);
     }
@@ -77,9 +77,9 @@ public class XmlParserTest extends Steps {
     @When("the relationship \"$children\" is configured with node name \"$rootNode\"")
     public void setNodeNameForChildren(String childName, String node) {
         if (options == null) {
-            options = new Options();
+            options = new ParsingOptions();
         }
-        Options opt = options.children.get(childName);
+        ParsingOptions opt = options.children.get(childName);
         opt.nodeName = node;
         options.children.put(childName, opt);
     }

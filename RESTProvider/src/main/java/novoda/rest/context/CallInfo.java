@@ -101,7 +101,7 @@ public class CallInfo implements Parcelable, Comparable<CallInfo>, Callable<Call
      * differ from the Uri given within the node. The Uri given by the node is
      * represented by @see {@link CallInfo#insertingUri}
      * 
-     * @see Node.Options#insertUri
+     * @see Node.ParsingOptions#insertUri
      */
     public Uri originatingUri;
 

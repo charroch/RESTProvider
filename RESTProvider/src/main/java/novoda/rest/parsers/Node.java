@@ -21,7 +21,7 @@ public abstract class Node<T> {
     /**
      *  
      */
-    public static class Options {
+    public static class ParsingOptions {
         public String rootNode;
 
         public String nodeName;
@@ -32,7 +32,7 @@ public abstract class Node<T> {
 
         public Map<String, String> mapper = new HashMap<String, String>();
 
-        public Map<String, Options> children = new HashMap<String, Options>();
+        public Map<String, ParsingOptions> children = new HashMap<String, ParsingOptions>();
     }
 
     /*
@@ -60,7 +60,7 @@ public abstract class Node<T> {
      */
     private Node<T> parent;
 
-    private Options options;
+    private ParsingOptions options;
 
     public T getData() {
         return data;
@@ -131,11 +131,11 @@ public abstract class Node<T> {
         return parent;
     }
 
-    public void setOptions(Options options) {
+    public void setOptions(ParsingOptions options) {
         this.options = options;
     }
 
-    public Options getOptions() {
+    public ParsingOptions getOptions() {
         return options;
     }
 
@@ -165,7 +165,7 @@ public abstract class Node<T> {
      */
     abstract public Node<T> getNode(int index);
 
-    abstract public void applyOptions(Options options);
+    abstract public void applyOptions(ParsingOptions options);
 
     abstract public String[] getColumns();
 }

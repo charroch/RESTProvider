@@ -49,6 +49,9 @@ public abstract class HttpService extends IntentService {
     public static final String ACTION_UPDATE = "novoda.rest.http.PUT_REQUEST";
 
     public static final String ACTION_DELETE = "novoda.rest.http.DELETE_REQUEST";
+    
+    public static final String ACTION_QUERY = "novoda.rest.cp.QUERY";
+
 
     private Intent intent;
 
@@ -75,7 +78,6 @@ public abstract class HttpService extends IntentService {
 
     @Override
     protected void onHandleIntent(Intent intent) {
-        Log.i("TES", intent.toString());
         this.intent = intent;
         final Uri uri = intent.getData();
         int method = -1;

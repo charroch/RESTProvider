@@ -1,7 +1,7 @@
 
 package novoda.rest.parsers;
 import static org.junit.Assert.assertEquals;
-import novoda.rest.parsers.Node.Options;
+import novoda.rest.parsers.Node.ParsingOptions;
 import novoda.rest.parsers.json.JsonNodeObject;
 
 import org.codehaus.jackson.JsonNode;
@@ -21,11 +21,11 @@ public class JsonParserTest extends Steps {
     public void getJson(String result) throws JsonProcessingException, IOException {
         ObjectMapper mapper = new ObjectMapper();
         
-        Options options = new Options();
+        ParsingOptions options = new ParsingOptions();
         options.rootNode = "root";
         options.table = "test";
         
-        Options child = new Options();
+        ParsingOptions child = new ParsingOptions();
         child.table = "test2";
         options.children.put("children", child);
         

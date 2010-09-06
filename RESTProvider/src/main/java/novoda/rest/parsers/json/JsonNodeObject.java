@@ -68,7 +68,7 @@ public class JsonNodeObject extends Node<JsonNode> {
         if (isArray) {
             JsonNodeObject o = new JsonNodeObject(data.get(index));
             o.setParent(this.getParent());
-            Options options = getOptions();
+            ParsingOptions options = getOptions();
             options.rootNode = null;
             o.applyOptions(options);
             return o;
@@ -78,7 +78,7 @@ public class JsonNodeObject extends Node<JsonNode> {
     }
 
     @Override
-    public void applyOptions(Options options) {
+    public void applyOptions(ParsingOptions options) {
         this.setOptions(options);
         if (options.rootNode != null) {
             data = data.path(options.rootNode);
@@ -96,8 +96,8 @@ public class JsonNodeObject extends Node<JsonNode> {
         }
     }
     
-    public void applyOptionsChild(Options options, JsonNodeObject node) {
-        for (Entry<String, Options> entry : options.children.entrySet()) {
+    public void applyOptionsChild(ParsingOptions options, JsonNodeObject node) {
+        for (Entry<String, ParsingOptions> entry : options.children.entrySet()) {
             JsonNode child = node.data.path(entry.getKey());
             JsonNodeObject childNode = new JsonNodeObject(child);
             childNode.applyOptions(entry.getValue());
