@@ -11,7 +11,7 @@ import android.os.Parcelable;
 
 public class ProviderMetaData implements Parcelable {
 
-    private static final String NAMESPACE = "http://novoda.github.com/RESTProvider/apk/res";
+    public static final String NAMESPACE = "http://novoda.github.com/RESTProvider/apk/res";
 
     private static final String SERVICE_TAG_ATR_NAME = "name";
 

@@ -1,5 +1,5 @@
 
-package novoda.rest.providers;
+package novoda.rest.system;
 
 import novoda.rest.mock.StringResourceParser;
 
@@ -14,7 +14,6 @@ import android.content.pm.PackageManager;
 import android.content.pm.ProviderInfo;
 import android.content.res.Resources;
 import android.content.res.XmlResourceParser;
-import android.net.Uri;
 import android.os.Bundle;
 import android.test.AndroidTestCase;
 import android.test.IsolatedContext;
@@ -25,13 +24,20 @@ import java.io.StringReader;
 import java.util.Arrays;
 import java.util.List;
 
-public class RESTProviderTest extends AndroidTestCase {
-
+public class IOCLoader2Test extends AndroidTestCase {
     private Bundle bundle;
 
-    private RESTProvider mProvider;
+    private IOCLoader loader;
 
     private ProviderInfo info;
+
+    public IOCLoader2Test() {
+        super();
+    }
+    
+    IOCLoader2Test(String name) {
+        super();
+    }
 
     @Override
     protected void setUp() throws Exception {
@@ -47,36 +53,31 @@ public class RESTProviderTest extends AndroidTestCase {
         info.name = "novoda.rest.providers.RESTProvider";
         info.metaData = bundle;
 
-        mProvider = RESTProvider.class.newInstance();
-        mProvider.attachInfo(getContext(), info);
-        assertNotNull(mProvider);
+        loader = IOCLoader.getInstance(getContext());
+        loader.providerInfo = info;
+        assertNotNull(loader);
+    }
+
+    public void testGetServiceFromMetadata() throws Exception {
+        setBundle(bundle);
+        assertEquals(loader.getProviderInfo(), info);
+        assertNotNull(loader.metaData);
     }
 
     public void testShoudlThrowExceptionIfNoMetadata() throws Exception {
-        mProvider = RESTProvider.class.newInstance();
-        mProvider.attachInfo(getContext(), null);
+        loader.providerInfo = null;
         try {
-            mProvider.getService();
+            loader.getMetaData();
             fail();
         } catch (Exception e) {
             assertTrue(true);
         }
     }
 
+    public void testGettingMetadata() throws Exception {
+        assertEquals(loader.metaData.serviceClassName, "test.com");
+    }
 
-    public void testGetTableName() throws Exception {
-        String actual = mProvider.getTableName(Uri.parse("content://test.com/test"));
-        assertEquals("test", actual);
-        
-        actual = mProvider.getTableName(Uri.parse("content://test.com/test/2"));
-        assertEquals("test", actual);
-    }
-    
-    public void testGetHttpUrl() throws Exception {
-        Uri actual = mProvider.getHttpUri(Uri.parse("content://test.com/test"));
-        assertEquals(Uri.parse("http://test.com/test"), actual);
-    }
-    
     public void setBundle(Bundle bundle) {
         this.bundle = bundle;
     }
@@ -121,9 +122,9 @@ public class RESTProviderTest extends AndroidTestCase {
                         xpp = factory.newPullParser();
                         xpp
                                 .setInput(new StringReader(
-                                        "<?xml version=\"1.0\" encoding=\"utf-8\"?>" +
-                                        "<service xmlns:rest=\"http://novoda.github.com/RESTProvider/apk/res\" rest:name=\"test.com\">" +
-                                        "</service>"));
+                                        "<?xml version=\"1.0\" encoding=\"utf-8\"?>"
+                                                + "<service xmlns:rest=\"http://novoda.github.com/RESTProvider/apk/res\" rest:name=\"test.com\">"
+                                                + "</service>"));
                     } catch (XmlPullParserException e) {
                         e.printStackTrace();
                     }

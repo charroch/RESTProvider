@@ -55,7 +55,11 @@ public class IOCLoaderTest extends InstrumentationTestCase {
         info.name = ".services.TestService";
         assertServiceEquals(info, loader.getServiceInfo("novoda.rest.test.services.TestService"));
     }
-
+    
+    public void testGetMetaData() throws Exception {
+        
+    }
+    
     private void assertServiceEquals(ServiceInfo expected, ServiceInfo actual) {
         assertTrue(actual.name.endsWith(expected.name));
     }

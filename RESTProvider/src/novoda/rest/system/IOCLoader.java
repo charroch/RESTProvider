@@ -1,22 +1,80 @@
 
 package novoda.rest.system;
 
+import novoda.rest.configuration.ProviderMetaData;
+import novoda.rest.database.ModularSQLiteOpenHelper;
+
+import org.xmlpull.v1.XmlPullParserException;
+
 import android.app.Service;
 import android.content.ComponentName;
 import android.content.Context;
 import android.content.pm.PackageManager;
+import android.content.pm.ProviderInfo;
 import android.content.pm.ServiceInfo;
 import android.content.pm.PackageManager.NameNotFoundException;
+import android.content.res.XmlResourceParser;
+
+import java.io.IOException;
+import java.util.List;
 
 public class IOCLoader {
+
+    private volatile static IOCLoader instance;
+
+    private static final String METADATA_NAME = "novoda.rest";
 
     private Context context;
 
     private PackageManager pm;
 
-    public IOCLoader(final Context context) {
+    /* package */ProviderMetaData metaData;
+
+    /* package */ProviderInfo providerInfo;
+
+    /* package */IOCLoader(final Context context) {
         this.context = context;
         this.pm = context.getPackageManager();
+        providerInfo = getProviderInfo();
+        metaData = getMetaData();
+    }
+
+    public static IOCLoader getInstance(final Context context) {
+        if (instance == null) {
+            synchronized (IOCLoader.class) {
+                if (instance == null)
+                    instance = new IOCLoader(context);
+            }
+        }
+        return instance;
+    }
+
+    /* package */ProviderMetaData getMetaData() {
+        try {
+            final XmlResourceParser xml = getProviderInfo().loadXmlMetaData(pm, METADATA_NAME);
+            return ProviderMetaData.loadFromXML(xml);
+        } catch (XmlPullParserException e) {
+            throw new LoaderException("XML not formed correctly", e);
+        } catch (IOException e) {
+            throw new LoaderException("IOException, can not open metadata file", e);
+        }
+    }
+
+    /* package */ProviderInfo getProviderInfo() {
+        // Get all providers associated with this process id. This might not
+        // work with multi-process calls.
+        List<ProviderInfo> providerInfo = pm.queryContentProviders(pm
+                .getNameForUid(android.os.Process.myUid()), android.os.Process.myUid(), 0);
+        for (ProviderInfo info : providerInfo) {
+            if (getClass().getName().equals(info.name)) {
+                return pm.resolveContentProvider(info.authority, PackageManager.GET_META_DATA);
+            }
+        }
+        throw new LoaderException("can not load provider, provider not found for this process");
+    }
+
+    public ServiceInfo getServiceInfo() {
+        return getServiceInfo(metaData.serviceClassName);
     }
 
     /**
@@ -49,52 +107,7 @@ public class IOCLoader {
         return name;
     }
 
-    /*
-     * Runtime exception that might happen upon class loading.
-     */
-    public class LoaderException extends RuntimeException {
-
-        public static final int INSTANTIATION_EXCEPTION = 0;
-
-        public static final int ILLEGAL_ACCESS_EXCEPTION = 1;
-
-        public static final int CLASS_NOT_FOUND_EXCEPTION = 2;
-
-        public static final int NAME_NOT_FOUND_EXCEPTION = 3;
-
-        private static final long serialVersionUID = 1092262456874490603L;
-
-        private int type;
-
-        public LoaderException(Exception e) {
-            super(e);
-            if (e instanceof InstantiationException) {
-                this.setType(INSTANTIATION_EXCEPTION);
-            } else if (e instanceof IllegalAccessException) {
-                this.setType(ILLEGAL_ACCESS_EXCEPTION);
-            } else if (e instanceof ClassNotFoundException) {
-                this.setType(CLASS_NOT_FOUND_EXCEPTION);
-            } else if (e instanceof NameNotFoundException) {
-                this.setType(NAME_NOT_FOUND_EXCEPTION);
-            }
-        }
-
-        public void setType(int type) {
-            this.type = type;
-        }
-
-        public int getType() {
-            return type;
-        }
-
-        @Override
-        public String getMessage() {
-            switch (type) {
-                case NAME_NOT_FOUND_EXCEPTION:
-                    return "Name not found, have you declared it in the manifest?";
-            }
-            return super.getMessage();
-        }
-
+    public ModularSQLiteOpenHelper getSQLiteHelper() {
+        return null;
     }
 }
