@@ -1,6 +1,7 @@
 
 package novoda.rest.services;
 
+import novoda.rest.context.QueryCallInfo;
 import novoda.rest.context.command.Command;
 import novoda.rest.context.command.QueryCommand;
 import novoda.rest.parsers.json.JsonNodeObject;
@@ -25,11 +26,14 @@ public class HttpServiceInvoker extends HttpService {
      */
     public static final String CONTENT_TYPE_XML_SUFFIX = "xml";
 
-    @SuppressWarnings("unchecked")
+    public static final int JSON = 0;
+
+    public static final int XML = 1;
+
     @Override
     protected void onHandleResponse(HttpResponse response, HttpContext context) {
         Intent intent = getIntent().getParcelableExtra("intent");
-        Command c = getCommand(intent);
+        Command c = getCommand(intent, 0);
         InputStream in;
         try {
             in = response.getEntity().getContent();
@@ -43,15 +47,16 @@ public class HttpServiceInvoker extends HttpService {
         }
     }
 
-    public Command<?> getCommand(Intent intent) {
+    public Command<?> getCommand(Intent intent, int type) {
+        QueryCallInfo info = intent.getParcelableExtra("callinfo");
         return new QueryCommand<JsonNode>();
     }
-    
+
     public <T> T getValue(HttpResponse response) {
         try {
             InputStream in = response.getEntity().getContent();
             if (response.getEntity().getContentType().equals(CONTENT_TYPE_JSON)) {
-                JsonNode noed = new ObjectMapper().readTree(in) ;
+                JsonNode noed = new ObjectMapper().readTree(in);
                 JsonNodeObject obj = new JsonNodeObject(noed);
             }
         } catch (IllegalStateException e) {
