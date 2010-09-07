@@ -79,6 +79,26 @@ public class HttpServiceTest extends ServiceTestCase<ConcreteHttpService> {
         getService().onHandleIntent(intent);
     }
 
+    public void testGetRequestWithParamsInUri() throws Exception {
+        client.expectUri(BASE_URI + "/?test=2&another=myString");
+        Intent intent = new Intent(HttpService.ACTION_GET, Uri.parse(BASE_URI
+                + "?test=2&another=myString"));
+        getService().onHandleIntent(intent);
+    }
+    
+    public void testGetRequestWithParamsInUriAndAsParams() throws Exception {
+        client.expectUri(BASE_URI + "/?yetanother=test&test=2&another=myString");
+        
+        ArrayList<ParcelableBasicNameValuePair> params = new ArrayList<ParcelableBasicNameValuePair>();
+        params.add(new ParcelableBasicNameValuePair("yetanother", "test"));
+        
+        Intent intent = new Intent(HttpService.ACTION_GET, Uri.parse(BASE_URI
+                + "?test=2&another=myString"));
+        
+        intent.putParcelableArrayListExtra("params", params);
+        getService().onHandleIntent(intent);
+    }
+
     public void testPostRequestWithParams() throws Exception {
 
         client.expectUri(BASE_URI).expectPostParams("test=2&another=myString");

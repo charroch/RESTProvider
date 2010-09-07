@@ -3,10 +3,12 @@
 	xmlns:rest="http://novoda.github.com/RESTProvider/apk/res"
 	rest:endpoint="http://twitter.com/api"
 	rest:format="JSON|XML"
-	rest:name="novoda.rest.services.DefaultRemoteCallService">
+	rest:name="novoda.rest.services.HttpServiceInvoker">
 
-	<!-- By convention <URI>/school will map to <endpoint>/school; POST maps 
-		to inserts, GET to query, DELETE to delete, PUT to update -->
+	<!--
+		By convention <URI>/school will map to <endpoint>/school; POST maps to
+		inserts, GET to query, DELETE to delete, PUT to update
+	-->
 	<urimapper>
 		<property
 			rest:uri="schools/#"
@@ -17,14 +19,19 @@
 	</urimapper>
 
 	<sqlite
+		rest:dynamic="true|false"
 		rest:schema="@raw/sql_insert">
+
 		<table
 			rest:uri="schools/#"
-			rest:name="title"
-			rest:type="TEXT|INTGER|SQLiteType"
-			rest:unique="true"
-			rest:allow_null="true"
-			rest:on_conflict="SQLiteOnConflict" />
+			rest:name="title">
+
+			<column
+				rest:type="TEXT|INTGER|SQLiteType"
+				rest:unique="true"
+				rest:allow_null="true"
+				rest:on_conflict="SQLiteOnConflict" />
+		</table>
 	</sqlite>
 
 	<clag>

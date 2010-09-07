@@ -2,9 +2,13 @@
 package novoda.rest.services;
 
 import org.apache.http.HttpResponse;
+import org.apache.http.ParseException;
 import org.apache.http.protocol.HttpContext;
+import org.apache.http.util.EntityUtils;
 
-import novoda.rest.services.HttpService;
+import android.util.Log;
+
+import java.io.IOException;
 
 /*
  * Concrete class used for testing abstract HTTP service.

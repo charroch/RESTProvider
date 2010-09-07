@@ -14,6 +14,7 @@ import android.content.pm.PackageManager;
 import android.content.pm.ProviderInfo;
 import android.content.res.Resources;
 import android.content.res.XmlResourceParser;
+import android.net.Uri;
 import android.os.Bundle;
 import android.test.AndroidTestCase;
 import android.test.IsolatedContext;
@@ -72,6 +73,19 @@ public class RESTProviderTest extends AndroidTestCase {
         assertEquals(mProvider.metaData.serviceClassName, "test.com");
     }
 
+    public void testGetTableName() throws Exception {
+        String actual = mProvider.getTableName(Uri.parse("content://test.com/test"));
+        assertEquals("test", actual);
+        
+        actual = mProvider.getTableName(Uri.parse("content://test.com/test/2"));
+        assertEquals("test", actual);
+    }
+    
+    public void testGetHttpUrl() throws Exception {
+        Uri actual = mProvider.getHttpUri(Uri.parse("content://test.com/test"));
+        assertEquals(Uri.parse("http://test.com/test"), actual);
+    }
+    
     public void setBundle(Bundle bundle) {
         this.bundle = bundle;
     }
