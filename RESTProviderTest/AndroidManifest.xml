@@ -1,40 +1,58 @@
 <?xml version="1.0" encoding="utf-8"?>
 
-<manifest xmlns:android="http://schemas.android.com/apk/res/android"
-	package="novoda.rest.test" android:versionCode="1" android:versionName="1.0">
+<manifest
+	xmlns:android="http://schemas.android.com/apk/res/android"
+	package="novoda.rest.test"
+	android:versionCode="1"
+	android:versionName="1.0">
+	<application
+		android:icon="@drawable/icon"
+		android:label="@string/app_name">
 
-	<application android:icon="@drawable/icon" android:label="@string/app_name">
+		<uses-library
+			android:name="android.test.runner" />
 
-		<uses-library android:name="android.test.runner" />
-
-		<provider android:name="novoda.rest.providers.RESTProvider"
+		<provider
+			android:name="novoda.rest.providers.RESTProvider"
 			android:authorities="novoda.rest.clag">
-			<meta-data android:name="novoda.rest" android:resource="@xml/description" />
+			<meta-data
+				android:name="novoda.rest"
+				android:resource="@xml/description" />
 		</provider>
 
-		<service android:name="novoda.rest.services.DefaultRemoteCallService">
-			<action android:name="novoda.rest.action.ACTION_QUERY" />
+		<service
+			android:name="novoda.rest.services.DefaultRemoteCallService">
+			<action
+				android:name="novoda.rest.action.ACTION_QUERY" />
 		</service>
 
-		<activity android:name="novoda.rest.activity.Landing">
+		<activity
+			android:name="novoda.rest.activity.Landing">
 			<intent-filter>
-				<action android:name="android.intent.action.MAIN" />
-				<category android:name="android.intent.category.DEFAULT" />
+				<action
+					android:name="android.intent.action.MAIN" />
+				<category
+					android:name="android.intent.category.DEFAULT" />
 			</intent-filter>
 		</activity>
 
-		<service android:name=".services.TestService" />
+		<service
+			android:name=".services.TestService" />
 
 		<!-- HttpService test -->
-		<service android:name="novoda.rest.services.ConcreteHttpService" />
-		
+		<service
+			android:name="novoda.rest.services.ConcreteHttpService" />
+
 		<!-- HttpService test -->
-		<service android:name="novoda.rest.services.HttpServiceInvoker" />
+		<service
+			android:name="novoda.rest.services.HttpServiceInvoker" />
 
 	</application>
-	<uses-permission android:name="android.permission.INTERNET" />
-	<instrumentation android:name="android.test.BespokeInstrumentationTestRunner"
+	<uses-permission
+		android:name="android.permission.INTERNET" />
+	<instrumentation
+		android:name="android.test.BespokeInstrumentationTestRunner"
 		android:targetPackage="novoda.rest.test" />
-
-	<uses-sdk android:minSdkVersion="8" />
+	<uses-sdk
+		android:minSdkVersion="8" />
 </manifest> 

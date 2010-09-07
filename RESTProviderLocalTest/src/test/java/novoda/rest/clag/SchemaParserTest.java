@@ -28,7 +28,7 @@ public class SchemaParserTest {
         SchemaParser parser = SchemaParser.from(node);
 
         assertArraysEqualUnordered(parser.getTableFields(), new String[] {
-                "title", "description", "cost", "id"
+                "\"title\"", "\"description\"", "\"cost\"", "\"id\""
         });
 
         assertEquals(parser.getType("title"), SQLiteType.TEXT);
