@@ -1,0 +1,8 @@
+<?xml version="1.0" encoding="utf-8"?>
+<table rest:tableName="table">
+	<column rest:name="id" rest:type="INTGER" rest:unique="true"
+		rest:allow_null="false" rest:on_conflict="REPLACE" />
+
+	<column rest:name="name" rest:type="TEXT" rest:unique="false"
+		rest:allow_null="false" />
+</table>

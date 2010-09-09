@@ -53,7 +53,7 @@ public class DatabaseUtilsTest {
     @Test
     public void creatortoTableCreate() throws Exception {
 
-        String expected = "CREATE TABLE IF NOT EXISTS test (_id INTEGER PRIMARY KEY AUTOINCREMENT , f TEXT);";
+        String expected = "CREATE TABLE IF NOT EXISTS \"test\" (_id INTEGER PRIMARY KEY AUTOINCREMENT , f TEXT);";
 
         String[] fields = new String[] {
             "f"
@@ -67,7 +67,7 @@ public class DatabaseUtilsTest {
         String sql = DatabaseUtils.getCreateStatement(p);
         assertEquals(expected, sql);
 
-        expected = "CREATE TABLE IF NOT EXISTS test (_id INTEGER PRIMARY KEY AUTOINCREMENT , f TEXT NOT NULL);";
+        expected = "CREATE TABLE IF NOT EXISTS \"test\" (_id INTEGER PRIMARY KEY AUTOINCREMENT , f TEXT NOT NULL);";
 
         fields = new String[] {
             "f"
@@ -80,7 +80,7 @@ public class DatabaseUtilsTest {
         sql = DatabaseUtils.getCreateStatement(p);
         assertEquals(expected, sql);
 
-        expected = "CREATE TABLE IF NOT EXISTS test (_id INTEGER PRIMARY KEY AUTOINCREMENT , f TEXT NOT NULL, f2 INTEGER);";
+        expected = "CREATE TABLE IF NOT EXISTS \"test\" (_id INTEGER PRIMARY KEY AUTOINCREMENT , f TEXT NOT NULL, f2 INTEGER);";
 
         fields = new String[] {
                 "f", "f2"
@@ -95,7 +95,7 @@ public class DatabaseUtilsTest {
         sql = DatabaseUtils.getCreateStatement(p);
         assertEquals(expected, sql);
 
-        expected = "CREATE TABLE IF NOT EXISTS test (f TEXT PRIMARY KEY , f2 INTEGER);";
+        expected = "CREATE TABLE IF NOT EXISTS \"test\" (f TEXT PRIMARY KEY , f2 INTEGER);";
 
         fields = new String[] {
                 "f", "f2"
@@ -110,7 +110,7 @@ public class DatabaseUtilsTest {
         sql = DatabaseUtils.getCreateStatement(p);
         assertEquals(expected, sql);
 
-        expected = "CREATE TABLE IF NOT EXISTS test (f TEXT PRIMARY KEY , f2 INTEGER UNIQUE);";
+        expected = "CREATE TABLE IF NOT EXISTS \"test\" (f TEXT PRIMARY KEY , f2 INTEGER UNIQUE);";
 
         fields = new String[] {
                 "f", "f2"
@@ -126,7 +126,7 @@ public class DatabaseUtilsTest {
         sql = DatabaseUtils.getCreateStatement(p);
         assertEquals(expected, sql);
         
-        expected = "CREATE TABLE IF NOT EXISTS test (f TEXT PRIMARY KEY , f2 INTEGER UNIQUE ON CONFLICT REPLACE);";
+        expected = "CREATE TABLE IF NOT EXISTS \"test\" (f TEXT PRIMARY KEY , f2 INTEGER UNIQUE ON CONFLICT REPLACE);";
         fields = new String[] {
                 "f", "f2"
         };
