@@ -9,6 +9,7 @@ import novoda.rest.context.command.Command;
 import novoda.rest.context.command.QueryCommand;
 import novoda.rest.database.ModularSQLiteOpenHelper;
 import novoda.rest.net.ETagInterceptor;
+import novoda.rest.uri.UriMapper;
 
 import org.apache.http.HttpResponse;
 import org.apache.http.client.methods.HttpUriRequest;
@@ -46,7 +47,8 @@ public class HttpServiceInvoker extends HttpService {
     @Override
     protected void onHandleResponse(HttpResponse response, HttpContext context) {
         Intent intent = getIntent().getParcelableExtra("intent");
-        Command c = getCommand(intent, 0);
+        @SuppressWarnings("rawtypes")
+		Command c = getCommand(intent, 0);
         InputStream in;
         try {
             in = response.getEntity().getContent();

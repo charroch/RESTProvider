@@ -1,5 +1,5 @@
 
-package novoda.rest.providers;
+package novoda.rest.configuration;
 
 import novoda.rest.configuration.ProviderMetaData;
 import novoda.rest.test.R;

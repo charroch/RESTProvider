@@ -21,6 +21,8 @@ public class ProviderMetaData implements Parcelable {
 
     private static final String CLAG_TAG = "clag";
 
+    private static final String URI_MAPPER_TAG = "urimapper";
+
     public String serviceClassName;
 
     public ClagMetaData clag;
@@ -65,6 +67,7 @@ public class ProviderMetaData implements Parcelable {
         }
     };
 
+
     /* Processing XML methods */
     private void processDocument(XmlResourceParser xpp) throws XmlPullParserException, IOException {
         int eventType = xpp.getEventType();
@@ -81,6 +84,10 @@ public class ProviderMetaData implements Parcelable {
 
                 if (xpp.getName().equals(CLAG_TAG)) {
                     processClagTag(xpp);
+                }
+                
+                if (xpp.getName().equals(URI_MAPPER_TAG)) {
+                	
                 }
 
             } else if (eventType == XmlResourceParser.END_TAG) {

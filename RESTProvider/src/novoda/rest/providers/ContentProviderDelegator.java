@@ -8,4 +8,5 @@ import android.content.pm.ServiceInfo;
 public interface ContentProviderDelegator {
     public ServiceInfo getService();
     public void startService(HttpServiceIntent intent);
+    public ContentProviderDelegate getDelegate();
 }

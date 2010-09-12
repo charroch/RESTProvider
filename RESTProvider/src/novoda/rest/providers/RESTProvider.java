@@ -6,6 +6,7 @@ import novoda.rest.configuration.ProviderMetaData;
 import novoda.rest.database.ModularSQLiteOpenHelper;
 import novoda.rest.intents.HttpServiceIntent;
 import novoda.rest.system.IOCLoader;
+import novoda.rest.uri.UriMapper;
 import novoda.rest.utils.UriUtils;
 
 import android.content.ContentProvider;
@@ -33,8 +34,7 @@ public class RESTProvider extends ContentProvider implements ContentProviderDele
         loader = IOCLoader.getInstance(getContext());
         metaData = loader.getMetaData();
         if (metaData.isClag()) {
-            delegate = new ClagProvider(this, metaData.clag);
-            delegate.onCreate();
+			delegate = new ClagProvider(metaData.clag);
         }
         db = new ModularSQLiteOpenHelper(getContext());
         return true;
@@ -60,7 +60,7 @@ public class RESTProvider extends ContentProvider implements ContentProviderDele
             String sortOrder) {
         Cursor cursor = db.getReadableDatabase().query(getTableName(uri), projection, selection,
                 selectionArgs, null, null, sortOrder);
-        delegate.query(uri, projection, selection, selectionArgs, sortOrder);
+        startService(delegate.query(uri, projection, selection, selectionArgs, sortOrder));
         return cursor;
     }
 
@@ -88,12 +88,11 @@ public class RESTProvider extends ContentProvider implements ContentProviderDele
     public String getTableName(Uri uri) {
         return UriUtils.getTableName(uri);
     }
-
-    public Uri getHttpUri(Uri uri) {
-        return uri.buildUpon().scheme("http").build();
-    }
-
-    public Intent getHttpIntent(Uri uri, int type) {
-        return null;
-    }
+    
+    public ContentProviderDelegate getDelegate() {
+    	if (metaData.isClag()) {
+			delegate = new ClagProvider(metaData.clag);
+        }
+		return delegate;
+	}
 }

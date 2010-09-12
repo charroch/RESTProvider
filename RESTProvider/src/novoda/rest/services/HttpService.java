@@ -80,6 +80,22 @@ public abstract class HttpService extends IntentService {
     @Override
     protected void onHandleIntent(Intent intent) {
         this.intent = intent;
+        try {
+        	request = getHttpUriRequest(intent);
+            HttpContext context = getHttpContext();
+            context.setAttribute("intent", intent);
+            onPreCall(request, context);
+            HttpResponse response = client.execute(request, context);
+            onPostCall(response, context);
+            onHandleResponse(response, context);
+        } catch (ClientProtocolException e) {
+            e.printStackTrace();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+    }
+
+    protected HttpUriRequest getHttpUriRequest(Intent intent) {
         final Uri uri = intent.getData();
         int method = -1;
 
@@ -118,26 +134,10 @@ public abstract class HttpService extends IntentService {
                         "Method not supported, does the intent contain a method? "
                                 + intent.toString());
         }
+		return request;
+	}
 
-        try {
-
-            HttpContext context = getHttpContext();
-            context.setAttribute("intent", intent);
-
-            onPreCall(request, context);
-            HttpResponse response = client.execute(request, context);
-            onPostCall(response, context);
-
-            onHandleResponse(response, context);
-
-        } catch (ClientProtocolException e) {
-            e.printStackTrace();
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
-    }
-
-    private URI getURIFromUri(Uri uri, List<ParcelableBasicNameValuePair> params) {
+	private URI getURIFromUri(Uri uri, List<ParcelableBasicNameValuePair> params) {
         try {
             StringBuilder query = new StringBuilder(URLEncodedUtils.format(params, "UTF-8"));
             if (uri.getQuery() != null && uri.getQuery().length() > 3) {

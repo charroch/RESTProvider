@@ -1,16 +1,13 @@
-
 package novoda.rest.providers;
 
-import android.content.ContentProvider;
+import novoda.rest.intents.HttpServiceIntent;
+import android.net.Uri;
 
-public abstract class ContentProviderDelegate extends ContentProvider {
-    ContentProviderDelegator delegator;
+public interface ContentProviderDelegate {
+	
+	public HttpServiceIntent query(Uri uri, String[] projection,
+			String selection, String[] selectionArgs, String sortOrder);
 
-    public ContentProviderDelegate(ContentProviderDelegator dispatcher) {
-        this.delegator = dispatcher;
-    }
-
-    public ContentProviderDelegator getDispatcher() {
-        return delegator;
-    }
+	public HttpServiceIntent init();
+	
 }
