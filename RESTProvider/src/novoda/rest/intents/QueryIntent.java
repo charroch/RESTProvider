@@ -14,14 +14,6 @@ import java.util.ArrayList;
 
 public abstract class QueryIntent implements HttpServiceIntent {
 
-    private static final int GET = 1;
-
-    private static final int POST = 2;
-
-    private static final int DELETE = 3;
-
-    private static final int PUT = 4;
-
     private Uri uri;
 
     private String[] projection;
@@ -87,20 +79,7 @@ public abstract class QueryIntent implements HttpServiceIntent {
 
     @Override
     public Intent getIntent() {
-        String action = null;
-        switch (getMethod()) {
-            case GET:
-                action = HttpService.ACTION_GET;
-                break;
-            case POST:
-                action = HttpService.ACTION_POST;
-                break;
-            default:
-                throw new HttpServiceException(
-                        "Method not supported, does the intent contain a method?");
-        }
-
-        Intent intent = new Intent(action);
+        Intent intent = new Intent(getMethod());
         intent.setData(getHttpUri());
         intent.putParcelableArrayListExtra("params", getQueryParams(uri, projection, selection,
                 selectionArgs, sortOrder));

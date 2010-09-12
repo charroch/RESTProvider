@@ -34,13 +34,13 @@ public abstract class HttpService extends IntentService {
 
     private static final String USER_AGENT = new UserAgent.Builder().with("RESTProvider").build();
 
-    private static final int GET = 1;
+    public static final int GET = 1;
 
-    private static final int POST = 2;
+    public static final int POST = 2;
 
-    private static final int DELETE = 3;
+    public static final int DELETE = 3;
 
-    private static final int PUT = 4;
+    public static final int PUT = 4;
 
     public static final String ACTION_GET = "novoda.rest.http.GET_REQUEST";
 
@@ -73,7 +73,7 @@ public abstract class HttpService extends IntentService {
 
     @Override
     public void onDestroy() {
-        ((AndroidHttpClient)client).close();
+        ((AndroidHttpClient) client).close();
         super.onDestroy();
     }
 
@@ -145,8 +145,8 @@ public abstract class HttpService extends IntentService {
                     query.append('&');
                 query.append(uri.getQuery());
             }
-            return URIUtils.createURI(uri.getScheme(), uri.getHost(), uri.getPort(), uri
-                    .getEncodedPath(), query.toString(), uri.getFragment());
+            return URIUtils.createURI(uri.getScheme(), uri.getHost(), uri.getPort(),
+                    uri.getEncodedPath(), query.toString(), uri.getFragment());
         } catch (URISyntaxException e) {
             throw new HttpServiceException();
         }

@@ -107,4 +107,8 @@ public class ProviderMetaData implements Parcelable {
         serviceClassName = xpp.getAttributeValue(NAMESPACE, SERVICE_TAG_ATR_NAME);
     }
 
+    public boolean isClag() {
+        return (clag != null);
+    }
+
 }

@@ -5,6 +5,9 @@ import android.net.Uri;
 
 public interface HttpServiceIntent {
     public Uri getHttpUri();
-    public int getMethod();
+    public String getMethod();
+    
+    // change intent what intent
+    // TODO
     public Intent getIntent();
 }

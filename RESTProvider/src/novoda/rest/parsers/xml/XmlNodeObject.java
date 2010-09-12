@@ -104,7 +104,7 @@ public class XmlNodeObject extends Node<XMLNode> {
 
     @Override
     public String[] getColumns() {
-        List<String> fields = data.getFieldsName(); 
+        List<String> fields = null; //data.getFieldsName(); 
         if (getParent() != null) {
             fields.add(getParent().getTableName() + "_id");
         }

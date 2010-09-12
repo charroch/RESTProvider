@@ -37,8 +37,7 @@ public class ModularSQLiteOpenHelper extends SQLiteOpenHelper {
     public ModularSQLiteOpenHelper(Context context) {
         super(context, new StringBuilder(context.getApplicationInfo().packageName).append(".db")
                 .toString(), null, dbVersion);
-
-        Cursor cur = getReadableDatabase().rawQuery(SELECT_TABLES_NAME, null);
+        final Cursor cur = getReadableDatabase().rawQuery(SELECT_TABLES_NAME, null);
         while (cur.moveToNext()) {
             createdTable.add(cur.getString(0));
         }

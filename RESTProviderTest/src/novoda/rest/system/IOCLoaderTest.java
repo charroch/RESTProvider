@@ -15,7 +15,7 @@ public class IOCLoaderTest extends InstrumentationTestCase {
 
     @Override
     protected void setUp() throws Exception {
-        loader = new IOCLoader(getInstrumentation().getContext());
+        loader = IOCLoader.getInstance(getInstrumentation().getTargetContext());
         super.setUp();
     }
 
