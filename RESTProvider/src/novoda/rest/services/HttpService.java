@@ -170,7 +170,9 @@ public abstract class HttpService extends IntentService {
     }
 
     protected HttpContext getHttpContext() {
-        return new BasicHttpContext();
+    	HttpContext context = new BasicHttpContext();
+    	context.setAttribute("novoda.rest.intent", getIntent());
+        return context;
     }
 
     /**

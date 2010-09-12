@@ -21,11 +21,12 @@ public class SQLiteMetaData {
 
     private static final String TABLE_TAG = "table";
 
-    String databaseName;
+    public String databaseName;
 
-    ArrayList<SQLiteTableCreator> tables;
+    public ArrayList<SQLiteTableCreator> tables;
 
     public SQLiteMetaData(Context context, XmlResourceParser xml) {
+    	tables = new ArrayList<SQLiteTableCreator>();
         try {
             processDocument(xml);
         } catch (XmlPullParserException e) {
@@ -34,8 +35,8 @@ public class SQLiteMetaData {
             e.printStackTrace();
         }
         if (databaseName == null || databaseName.equals("")) {
-            databaseName = new StringBuilder(context.getApplicationInfo().packageName)
-                    .append(".db").toString();
+//            databaseName = new StringBuilder(context.getApplicationInfo().packageName)
+//                    .append(".db").toString();
         }
     }
 
@@ -51,11 +52,9 @@ public class SQLiteMetaData {
                 if (xpp.getName().equals(SQLITE_TAG)) {
                     processSQliteTag(xpp);
                 }
-
                 if (xpp.getName().equals(TABLE_TAG)) {
                     processTableTag(xpp);
                 }
-
             } else if (eventType == XmlResourceParser.END_TAG) {
                 if (xpp.getName().equals(SQLITE_TAG)) {
                     break;
@@ -68,6 +67,7 @@ public class SQLiteMetaData {
 
     private void processTableTag(XmlResourceParser xpp) {
         SQLiteTableCreator creator = new XmlSQLiteTableCreator(xpp);
+        tables.add(creator);
     }
 
     private void processSQliteTag(XmlResourceParser xpp) {

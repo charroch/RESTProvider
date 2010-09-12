@@ -20,12 +20,6 @@
 				android:resource="@xml/description" />
 		</provider>
 
-		<service
-			android:name="novoda.rest.services.DefaultRemoteCallService">
-			<action
-				android:name="novoda.rest.action.ACTION_QUERY" />
-		</service>
-
 		<activity
 			android:name="novoda.rest.activity.Landing">
 			<intent-filter>

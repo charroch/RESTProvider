@@ -2,6 +2,10 @@
 package novoda.rest.configuration;
 
 import java.io.IOException;
+import java.util.ArrayList;
+import java.util.List;
+
+import novoda.rest.database.SQLiteTableCreator;
 
 import org.xmlpull.v1.XmlPullParserException;
 
@@ -26,6 +30,8 @@ public class ProviderMetaData implements Parcelable {
     public String serviceClassName;
 
     public ClagMetaData clag;
+    
+    public SQLiteMetaData sqlite;
 
     public ProviderMetaData(Parcel parcel) {
         serviceClassName = parcel.readString();
@@ -67,6 +73,8 @@ public class ProviderMetaData implements Parcelable {
         }
     };
 
+	private static final String SQLITE_TAG = "sqlite";
+
 
     /* Processing XML methods */
     private void processDocument(XmlResourceParser xpp) throws XmlPullParserException, IOException {
@@ -89,7 +97,10 @@ public class ProviderMetaData implements Parcelable {
                 if (xpp.getName().equals(URI_MAPPER_TAG)) {
                 	
                 }
-
+                
+                if (xpp.getName().equals(SQLITE_TAG) ) {
+                	processSQLiteTag(xpp);
+                }
             } else if (eventType == XmlResourceParser.END_TAG) {
             } else if (eventType == XmlResourceParser.TEXT) {
                 // currently not in use
@@ -98,7 +109,11 @@ public class ProviderMetaData implements Parcelable {
         } while (eventType != XmlResourceParser.END_DOCUMENT);
     }
 
-    /*
+    private void processSQLiteTag(XmlResourceParser xpp) {
+    	sqlite = new SQLiteMetaData(null, xpp);
+	}
+
+	/*
      * Process the <clag> tag
      */
     private void processClagTag(XmlResourceParser xpp) {
@@ -118,4 +133,7 @@ public class ProviderMetaData implements Parcelable {
         return (clag != null);
     }
 
+	public List<SQLiteTableCreator> getCreateStatements() {
+		return sqlite.tables;
+	}
 }

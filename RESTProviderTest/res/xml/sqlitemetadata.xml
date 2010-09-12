@@ -5,7 +5,7 @@
 		rest:tableName="table">
 		<column
 			rest:name="id"
-			rest:type="INTGER"
+			rest:type="INTEGER"
 			rest:unique="true"
 			rest:allow_null="false"
 			rest:on_conflict="REPLACE" />

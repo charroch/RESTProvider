@@ -13,17 +13,19 @@ import novoda.rest.system.LoaderException;
 import org.xmlpull.v1.XmlPullParser;
 import org.xmlpull.v1.XmlPullParserException;
 
-import android.content.res.XmlResourceParser;
-
 public class XmlSQLiteTableCreator implements SQLiteTableCreator {
 
 	private static final String ROOT_TAG_NAME = "table";
+
+	private static final String COLUMN_TAG_NAME = "column";
 
 	private XmlPullParser xpp;
 
 	private Map<String, Column> columns;
 
 	private String tableName;
+
+	private String primaryField = "_id";
 
 	public XmlSQLiteTableCreator(XmlPullParser xtc) {
 		columns = new HashMap<String, Column>();
@@ -51,7 +53,40 @@ public class XmlSQLiteTableCreator implements SQLiteTableCreator {
 		}
 		do {
 			if (eventType == XmlPullParser.START_TAG) {
+				if (COLUMN_TAG_NAME.equals(xpp.getName())) {
+					Column column = new Column();
 
+					column.name = xpp.getAttributeValue(
+							ProviderMetaData.NAMESPACE, "name");
+
+					String type = xpp.getAttributeValue(
+							ProviderMetaData.NAMESPACE, "type");
+
+					if (type != null) {
+						column.type = SQLiteType.valueOf(type);
+					}
+					String allowNull = xpp.getAttributeValue(
+							ProviderMetaData.NAMESPACE, "allow_null");
+
+					if (allowNull != null && allowNull.equals("true")) {
+						column.allowNull = true;
+					}
+
+					String unique = xpp.getAttributeValue(
+							ProviderMetaData.NAMESPACE, "unique");
+
+					if (unique != null && unique.equals("true")) {
+						column.unique = true;
+					}
+
+					String primary = xpp.getAttributeValue(ProviderMetaData.NAMESPACE,
+					"primary");
+					if (primary != null && primary.equals("true")) {
+						primaryField = column.name;
+					}
+					
+					columns.put(column.name, column);
+				}
 			} else if (eventType == XmlPullParser.END_TAG) {
 				if (ROOT_TAG_NAME.equals(xpp.getName()))
 					break;
@@ -72,78 +107,66 @@ public class XmlSQLiteTableCreator implements SQLiteTableCreator {
 
 	@Override
 	public String getParentTableName() {
-		// TODO Auto-generated method stub
 		return null;
 	}
 
 	@Override
 	public SQLiteType getParentType() {
-		// TODO Auto-generated method stub
 		return null;
 	}
 
 	@Override
 	public String getPrimaryKey() {
-		// TODO Auto-generated method stub
-		return null;
+		return primaryField;
 	}
 
 	@Override
 	public String[] getTableFields() {
-		// TODO Auto-generated method stub
-		return null;
+		return columns.keySet().toArray(new String[] {});
 	}
 
 	@Override
 	public String getTableName() {
-		return "test";
+		return tableName;
 	}
 
 	@Override
 	public String[] getTriggers() {
-		// TODO Auto-generated method stub
 		return null;
 	}
 
 	@Override
 	public SQLiteType getType(String field) {
-		// TODO Auto-generated method stub
-		return null;
+		return columns.get(field).type;
 	}
 
 	@Override
 	public boolean isNullAllowed(String field) {
-		// TODO Auto-generated method stub
-		return false;
+		return columns.get(field).allowNull;
 	}
 
 	@Override
 	public boolean isOneToMany() {
-		// TODO Auto-generated method stub
 		return false;
 	}
 
 	@Override
 	public boolean isUnique(String field) {
-		// TODO Auto-generated method stub
-		return false;
+		return columns.get(field).unique;
 	}
 
 	@Override
 	public SQLiteConflictClause onConflict(String field) {
-		// TODO Auto-generated method stub
 		return null;
 	}
 
 	@Override
 	public boolean shouldIndex(String field) {
-		// TODO Auto-generated method stub
 		return false;
 	}
 
 	@Override
 	public boolean shouldPKAutoIncrement() {
-		// TODO Auto-generated method stub
 		return false;
 	}
 

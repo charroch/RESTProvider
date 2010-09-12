@@ -1,4 +1,16 @@
 <?xml version="1.0" encoding="utf-8"?>
 <service xmlns:rest="http://novoda.github.com/RESTProvider/apk/res"
 	rest:name="test.com">
+	<urimapper>
+		<map rest:uri="updates" rest:type="GET" rest:url="network/updates" />
+	</urimapper>
+	<sqlite>
+		<table rest:tableName="table">
+			<column rest:name="id" rest:type="INTEGER" rest:unique="true"
+				rest:primary="true" rest:allow_null="false" rest:on_conflict="REPLACE" />
+
+			<column rest:name="name" rest:type="TEXT" rest:unique="false"
+				rest:allow_null="true" />
+		</table>
+	</sqlite>
 </service>

@@ -72,10 +72,6 @@ public class RESTProviderTest extends AndroidTestCase {
         assertEquals("test", actual);
     }
     
-    public void testGetHttpUrl() throws Exception {
-        Uri actual = mProvider.getHttpUri(Uri.parse("content://test.com/test"));
-        assertEquals(Uri.parse("http://test.com/test"), actual);
-    }
     
     public void setBundle(Bundle bundle) {
         this.bundle = bundle;
