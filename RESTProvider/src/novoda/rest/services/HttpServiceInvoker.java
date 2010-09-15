@@ -1,5 +1,12 @@
 package novoda.rest.services;
 
+import java.io.IOException;
+import java.io.InputStream;
+
+import javax.xml.parsers.FactoryConfigurationError;
+import javax.xml.parsers.ParserConfigurationException;
+
+import novoda.mixml.XMLNode;
 import novoda.rest.clag.command.ClagInitCommand;
 import novoda.rest.clag.command.ClagQueryCommand;
 import novoda.rest.clag.command.ClagXtifyInitCommand;
@@ -7,19 +14,20 @@ import novoda.rest.context.QueryCallInfo;
 import novoda.rest.context.command.Command;
 import novoda.rest.context.command.QueryCommand;
 import novoda.rest.database.ModularSQLiteOpenHelper;
+import novoda.rest.exception.ParserException;
 import novoda.rest.net.ETagInterceptor;
-import novoda.rest.uri.UriMapper;
+import novoda.rest.parsers.Node;
 
 import org.apache.http.HttpResponse;
 import org.apache.http.client.methods.HttpUriRequest;
 import org.apache.http.protocol.HttpContext;
+import org.apache.http.util.EntityUtils;
 import org.codehaus.jackson.JsonNode;
 import org.codehaus.jackson.map.ObjectMapper;
+import org.xml.sax.SAXException;
 
 import android.content.Intent;
-
-import java.io.IOException;
-import java.io.InputStream;
+import android.util.Log;
 
 // dispatcher
 public class HttpServiceInvoker extends HttpService {
@@ -51,12 +59,35 @@ public class HttpServiceInvoker extends HttpService {
 		Command c = getCommand(intent, 0);
 		InputStream in;
 		try {
-			in = response.getEntity().getContent();
-			JsonNode node = new ObjectMapper().readTree(in);
-			c.execute(node);
+			if (response.getEntity().getContentType().getValue()
+					.equals(CONTENT_TYPE_JSON)) {
+				in = response.getEntity().getContent();
+				JsonNode node = new ObjectMapper().readTree(in);
+				c.execute(node);
+			} else if (response.getEntity().getContentType().getValue()
+					.endsWith(CONTENT_TYPE_XML_SUFFIX)) {
+				in = response.getEntity().getContent();
+				XMLNode node = new XMLNode();
+				node.parse(in);
+				c.execute(node);
+			} else {
+				in = response.getEntity().getContent();
+				XMLNode node = new XMLNode();
+				node.parse(in);
+				c.execute(node);
+//				Log.i("TEST", EntityUtils.toString(response.getEntity()));
+//				throw new ParserException(
+//						"the content type is not defined nor did you define it in the service description");
+			}
 		} catch (IllegalStateException e) {
 			e.printStackTrace();
 		} catch (IOException e) {
+			e.printStackTrace();
+		} catch (SAXException e) {
+			e.printStackTrace();
+		} catch (ParserConfigurationException e) {
+			e.printStackTrace();
+		} catch (FactoryConfigurationError e) {
 			e.printStackTrace();
 		}
 	}
@@ -64,11 +95,11 @@ public class HttpServiceInvoker extends HttpService {
 	@Override
 	protected void onPreCall(HttpUriRequest request, HttpContext context) {
 		Intent intent = getIntent().getParcelableExtra("intent");
-//		if (intent != null
-//				&& intent.getAction().equals("novoda.rest.clag.REGISTER_XTIFY")
-//				|| intent.getAction().equals("novoda.rest.clag.QUERY")) {
-//			request.addHeader("account", intent.getStringExtra("account"));
-//		}
+		// if (intent != null
+		// && intent.getAction().equals("novoda.rest.clag.REGISTER_XTIFY")
+		// || intent.getAction().equals("novoda.rest.clag.QUERY")) {
+		// request.addHeader("account", intent.getStringExtra("account"));
+		// }
 		super.onPreCall(request, context);
 	}
 
@@ -80,7 +111,7 @@ public class HttpServiceInvoker extends HttpService {
 			return c;
 		} else if (intent.getAction().equals("novoda.rest.clag.REGISTER_XTIFY")) {
 			ClagXtifyInitCommand c = new ClagXtifyInitCommand();
-			c.setPersister(new ModularSQLiteOpenHelper(getBaseContext()));
+			// c.setPersister(new ModularSQLiteOpenHelper(getBaseContext()));
 			return c;
 
 		} else if (intent.getAction().equals("novoda.rest.clag.QUERY")) {
@@ -88,10 +119,7 @@ public class HttpServiceInvoker extends HttpService {
 			c.setPersister(new ModularSQLiteOpenHelper(getBaseContext()));
 			return c;
 		}
-		return new QueryCommand<JsonNode>();
+		return null;
 	}
 
-	private QueryCommand<?> getQueryCommand(QueryCallInfo info, int type) {
-		return new QueryCommand<JsonNode>();
-	}
 }

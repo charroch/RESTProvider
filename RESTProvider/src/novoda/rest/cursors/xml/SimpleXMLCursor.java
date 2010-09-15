@@ -1,19 +1,6 @@
 
 package novoda.rest.cursors.xml;
 
-import novoda.mixml.XMLNode;
-import novoda.rest.cursors.RESTMarshaller;
-import novoda.rest.database.SQLiteTableCreator;
-
-import org.apache.http.HttpResponse;
-import org.apache.http.ParseException;
-import org.apache.http.client.ClientProtocolException;
-import org.xml.sax.SAXException;
-
-import android.database.AbstractCursor;
-import android.net.Uri;
-import android.os.Bundle;
-
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -25,7 +12,21 @@ import java.util.Map.Entry;
 import javax.xml.parsers.FactoryConfigurationError;
 import javax.xml.parsers.ParserConfigurationException;
 
-public class SimpleXMLCursor extends RESTMarshaller {
+import novoda.mixml.XMLNode;
+import novoda.rest.cursors.RESTMarshaller;
+import novoda.rest.cursors.xml.SimpleXMLCursor.Builder;
+import novoda.rest.database.SQLiteTableCreator;
+import novoda.rest.utils.XMLMiXPath;
+
+import org.apache.http.HttpResponse;
+import org.apache.http.ParseException;
+import org.apache.http.client.ClientProtocolException;
+import org.xml.sax.SAXException;
+
+import android.net.Uri;
+import android.os.Bundle;
+
+public class SimpleXMLCursor extends RESTMarshaller<SimpleXMLCursor> {
 
     public SimpleXMLCursor(Uri uri) {
         super(uri);
@@ -146,6 +147,13 @@ public class SimpleXMLCursor extends RESTMarshaller {
         if (P.withAutoId && columnName[column].equals("_id")) {
             return mPos;
         }
+        
+        XMLNode ret = nodeList.get(mPos);
+        if (getOriginalName(column).contains("/")) {
+            XMLMiXPath p = new XMLMiXPath();
+            ret = p.parse(ret, getOriginalName(column));
+            return ret.getAsInt();
+        }
         return nodeList.get(mPos).path(getOriginalName(column)).getAsInt();
     }
 
@@ -169,6 +177,12 @@ public class SimpleXMLCursor extends RESTMarshaller {
 
     @Override
     public String getString(int column) {
+        XMLNode ret = nodeList.get(mPos);
+        if (getOriginalName(column).contains("/")) {
+            XMLMiXPath p = new XMLMiXPath();
+            ret = p.parse(ret, getOriginalName(column));
+            return ret.getAsString();
+        }
         return nodeList.get(mPos).path(getOriginalName(column)).getAsString();
     }
 
@@ -267,7 +281,7 @@ public class SimpleXMLCursor extends RESTMarshaller {
     }
 
     @Override
-    public AbstractCursor getCursor() {
+    public SimpleXMLCursor getCursor() {
         return this;
     }
 
@@ -278,7 +292,7 @@ public class SimpleXMLCursor extends RESTMarshaller {
     @Override
     public Bundle getExtras() {
         Bundle bundle = new Bundle();
-       // bundle.putSerializable("response", root);
+        bundle.putSerializable("response", root);
         return bundle;
     }
 }

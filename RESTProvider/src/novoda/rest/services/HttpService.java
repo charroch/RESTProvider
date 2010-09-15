@@ -22,6 +22,7 @@ import android.app.IntentService;
 import android.content.Intent;
 import android.net.Uri;
 import android.net.http.AndroidHttpClient;
+import android.util.Log;
 
 import java.io.IOException;
 import java.io.UnsupportedEncodingException;
@@ -54,7 +55,7 @@ public abstract class HttpService extends IntentService {
 
     private Intent intent;
 
-    private HttpClient client;
+    protected HttpClient client;
 
     private HttpUriRequest request;
 
@@ -62,8 +63,10 @@ public abstract class HttpService extends IntentService {
 
     public HttpService(String name) {
         super(name);
-        if (client == null)
+        if (client == null) {
             client = getHttpClient();
+            ((AndroidHttpClient) client).enableCurlLogging("TEST", Log.VERBOSE);
+        }
         wrappers = new ArrayList<HttpServiceWrapper>();
     }
 
@@ -73,6 +76,7 @@ public abstract class HttpService extends IntentService {
 
     @Override
     public void onDestroy() {
+    	((AndroidHttpClient) client).getConnectionManager().shutdown();
         ((AndroidHttpClient) client).close();
         super.onDestroy();
     }

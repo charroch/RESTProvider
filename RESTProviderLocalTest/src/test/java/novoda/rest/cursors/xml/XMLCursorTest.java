@@ -4,7 +4,6 @@ package novoda.rest.cursors.xml;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
 import static org.mockito.Mockito.when;
-import static org.hamcrest.CoreMatchers.anything;
 import novoda.rest.RESTProvider;
 
 import org.apache.http.HttpEntity;
@@ -20,8 +19,11 @@ import android.net.Uri;
 
 import java.io.File;
 import java.io.FileInputStream;
+import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.util.Arrays;
+import java.util.HashMap;
+import java.util.Map;
 
 @RunWith(MockitoJUnitRunner.class)
 public class XMLCursorTest {
@@ -34,7 +36,7 @@ public class XMLCursorTest {
 
     @Mock
     Uri uri;
-    
+
     @Mock
     Uri childUri;
 
@@ -47,8 +49,8 @@ public class XMLCursorTest {
 
     @Test
     public void shouldParseSimpleXML() throws Exception {
-        SimpleXMLCursor c = new SimpleXMLCursor.Builder().withFieldID("integer").withRootNode(
-                "array").withNodeName("array_item").create();
+        SimpleXMLCursor c = new SimpleXMLCursor.Builder().withFieldID("integer")
+                .withRootNode("array").withNodeName("array_item").create();
 
         when(entity.getContent()).thenReturn(
                 new FileInputStream(new File("src/test/resources/simple.xml")));
@@ -87,8 +89,9 @@ public class XMLCursorTest {
 
     @Test
     public void shouldMapFieldsToString() throws Exception {
-        SimpleXMLCursor c = new SimpleXMLCursor.Builder().withFieldID("integer").withRootNode(
-                "array").withNodeName("array_item").withMappedField("value", "string").create();
+        SimpleXMLCursor c = new SimpleXMLCursor.Builder().withFieldID("integer")
+                .withRootNode("array").withNodeName("array_item")
+                .withMappedField("value", "string").create();
         when(entity.getContent()).thenReturn(
                 new FileInputStream(new File("src/test/resources/simple.xml")));
         c.handleResponse(response);
@@ -113,8 +116,8 @@ public class XMLCursorTest {
 
     @Test
     public void shouldAddID() throws Exception {
-        SimpleXMLCursor c = new SimpleXMLCursor.Builder().withFieldID("integer").withRootNode(
-                "array").withNodeName("array_item").withAutoID().create();
+        SimpleXMLCursor c = new SimpleXMLCursor.Builder().withFieldID("integer")
+                .withRootNode("array").withNodeName("array_item").withAutoID().create();
         when(entity.getContent()).thenReturn(
                 new FileInputStream(new File("src/test/resources/simple.xml")));
         c.handleResponse(response);
@@ -139,30 +142,44 @@ public class XMLCursorTest {
 
     @Test
     public void shouldAddOneToMany() throws Exception {
-        
-        //when(childUri.equals(childUri)).thenReturn(true);
-        
-        SimpleXMLCursor child = new SimpleXMLCursor.Builder().withRootNode("array").withNodeName(
-                "array_item").withFieldID("integer").create();
-        
+
+        // when(childUri.equals(childUri)).thenReturn(true);
+
+        SimpleXMLCursor child = new SimpleXMLCursor.Builder().withRootNode("array")
+                .withNodeName("array_item").withFieldID("integer").create();
+
         SimpleXMLCursor c = new SimpleXMLCursor.Builder().withRootNode("response").withAutoID()
                 .withChildren(child).create();
-        
+
         when(entity.getContent()).thenReturn(
                 new FileInputStream(new File("src/test/resources/simple.xml")));
         c.handleResponse(response);
-        
+
         assertEquals(c.getCount(), 1);
         assertTrue(c.moveToFirst());
         assertEquals(c.getString(c.getColumnIndex("msg")), "message");
         assertEquals(c.getLong(c.getColumnIndex("_id")), 0);
-        
+
         assertTrue(c.getChildUri().size() == 1);
-        
+
         SimpleXMLCursor c2 = (SimpleXMLCursor) c.getChild(childUri);
         assertEquals(c2.getCount(), 2);
         assertTrue(c2.moveToFirst());
         assertEquals(c2.getString(c2.getColumnIndex("string")), "string");
         assertEquals(c2.getLong(c2.getColumnIndex("integer")), 1);
+    }
+
+    @Test
+    public void shouldHaveXPathSupport() throws IllegalStateException, FileNotFoundException,
+            IOException {
+        SimpleXMLCursor cursor = new SimpleXMLCursor.Builder()
+                .withMappedField("hello", "test/value/").withMappedField("test", "array/array_item/string/").withRootNode("response").create();
+        when(entity.getContent()).thenReturn(
+                new FileInputStream(new File("src/test/resources/simple.xml")));
+        cursor.handleResponse(response);
+        assertTrue(Arrays.asList(cursor.getColumnNames()).contains("hello"));
+        assertTrue(cursor.moveToFirst());
+        assertEquals(2, cursor.getInt(cursor.getColumnIndex("hello")));
+        assertEquals("string", cursor.getString(cursor.getColumnIndex("test")));
     }
 }

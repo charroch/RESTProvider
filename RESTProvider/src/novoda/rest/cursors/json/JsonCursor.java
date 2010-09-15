@@ -1,6 +1,12 @@
 
 package novoda.rest.cursors.json;
 
+import java.io.IOException;
+import java.net.URLEncoder;
+import java.util.Arrays;
+import java.util.Iterator;
+import java.util.Map;
+
 import novoda.rest.cursors.One2ManyMapping;
 import novoda.rest.handlers.QueryHandler;
 
@@ -17,12 +23,6 @@ import org.codehaus.jackson.map.ObjectMapper;
 import android.database.AbstractCursor;
 import android.os.Bundle;
 import android.util.Log;
-
-import java.io.IOException;
-import java.net.URLEncoder;
-import java.util.Arrays;
-import java.util.Iterator;
-import java.util.Map;
 
 public class JsonCursor extends AbstractCursor implements QueryHandler<JsonCursor>, One2ManyMapping {
 
@@ -313,49 +313,5 @@ public class JsonCursor extends AbstractCursor implements QueryHandler<JsonCurso
 
     public String getPrimaryFieldName() {
         return (idNode != null) ? idNode : (withId) ? COLUMN_ID : null;
-    }
-
-    public static class Builder {
-
-        private String root = null;
-
-        private String[] columnNames;
-
-        private boolean withId;
-
-        private String idNode = null;
-
-        private String[] foreignKeys;
-
-        public Builder withRootField(String root) {
-            this.root = root;
-            return this;
-        }
-
-        public Builder withIDField(String field) {
-            idNode = field;
-            return this;
-        }
-
-        public Builder addIDField(boolean add) {
-            withId = add;
-            return this;
-        }
-
-        public Builder addOneToMany(JsonCursor.Builder... fields) {
-            throw new UnsupportedOperationException("not implemented");
-        }
-
-        public Builder removeFields(String... fields) {
-            throw new UnsupportedOperationException("not implemented");
-        }
-
-        public Builder withArraysAsForeignKeys(boolean auto) {
-            throw new UnsupportedOperationException("use addOneToMany instead");
-        }
-
-        public JsonCursor create() {
-            return null;
-        }
     }
 }
