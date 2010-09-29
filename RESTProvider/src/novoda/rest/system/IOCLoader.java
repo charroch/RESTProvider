@@ -1,6 +1,9 @@
 
 package novoda.rest.system;
 
+import java.io.IOException;
+import java.util.List;
+
 import novoda.rest.configuration.ProviderMetaData;
 import novoda.rest.database.ModularSQLiteOpenHelper;
 
@@ -14,11 +17,6 @@ import android.content.pm.PackageManager.NameNotFoundException;
 import android.content.pm.ProviderInfo;
 import android.content.pm.ServiceInfo;
 import android.content.res.XmlResourceParser;
-import android.os.Bundle;
-import android.util.Log;
-
-import java.io.IOException;
-import java.util.List;
 
 public class IOCLoader {
 
@@ -54,7 +52,7 @@ public class IOCLoader {
     public ProviderMetaData getMetaData() {
         try {
             final XmlResourceParser xml = getProviderInfo().loadXmlMetaData(pm, METADATA_NAME);
-            return ProviderMetaData.loadFromXML(xml);
+            return ProviderMetaData.loadFromXML(context, xml);
         } catch (XmlPullParserException e) {
             throw new LoaderException("XML not formed correctly", e);
         } catch (IOException e) {

@@ -14,6 +14,7 @@ public class SQLiteMetaDataTest extends InstrumentationTestCase {
     public void testGettingDatabaseName() throws Exception {
         SQLiteMetaData data = new SQLiteMetaData(getInstrumentation().getContext(),
                 getInstrumentation().getContext().getResources().getXml(R.xml.sqlitemetadata));
+        
         assertEquals(data.databaseName, "d.db"); 
         assertEquals(data.tables.size(), 1);
     }

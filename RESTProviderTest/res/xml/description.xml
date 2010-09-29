@@ -11,9 +11,9 @@
 	-->
 	<urimapper>
 		<property
-			rest:uri="schools/#"
-			rest:type="POST/GET/PUT/DELETE"
-			rest:url="append to endpoint|give direct link" />
+			rest:uri="search"
+			rest:type="GET"
+			rest:url="http://twitter.com/api/search.json" />
 
 		<!-- mapping URI to Http Request -->
 	</urimapper>
@@ -23,7 +23,7 @@
 		rest:schema="@raw/sql_insert">
 
 		<table
-			rest:uri="schools/#"
+			rest:uri="search"
 			rest:name="title">
 
 			<column

@@ -1,17 +1,17 @@
 
 package novoda.rest.configuration;
 
-import java.io.IOException;
-import java.util.ArrayList;
-import java.util.List;
-
 import novoda.rest.database.SQLiteTableCreator;
 
 import org.xmlpull.v1.XmlPullParserException;
 
+import android.content.Context;
 import android.content.res.XmlResourceParser;
 import android.os.Parcel;
 import android.os.Parcelable;
+
+import java.io.IOException;
+import java.util.List;
 
 public class ProviderMetaData implements Parcelable {
 
@@ -30,8 +30,10 @@ public class ProviderMetaData implements Parcelable {
     public String serviceClassName;
 
     public ClagMetaData clag;
-    
+
     public SQLiteMetaData sqlite;
+
+	private Context context;
 
     public ProviderMetaData(Parcel parcel) {
         serviceClassName = parcel.readString();
@@ -55,8 +57,19 @@ public class ProviderMetaData implements Parcelable {
         if (xml == null) {
             throw new IOException("xml is null");
         }
-        
+
         ProviderMetaData m = new ProviderMetaData();
+        m.processDocument(xml);
+        return m;
+    }
+
+    public static ProviderMetaData loadFromXML(Context context, XmlResourceParser xml)
+            throws XmlPullParserException, IOException {
+        if (xml == null) {
+            throw new IOException("xml is null");
+        }
+        ProviderMetaData m = new ProviderMetaData();
+        m.context = context;
         m.processDocument(xml);
         return m;
     }
@@ -73,8 +86,7 @@ public class ProviderMetaData implements Parcelable {
         }
     };
 
-	private static final String SQLITE_TAG = "sqlite";
-
+    private static final String SQLITE_TAG = "sqlite";
 
     /* Processing XML methods */
     private void processDocument(XmlResourceParser xpp) throws XmlPullParserException, IOException {
@@ -93,13 +105,13 @@ public class ProviderMetaData implements Parcelable {
                 if (xpp.getName().equals(CLAG_TAG)) {
                     processClagTag(xpp);
                 }
-                
+
                 if (xpp.getName().equals(URI_MAPPER_TAG)) {
-                	
+
                 }
-                
-                if (xpp.getName().equals(SQLITE_TAG) ) {
-                	processSQLiteTag(xpp);
+
+                if (xpp.getName().equals(SQLITE_TAG)) {
+                    processSQLiteTag(xpp);
                 }
             } else if (eventType == XmlResourceParser.END_TAG) {
             } else if (eventType == XmlResourceParser.TEXT) {
@@ -110,10 +122,10 @@ public class ProviderMetaData implements Parcelable {
     }
 
     private void processSQLiteTag(XmlResourceParser xpp) {
-    	sqlite = new SQLiteMetaData(null, xpp);
-	}
+        sqlite = new SQLiteMetaData(context, xpp);
+    }
 
-	/*
+    /*
      * Process the <clag> tag
      */
     private void processClagTag(XmlResourceParser xpp) {
@@ -133,7 +145,7 @@ public class ProviderMetaData implements Parcelable {
         return (clag != null);
     }
 
-	public List<SQLiteTableCreator> getCreateStatements() {
-		return sqlite.tables;
-	}
+    public List<SQLiteTableCreator> getCreateStatements() {
+        return sqlite.tables;
+    }
 }

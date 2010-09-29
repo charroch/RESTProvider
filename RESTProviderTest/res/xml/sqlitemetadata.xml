@@ -2,14 +2,13 @@
 <sqlite xmlns:rest="http://novoda.github.com/RESTProvider/apk/res"
 	rest:name="d.db">
 	<table
-		rest:tableName="table">
+		rest:tableName="table" rest:schema="@raw/sql_insert">
 		<column
 			rest:name="id"
 			rest:type="INTEGER"
 			rest:unique="true"
 			rest:allow_null="false"
 			rest:on_conflict="REPLACE" />
-
 		<column
 			rest:name="name"
 			rest:type="TEXT"

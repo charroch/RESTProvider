@@ -58,7 +58,7 @@ public abstract class RESTProvider extends ContentProvider {
     static {
         setupHttpClient();
     }
-    
+
     @Override
     public boolean onCreate() {
         if (DEBUG) {
@@ -71,25 +71,19 @@ public abstract class RESTProvider extends ContentProvider {
         }
         if (this instanceof OAuthPreferences) {
             Log.i(TAG, "setting oauth pref");
-            setOAuthPreferences((OAuthPreferences)this);
+            setOAuthPreferences((OAuthPreferences) this);
         }
         return true;
     }
 
     public void setOAuthPreferences(OAuthPreferences pref) {
-        
-        interceptor = new OAuthInterceptor(pref.getConsumerKey(), pref
-                .getConsumerSecret());
-        
+        interceptor = new OAuthInterceptor(pref.getConsumerKey(), pref.getConsumerSecret());
         httpClient.addRequestInterceptor(interceptor);
-        
         SharedPreferences p = pref.getSharedPreference();
-        
         if (p.contains(pref.getTokenKey())) {
-            interceptor.setTokenWithSecret(p.getString(pref.getTokenKey(), ""), p.getString(pref
-                    .getTokenSecret(), ""));
+            interceptor.setTokenWithSecret(p.getString(pref.getTokenKey(), ""),
+                    p.getString(pref.getTokenSecret(), ""));
         }
-        
         pref.getSharedPreference().registerOnSharedPreferenceChangeListener(
                 new OAuthOnSharedPreferenceChangeListener(pref.getTokenKey(),
                         pref.getTokenSecret(), interceptor));
@@ -98,9 +92,10 @@ public abstract class RESTProvider extends ContentProvider {
     @Override
     public int delete(Uri uri, String selection, String[] selectionArgs) {
         try {
-            return getDeleteHandler(uri).handleResponse(
-                    httpClient
-                            .execute((HttpUriRequest)deleteRequest(uri, selection, selectionArgs)));
+            return getDeleteHandler(uri)
+                    .handleResponse(
+                            httpClient.execute((HttpUriRequest) deleteRequest(uri, selection,
+                                    selectionArgs)));
         } catch (ClientProtocolException e) {
             Log.e(TAG, "an error occured in delete", e);
             return -1;
@@ -114,7 +109,7 @@ public abstract class RESTProvider extends ContentProvider {
     public Uri insert(Uri uri, ContentValues values) {
         try {
             return getInsertHandler(uri).handleResponse(
-                    httpClient.execute((HttpUriRequest)insertRequest(uri, values)));
+                    httpClient.execute((HttpUriRequest) insertRequest(uri, values)));
         } catch (ClientProtocolException e) {
             Log.e(TAG, "an error occured in insert", e);
             return null;
@@ -136,6 +131,7 @@ public abstract class RESTProvider extends ContentProvider {
                 Log.i(TAG, "will query: " + request.getURI());
 
             Cursor cursor = getQueryHandler(uri).handleResponse(httpClient.execute(request));
+            //httpClient.getConnectionManager().shutdown();
             return cursor;
         } catch (ConnectException e) {
             Log.w(TAG, "an error occured in query", e);
@@ -148,7 +144,8 @@ public abstract class RESTProvider extends ContentProvider {
             return ErrorCursor.getCursor(0, e.getMessage());
         } catch (IllegalArgumentException e) {
             Log.w(TAG, "an error occured in query", e);
-            return ErrorCursor.getCursor(0,
+            return ErrorCursor.getCursor(
+                    0,
                     "Unknown URI (not in cache or not answerable by the implementator): "
                             + uri.toString());
         }
@@ -157,8 +154,10 @@ public abstract class RESTProvider extends ContentProvider {
     @Override
     public int update(Uri uri, ContentValues values, String selection, String[] selectionArgs) {
         try {
-            return getUpdateHandler(uri).handleResponse(
+            int i = getUpdateHandler(uri).handleResponse(
                     httpClient.execute(updateRequest(uri, values, selection, selectionArgs)));
+            //httpClient.getConnectionManager().shutdown();
+            return i;
         } catch (ClientProtocolException e) {
             Log.e(TAG, "an error occured in update", e);
             return -1;
@@ -249,7 +248,8 @@ public abstract class RESTProvider extends ContentProvider {
         HttpProtocolParams.setUserAgent(httpParams, HTTP_USER_AGENT);
         SchemeRegistry schemeRegistry = new SchemeRegistry();
         schemeRegistry.register(new Scheme("http", PlainSocketFactory.getSocketFactory(), 80));
-        //schemeRegistry.register(new Scheme("https", new EasySSLProtocolSocketFactory(), 443));
+        // schemeRegistry.register(new Scheme("https", new
+        // EasySSLProtocolSocketFactory(), 443));
         ThreadSafeClientConnManager cm = new ThreadSafeClientConnManager(httpParams, schemeRegistry);
         HttpProtocolParams.setContentCharset(httpParams, HTTP.UTF_8);
         httpClient = new DefaultHttpClient(cm, httpParams);

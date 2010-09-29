@@ -9,6 +9,7 @@ import novoda.rest.database.SQLiteType;
 
 import android.content.Context;
 import android.content.res.XmlResourceParser;
+import android.util.Log;
 
 import java.io.IOException;
 import java.util.ArrayList;
@@ -19,14 +20,19 @@ public class SQLiteMetaData {
 
     private static final String SQLITE_TAG_ATR_NAME = "name";
 
+    private static final String SQLITE_SCHEMA_ATR_NAME = "schema";
+
     private static final String TABLE_TAG = "table";
 
     public String databaseName;
 
     public ArrayList<SQLiteTableCreator> tables;
 
+    private Context context;
+
     public SQLiteMetaData(Context context, XmlResourceParser xml) {
-    	tables = new ArrayList<SQLiteTableCreator>();
+        this.context = context;
+        tables = new ArrayList<SQLiteTableCreator>();
         try {
             processDocument(xml);
         } catch (XmlPullParserException e) {
@@ -35,8 +41,9 @@ public class SQLiteMetaData {
             e.printStackTrace();
         }
         if (databaseName == null || databaseName.equals("")) {
-//            databaseName = new StringBuilder(context.getApplicationInfo().packageName)
-//                    .append(".db").toString();
+            // databaseName = new
+            // StringBuilder(context.getApplicationInfo().packageName)
+            // .append(".db").toString();
         }
     }
 
@@ -72,5 +79,10 @@ public class SQLiteMetaData {
 
     private void processSQliteTag(XmlResourceParser xpp) {
         databaseName = xpp.getAttributeValue(ProviderMetaData.NAMESPACE, SQLITE_TAG_ATR_NAME);
+        final String rawCreate = xpp.getAttributeValue(ProviderMetaData.NAMESPACE,
+                SQLITE_SCHEMA_ATR_NAME);
+//        
+//        context.getResources().openRawResource(
+//                context.getResources().getIdentifier(rawCreate.split("//")[1], "raw", context.getPackageName()));
     }
 }

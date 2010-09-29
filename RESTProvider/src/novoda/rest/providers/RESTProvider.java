@@ -1,3 +1,4 @@
+
 package novoda.rest.providers;
 
 import novoda.rest.clag.provider.ClagProvider;
@@ -16,85 +17,90 @@ import android.database.Cursor;
 import android.net.Uri;
 
 // delegate class
-public class RESTProvider extends ContentProvider implements
-		ContentProviderDelegator {
+public class RESTProvider extends ContentProvider implements ContentProviderDelegator {
 
-	ModularSQLiteOpenHelper db;
+    ModularSQLiteOpenHelper db;
 
-	IRESTProvider remoteProvider;
+    IRESTProvider remoteProvider;
 
-	private IOCLoader loader;
+    private IOCLoader loader;
 
-	private ProviderMetaData metaData;
+    private ProviderMetaData metaData;
 
-	private ContentProviderDelegate delegate;
+    private ContentProviderDelegate delegate;
 
-	@Override
-	public boolean onCreate() {
-		loader = IOCLoader.getInstance(getContext());
-		metaData = loader.getMetaData();
-		delegate = getDelegate();
-		db = new ModularSQLiteOpenHelper(getContext());
-		for (SQLiteTableCreator creator : metaData.sqlite.tables) {
-			db.createTable(creator);
-		}
-		return true;
-	}
+    @Override
+    public boolean onCreate() {
+        loader = IOCLoader.getInstance(getContext());
+        metaData = loader.getMetaData();
+        delegate = getDelegate();
+        db = getSQLiteOpenHelper();
+        for (SQLiteTableCreator creator : metaData.sqlite.tables) {
+            db.createTable(creator);
+        }
+        return true;
+    }
 
-	@Override
-	public int delete(Uri arg0, String arg1, String[] arg2) {
-		return 0;
-	}
+    @Override
+    public int delete(Uri arg0, String arg1, String[] arg2) {
+        return 0;
+    }
 
-	@Override
-	public String getType(Uri uri) {
-		return null;
-	}
+    @Override
+    public String getType(Uri uri) {
+        return null;
+    }
 
-	@Override
-	public Uri insert(Uri arg0, ContentValues arg1) {
-		return null;
-	}
+    @Override
+    public Uri insert(Uri arg0, ContentValues arg1) {
+        return null;
+    }
 
-	@Override
-	public Cursor query(Uri uri, String[] projection, String selection,
-			String[] selectionArgs, String sortOrder) {
-		Cursor cursor = db.getReadableDatabase().query(getTableName(uri),
-				projection, selection, selectionArgs, null, null, sortOrder);
-		startService(delegate.query(uri, projection, selection, selectionArgs,
-				sortOrder));
-		return cursor;
-	}
+    @Override
+    public Cursor query(Uri uri, String[] projection, String selection, String[] selectionArgs,
+            String sortOrder) {
+        
+    	Cursor cursor = db.getReadableDatabase().query(getTableName(uri), projection, selection,
+                selectionArgs, null, null, sortOrder);
+        
+        //startService(delegate.query(uri, projection, selection, selectionArgs, sortOrder));
+        
+        return cursor;
+    }
 
-	@Override
-	public int update(Uri arg0, ContentValues arg1, String arg2, String[] arg3) {
-		return 0;
-	}
+    @Override
+    public int update(Uri arg0, ContentValues arg1, String arg2, String[] arg3) {
+        return 0;
+    }
 
-	@Override
-	public ServiceInfo getService() {
-		return loader.getServiceInfo();
-	}
+    @Override
+    public ServiceInfo getService() {
+        return loader.getServiceInfo();
+    }
 
-	@Override
-	public void startService(HttpServiceIntent intent) {
-		Intent in = intent.getIntent();
-		in.setClassName(getContext(), getService().name);
-		getContext().startService(in);
-	}
+    @Override
+    public void startService(HttpServiceIntent intent) {
+        Intent in = intent.getIntent();
+        in.setClassName(getContext(), getService().name);
+        getContext().startService(in);
+    }
 
-	public String getBaseURI() {
-		return "";
-	}
+    public String getBaseURI() {
+        return "";
+    }
 
-	public String getTableName(Uri uri) {
-		return UriUtils.getTableName(uri);
-	}
+    public String getTableName(Uri uri) {
+        return UriUtils.getTableName(uri);
+    }
 
-	public ContentProviderDelegate getDelegate() {
-		if (metaData.isClag()) {
-			delegate = new ClagProvider(metaData.clag);
-		}
-		return new DefaultContentProviderDelegate(getContext());
-	}
+    public ContentProviderDelegate getDelegate() {
+        if (metaData.isClag()) {
+            delegate = new ClagProvider(metaData.clag);
+        }
+        return new DefaultContentProviderDelegate(getContext());
+    }
+
+    protected ModularSQLiteOpenHelper getSQLiteOpenHelper() {
+        return new ModularSQLiteOpenHelper(getContext());
+    }
 }
