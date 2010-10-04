@@ -1,4 +1,3 @@
-
 package novoda.rest.intents;
 
 import novoda.rest.RESTIntent;

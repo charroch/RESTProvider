@@ -13,13 +13,16 @@ import novoda.rest.parsers.NodeParser;
 import novoda.rest.parsers.Node.ParsingOptions;
 
 public class JsonNodeParser extends NodeParser<JsonNodeObject> {
-    static ObjectMapper oMapper = new ObjectMapper();
+    
+	static ObjectMapper oMapper = new ObjectMapper();
+    
     @Override
     public JsonNodeObject parse(InputStream response, ParsingOptions options) throws ParserException {
         try {
             JsonNode node = oMapper.readTree(response);
             JsonNodeObject o = new JsonNodeObject(node);
-            o.applyOptions(options);
+            if (options != null)
+            	o.applyOptions(options);
             return o;
         } catch (JsonProcessingException e) {
             e.printStackTrace();

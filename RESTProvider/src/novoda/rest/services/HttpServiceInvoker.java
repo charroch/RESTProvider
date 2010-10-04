@@ -10,24 +10,17 @@ import novoda.mixml.XMLNode;
 import novoda.rest.clag.command.ClagInitCommand;
 import novoda.rest.clag.command.ClagQueryCommand;
 import novoda.rest.clag.command.ClagXtifyInitCommand;
-import novoda.rest.context.QueryCallInfo;
 import novoda.rest.context.command.Command;
-import novoda.rest.context.command.QueryCommand;
 import novoda.rest.database.ModularSQLiteOpenHelper;
-import novoda.rest.exception.ParserException;
-import novoda.rest.net.ETagInterceptor;
-import novoda.rest.parsers.Node;
 
 import org.apache.http.HttpResponse;
 import org.apache.http.client.methods.HttpUriRequest;
 import org.apache.http.protocol.HttpContext;
-import org.apache.http.util.EntityUtils;
 import org.codehaus.jackson.JsonNode;
 import org.codehaus.jackson.map.ObjectMapper;
 import org.xml.sax.SAXException;
 
 import android.content.Intent;
-import android.util.Log;
 
 // dispatcher
 public class HttpServiceInvoker extends HttpService {
@@ -37,8 +30,6 @@ public class HttpServiceInvoker extends HttpService {
 	@Override
 	public void onCreate() {
 		super.onCreate();
-		addHttpServiceWrapper(new ETagInterceptor(getBaseContext(),
-				"novoda.bookssation.db"));
 	}
 
 	/*

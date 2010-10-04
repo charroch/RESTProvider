@@ -16,14 +16,6 @@ public abstract class QueryCommand<T> implements Command<Node<T>>, Persister {
 	}
 
 	@Override
-	public void execute(Node<T> data) {
-		if (options != null) {
-			data.applyOptions(options);
-		}
-		parse(data);
-	}
-
-	@Override
 	public void setPersister(ModularSQLiteOpenHelper sqlite) {
 		this.sqlite = sqlite;
 	}
@@ -31,6 +23,4 @@ public abstract class QueryCommand<T> implements Command<Node<T>>, Persister {
 	protected synchronized ModularSQLiteOpenHelper getDB() {
 		return sqlite;
 	}
-
-	public abstract void parse(Node<T> data);
 }

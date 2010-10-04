@@ -24,6 +24,8 @@ public class IOCLoader {
 
     private static final String METADATA_NAME = "novoda.rest";
 
+	private static final int JSON = 0;
+
     private Context context;
 
     private PackageManager pm;
@@ -115,4 +117,8 @@ public class IOCLoader {
     public ModularSQLiteOpenHelper getSQLiteHelper() {
         return null;
     }
+
+	public int getFormat() {
+		return JSON;
+	}
 }

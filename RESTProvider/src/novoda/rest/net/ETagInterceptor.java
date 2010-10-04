@@ -1,8 +1,8 @@
-
 package novoda.rest.net;
 
+import java.io.IOException;
+
 import novoda.rest.database.etag.ETagSQLiteHelper;
-import novoda.rest.services.HttpServiceWrapper;
 
 import org.apache.http.Header;
 import org.apache.http.HttpException;
@@ -19,86 +19,66 @@ import org.apache.http.protocol.HttpContext;
 
 import android.content.Context;
 
-import java.io.IOException;
+public class ETagInterceptor implements HttpRequestInterceptor,
+		HttpResponseInterceptor {
 
-public class ETagInterceptor implements HttpRequestInterceptor, HttpResponseInterceptor,
-        HttpServiceWrapper {
+	/* package */ETagSQLiteHelper helper;
 
-    /* package */ETagSQLiteHelper helper;
+	public ETagInterceptor(Context context, String databaseName) {
+		helper = new ETagSQLiteHelper(context, databaseName);
+	}
 
-    public ETagInterceptor(Context context, String databaseName) {
-        helper = new ETagSQLiteHelper(context, databaseName);
-    }
+	@Override
+	public void process(HttpRequest request, HttpContext context)
+			throws HttpException, IOException {
+		if (isGetMethod(request)) {
+			ETag etag = helper.getETag(((HttpUriRequest) request).getURI()
+					.toString());
+			if (etag != null) {
+				if (!request.containsHeader(ETag.IF_NONE_MATCH)) {
+					Header inm = new BasicHeader(ETag.IF_NONE_MATCH, etag.etag);
+					request.addHeader(inm);
+				}
+				if (!request.containsHeader(ETag.IF_MODIFIED_SINCE)) {
+					Header inm = new BasicHeader(ETag.IF_MODIFIED_SINCE,
+							etag.lastModified);
+					request.addHeader(inm);
+				}
+			}
+		}
+	}
 
-    @Override
-    public void process(HttpRequest request, HttpContext context) throws HttpException, IOException {
-        if (isGetMethod(request)) {
-            ETag etag = helper.getETag(((HttpUriRequest) request).getURI().toString());
-            if (etag != null) {
-                if (!request.containsHeader(ETag.IF_NONE_MATCH)) {
-                    Header inm = new BasicHeader(ETag.IF_NONE_MATCH, etag.etag);
-                    request.addHeader(inm);
-                }
-                if (!request.containsHeader(ETag.IF_MODIFIED_SINCE)) {
-                    Header inm = new BasicHeader(ETag.IF_MODIFIED_SINCE, etag.lastModified);
-                    request.addHeader(inm);
-                }
-            }
-        }
-    }
+	@Override
+	public void process(HttpResponse response, HttpContext context)
+			throws HttpException, IOException {
 
-    @Override
-    public void process(HttpResponse response, HttpContext context) throws HttpException,
-            IOException {
+		/*
+		 * Only save if we have the ETAG in the header and the response has been
+		 * successful.
+		 */
+		if (response != null && response.containsHeader(ETag.ETAG)
+				&& response.containsHeader(ETag.LAST_MODIFIED)
+				&& response.getStatusLine().getStatusCode() == HttpStatus.SC_OK) {
 
-        /*
-         * Only save if we have the ETAG in the header and the response has been
-         * successful.
-         */
-        if (response != null && response.containsHeader(ETag.ETAG)
-                && response.containsHeader(ETag.LAST_MODIFIED)
-                && response.getStatusLine().getStatusCode() == HttpStatus.SC_OK) {
+			final Header etagHeader = response.getFirstHeader(ETag.ETAG);
+			final Header lastModified = response
+					.getFirstHeader(ETag.LAST_MODIFIED);
 
-            final Header etagHeader = response.getFirstHeader(ETag.ETAG);
-            final Header lastModified = response.getFirstHeader(ETag.LAST_MODIFIED);
+			final HttpRequest reqWrapper = (HttpRequest) context
+					.getAttribute(ExecutionContext.HTTP_REQUEST);
 
-            final HttpRequest reqWrapper = (HttpRequest) context
-                    .getAttribute(ExecutionContext.HTTP_REQUEST);
+			final String request = reqWrapper.getRequestLine().getUri();
 
-            final String request = reqWrapper.getRequestLine().getUri();
+			ETag etag = new ETag();
+			etag.etag = etagHeader.getValue();
+			etag.lastModified = lastModified.getValue();
+			helper.insertETagForUri(etag, request);
+		}
+	}
 
-            ETag etag = new ETag();
-            etag.etag = etagHeader.getValue();
-            etag.lastModified = lastModified.getValue();
-            helper.insertETagForUri(etag, request);
-        }
-    }
-
-    @Override
-    public void onPostCall(HttpResponse response, HttpContext context) {
-        try {
-            process(response, context);
-        } catch (HttpException e) {
-            e.printStackTrace();
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
-    }
-
-    @Override
-    public void onPreCall(HttpUriRequest request, HttpContext context) {
-        try {
-            process(request, context);
-        } catch (HttpException e) {
-            e.printStackTrace();
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
-    }
-
-    private boolean isGetMethod(HttpRequest request) {
-        if (((HttpUriRequest) request).getMethod().equals(HttpGet.METHOD_NAME))
-            return true;
-        return false;
-    }
+	private boolean isGetMethod(HttpRequest request) {
+		if (((HttpUriRequest) request).getMethod().equals(HttpGet.METHOD_NAME))
+			return true;
+		return false;
+	}
 }

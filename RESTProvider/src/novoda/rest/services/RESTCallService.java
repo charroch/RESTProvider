@@ -1,6 +1,11 @@
 
 package novoda.rest.services;
 
+import java.io.IOException;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
+
 import novoda.rest.UriRequestMap;
 import novoda.rest.context.QueryCallInfo;
 import novoda.rest.database.CachingStrategy;
@@ -20,11 +25,6 @@ import android.content.Intent;
 import android.net.Uri;
 import android.os.Bundle;
 import android.util.Log;
-
-import java.io.IOException;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.List;
 
 public abstract class RESTCallService extends IntentService implements UriRequestMap,
         CachingStrategy {

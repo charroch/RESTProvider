@@ -2,7 +2,6 @@
 package novoda.rest.services;
 
 import novoda.rest.database.SQLiteTableCreatorWrapper;
-
 import android.content.ContentValues;
 import android.net.Uri;
 
