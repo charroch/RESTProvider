@@ -60,6 +60,10 @@ public class RESTProvider extends ContentProvider implements
 	public Cursor query(Uri uri, String[] projection, String selection,
 			String[] selectionArgs, String sortOrder) {
 
+		if (UriUtils.isItem(uri)) {
+			selection ="_id=?";
+			selectionArgs = new String[] {uri.getLastPathSegment()};
+		}
 		Cursor cursor = db.getReadableDatabase().query(getTableName(uri),
 				projection, selection, selectionArgs, null, null, sortOrder);
 

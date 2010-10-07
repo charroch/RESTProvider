@@ -94,7 +94,14 @@ public abstract class HttpService extends IntentService {
 			e.printStackTrace();
 		} catch (IOException e) {
 			e.printStackTrace();
+		} finally {
+			onFinishCall();
 		}
+	}
+
+	protected void onFinishCall() {
+		// TODO Auto-generated method stub
+		
 	}
 
 	protected HttpUriRequest getHttpUriRequest(Intent intent) {
