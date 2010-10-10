@@ -1,3 +1,4 @@
+
 package novoda.rest.services;
 
 import java.io.IOException;
@@ -31,182 +32,184 @@ import android.net.Uri;
 
 public abstract class HttpService extends IntentService {
 
-	private static final String USER_AGENT = new UserAgent.Builder().with(
-			"RESTProvider").build();
+    private static final String USER_AGENT = new UserAgent.Builder().with("RESTProvider").build();
 
-	public static final int GET = 1;
+    public static final int GET = 1;
 
-	public static final int POST = 2;
+    public static final int POST = 2;
 
-	public static final int DELETE = 3;
+    public static final int DELETE = 3;
 
-	public static final int PUT = 4;
+    public static final int PUT = 4;
 
-	public static final String ACTION_GET = "novoda.rest.http.GET_REQUEST";
+    public static final String ACTION_GET = "novoda.rest.http.GET_REQUEST";
 
-	public static final String ACTION_POST = "novoda.rest.http.POST_REQUEST";
+    public static final String ACTION_POST = "novoda.rest.http.POST_REQUEST";
 
-	public static final String ACTION_UPDATE = "novoda.rest.http.PUT_REQUEST";
+    public static final String ACTION_UPDATE = "novoda.rest.http.PUT_REQUEST";
 
-	public static final String ACTION_DELETE = "novoda.rest.http.DELETE_REQUEST";
+    public static final String ACTION_DELETE = "novoda.rest.http.DELETE_REQUEST";
 
-	public static final String ACTION_QUERY = "novoda.rest.cp.QUERY";
+    public static final String ACTION_QUERY = "novoda.rest.cp.QUERY";
 
-	private Intent intent;
+    private Intent intent;
 
-	protected AndroidHttpClient client;
+    protected AndroidHttpClient client;
 
-	private HttpUriRequest request;
+    private HttpUriRequest request;
 
-	public HttpService(String name) {
-		super(name);
-		if (client == null) {
-			client = getHttpClient();
-		}
-	}
+    public HttpService(String name) {
+        super(name);
+        if (client == null) {
+            client = getHttpClient();
+        }
+    }
 
-	public HttpService() {
-		this(HttpService.class.getSimpleName());
-	}
+    public HttpService() {
+        this(HttpService.class.getSimpleName());
+    }
 
-	@Override
-	public void onDestroy() {
-		client.getConnectionManager().shutdown();
-		client.close();
-		super.onDestroy();
-	}
+    @Override
+    public void onDestroy() {
+        client.getConnectionManager().shutdown();
+        client.close();
+        super.onDestroy();
+    }
 
-	@Override
-	protected void onHandleIntent(Intent intent) {
-		ETagInterceptor e2 = new ETagInterceptor(getBaseContext(), "etag.db");
-		client.addRequestInterceptor(e2);
-		client.addResponseInterceptor(e2);
-		this.intent = intent;
-		try {
-			request = getHttpUriRequest(intent);
-			HttpContext context = getHttpContext();
-			context.setAttribute("intent", intent);
-			onPreCall(request, context);
-			HttpResponse response = client.execute(request, context);
-			onPostCall(response, context);
-			onHandleResponse(response, context);
-		} catch (ClientProtocolException e) {
-			e.printStackTrace();
-		} catch (IOException e) {
-			e.printStackTrace();
-		}
-	}
+    @Override
+    protected void onHandleIntent(Intent intent) {
+        ETagInterceptor e2 = new ETagInterceptor(getBaseContext(), "etag.db");
+        client.addRequestInterceptor(e2);
+        client.addResponseInterceptor(e2);
+        this.intent = intent;
+        try {
+            request = getHttpUriRequest(intent);
+            HttpContext context = getHttpContext();
+            context.setAttribute("intent", intent);
+            onPreCall(request, context);
+            HttpResponse response = client.execute(request, context);
+            onPostCall(response, context);
+            onHandleResponse(response, context);
+        } catch (Exception e) {
+            onThrowable(e);
+        } finally {
+            onFinishCall();
+        }
+    }
 
-	protected HttpUriRequest getHttpUriRequest(Intent intent) {
-		final Uri uri = intent.getData();
-		int method = -1;
+    protected void onThrowable(Exception e) {
+    }
 
-		List<ParcelableBasicNameValuePair> params = intent
-				.getParcelableArrayListExtra("params");
+    protected HttpUriRequest getHttpUriRequest(Intent intent) {
+        final Uri uri = intent.getData();
+        int method = -1;
 
-		if (params == null) {
-			params = new ArrayList<ParcelableBasicNameValuePair>();
-		}
+        List<ParcelableBasicNameValuePair> params = intent.getParcelableArrayListExtra("params");
 
-		if (ACTION_GET.equals(intent.getAction())) {
-			method = GET;
-		} else if (ACTION_POST.equals(intent.getAction())) {
-			method = POST;
-		} else if (ACTION_DELETE.equals(intent.getAction())) {
-			method = DELETE;
-		} else if (ACTION_UPDATE.equals(intent.getAction())) {
-			method = PUT;
-		}
+        if (params == null) {
+            params = new ArrayList<ParcelableBasicNameValuePair>();
+        }
 
-		switch (method) {
-		case GET:
-			request = new HttpGet(getURIFromUri(uri, params));
-			break;
-		case POST:
-			request = new HttpPost(uri.toString());
-			((HttpPost) request).setEntity(getPostEntity(params));
-			break;
-		case DELETE:
-			request = new HttpDelete(uri.toString());
-			break;
-		case PUT:
-			request = new HttpPut(uri.toString());
-			break;
-		default:
-			throw new HttpServiceException(
-					"Method not supported, does the intent contain a method? "
-							+ intent.toString());
-		}
-		return request;
-	}
+        if (ACTION_GET.equals(intent.getAction())) {
+            method = GET;
+        } else if (ACTION_POST.equals(intent.getAction())) {
+            method = POST;
+        } else if (ACTION_DELETE.equals(intent.getAction())) {
+            method = DELETE;
+        } else if (ACTION_UPDATE.equals(intent.getAction())) {
+            method = PUT;
+        }
 
-	private URI getURIFromUri(Uri uri, List<ParcelableBasicNameValuePair> params) {
-		try {
-			StringBuilder query = new StringBuilder(URLEncodedUtils.format(
-					params, "UTF-8"));
-			if (uri.getQuery() != null && uri.getQuery().length() > 3) {
-				if (params.size() > 0)
-					query.append('&');
-				query.append(uri.getQuery());
-			}
-			return URIUtils.createURI(uri.getScheme(), uri.getHost(),
-					uri.getPort(), uri.getEncodedPath(), query.toString(),
-					uri.getFragment());
-		} catch (URISyntaxException e) {
-			throw new HttpServiceException();
-		}
-	}
+        switch (method) {
+            case GET:
+                request = new HttpGet(getURIFromUri(uri, params));
+                break;
+            case POST:
+                request = new HttpPost(uri.toString());
+                ((HttpPost) request).setEntity(getPostEntity(params));
+                break;
+            case DELETE:
+                request = new HttpDelete(uri.toString());
+                break;
+            case PUT:
+                request = new HttpPut(uri.toString());
+                break;
+            default:
+                throw new HttpServiceException(
+                        "Method not supported, does the intent contain a method? "
+                                + intent.toString());
+        }
+        return request;
+    }
 
-	/**
-	 * Override this method if you intend to change the default behaviour of the
-	 * POST entity. By default, we return URL encoded form entity (i.e.
-	 * param1=value1&param2=value2).The parameters are given from the intent.
-	 * 
-	 * @param params
-	 * @return the entity used within the post. By default, it will use form
-	 *         encoded entity (i.e. param1=value1&param2=value2)
-	 */
-	protected HttpEntity getPostEntity(List<ParcelableBasicNameValuePair> params) {
-		try {
-			return new UrlEncodedFormEntity(params, "UTF-8");
-		} catch (UnsupportedEncodingException e) {
-			throw new HttpServiceException();
-		}
-	}
+    private URI getURIFromUri(Uri uri, List<ParcelableBasicNameValuePair> params) {
+        try {
+            StringBuilder query = new StringBuilder(URLEncodedUtils.format(params, "UTF-8"));
+            if (uri.getQuery() != null && uri.getQuery().length() > 3) {
+                if (params.size() > 0)
+                    query.append('&');
+                query.append(uri.getQuery());
+            }
+            return URIUtils.createURI(uri.getScheme(), uri.getHost(), uri.getPort(),
+                    uri.getEncodedPath(), query.toString(), uri.getFragment());
+        } catch (URISyntaxException e) {
+            throw new HttpServiceException();
+        }
+    }
 
-	protected HttpContext getHttpContext() {
-		HttpContext context = new BasicHttpContext();
-		context.setAttribute("novoda.rest.intent", getIntent());
-		return context;
-	}
+    /**
+     * Override this method if you intend to change the default behaviour of the
+     * POST entity. By default, we return URL encoded form entity (i.e.
+     * param1=value1&param2=value2).The parameters are given from the intent.
+     * 
+     * @param params
+     * @return the entity used within the post. By default, it will use form
+     *         encoded entity (i.e. param1=value1&param2=value2)
+     */
+    protected HttpEntity getPostEntity(List<ParcelableBasicNameValuePair> params) {
+        try {
+            return new UrlEncodedFormEntity(params, "UTF-8");
+        } catch (UnsupportedEncodingException e) {
+            throw new HttpServiceException();
+        }
+    }
 
-	/**
-	 * Called before the request goes on the wire. Leaves a chance to the
-	 * implementor to change the request. If you intent to add interceptors, use
-	 * the constructor instead.
-	 * 
-	 * @param request
-	 *            , the constructed httpUriRequest from the several options
-	 *            given by the intent
-	 */
-	protected void onPreCall(HttpUriRequest request, HttpContext context) {
-	}
+    protected HttpContext getHttpContext() {
+        HttpContext context = new BasicHttpContext();
+        context.setAttribute("novoda.rest.intent", getIntent());
+        return context;
+    }
 
-	protected void onPostCall(HttpResponse response, HttpContext context) {
-	}
+    /**
+     * Called before the request goes on the wire. Leaves a chance to the
+     * implementor to change the request. If you intent to add interceptors, use
+     * the constructor instead.
+     * 
+     * @param request , the constructed httpUriRequest from the several options
+     *            given by the intent
+     */
+    protected void onPreCall(HttpUriRequest request, HttpContext context) {
+    }
 
-	protected Intent getIntent() {
-		return intent;
-	}
+    protected void onPostCall(HttpResponse response, HttpContext context) {
+    }
 
-	/* package */AndroidHttpClient getHttpClient() {
-		return AndroidHttpClient.newInstance(USER_AGENT, getBaseContext());
-	}
+    protected Intent getIntent() {
+        return intent;
+    }
 
-	/* package */void setHttpClient(AndroidHttpClient client) {
-		this.client = client;
-	}
+    /* package */AndroidHttpClient getHttpClient() {
+        return AndroidHttpClient.newInstance(USER_AGENT, getBaseContext());
+    }
 
-	protected abstract void onHandleResponse(HttpResponse response,
-			HttpContext context);
+    /* package */void setHttpClient(AndroidHttpClient client) {
+        this.client = client;
+    }
+
+    protected abstract void onHandleResponse(HttpResponse response, HttpContext context);
+
+    protected void onFinishCall() {
+        // TODO Auto-generated method stub
+
+    }
 }

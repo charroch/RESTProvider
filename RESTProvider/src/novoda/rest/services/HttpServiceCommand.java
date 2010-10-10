@@ -1,7 +1,5 @@
 package novoda.rest.services;
 
-import java.io.IOException;
-
 import novoda.rest.command.Command;
 import novoda.rest.database.ModularSQLiteOpenHelper;
 import novoda.rest.database.Persister;
@@ -15,7 +13,8 @@ import org.apache.http.client.ClientProtocolException;
 import org.apache.http.protocol.HttpContext;
 
 import android.content.Intent;
-import android.util.Log;
+
+import java.io.IOException;
 
 public abstract class HttpServiceCommand extends HttpService {
 
