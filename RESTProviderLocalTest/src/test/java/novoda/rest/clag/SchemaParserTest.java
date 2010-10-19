@@ -9,6 +9,7 @@ import org.codehaus.jackson.JsonNode;
 import org.codehaus.jackson.JsonProcessingException;
 import org.codehaus.jackson.map.ObjectMapper;
 import org.junit.Test;
+import org.junit.experimental.categories.Category;
 
 import java.io.IOException;
 import java.util.Arrays;
@@ -17,6 +18,7 @@ public class SchemaParserTest {
 
     private static ObjectMapper mapper = new ObjectMapper();
 
+    @Prerequisite(requires = "databaseIsAvailable")
     @Test
     public void testSimpleCreate() throws JsonProcessingException, IOException {
         String json = "{\"name\":\"Example\",\"columns\":"

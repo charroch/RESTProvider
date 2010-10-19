@@ -1,5 +1,7 @@
 package novoda.rest.command;
 
+import android.content.ContentProviderClient;
+import android.util.Log;
 import novoda.rest.database.ModularSQLiteOpenHelper;
 import novoda.rest.database.Persister;
 import novoda.rest.parsers.Node;
@@ -22,10 +24,13 @@ public abstract class PersistableCommand implements Command, Persister {
 
 	@Override
 	public void execute() {
-		// TODO locking?
-		traverse(data, sqlite);
+		try {
+			traverse(data, sqlite);
+		} finally {
+			// sqlite.close();
+		}
 	}
 
 	protected abstract void traverse(Node<?> response,
-			ModularSQLiteOpenHelper dbHelper);
+			ModularSQLiteOpenHelper client);
 }

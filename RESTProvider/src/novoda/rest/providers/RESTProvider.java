@@ -2,7 +2,6 @@ package novoda.rest.providers;
 
 import novoda.rest.clag.provider.ClagProvider;
 import novoda.rest.configuration.ProviderMetaData;
-import novoda.rest.configuration.SQLiteMetaData;
 import novoda.rest.database.ModularSQLiteOpenHelper;
 import novoda.rest.database.SQLiteTableCreator;
 import novoda.rest.intents.HttpServiceIntent;

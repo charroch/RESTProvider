@@ -42,18 +42,19 @@ public class ModularSQLiteOpenHelper extends SQLiteOpenHelper {
 		super(context, new StringBuilder(
 				context.getApplicationInfo().packageName).append(".db")
 				.toString(), null, dbVersion);
-		final Cursor cur = getReadableDatabase().rawQuery(SELECT_TABLES_NAME,
-				null);
-		while (cur.moveToNext()) {
-			createdTable.add(cur.getString(0));
-		}
-		cur.close();
+
+//		final Cursor cur = getReadableDatabase().rawQuery(SELECT_TABLES_NAME,
+//				null);
+//		while (cur.moveToNext()) {
+//			createdTable.add(cur.getString(0));
+//		}
+//		cur.close();
 	}
 
 	@Override
 	public void onCreate(SQLiteDatabase db) {
 		Log.v(TAG, "creating database");
-		db.execSQL(CREATE_TABLE_STATUS);
+		//db.execSQL(CREATE_TABLE_STATUS);
 	}
 
 	@Override
@@ -122,7 +123,7 @@ public class ModularSQLiteOpenHelper extends SQLiteOpenHelper {
 	 * @return true if the table has been created. false otherwise
 	 */
 	public synchronized boolean isTableCreated(final String tableName) {
-		return createStatements.containsKey(tableName);
+		return createdTable.contains(tableName);
 	}
 
 }
