@@ -1,7 +1,8 @@
 package novoda.rest.command;
 
-import android.content.ContentProviderClient;
-import android.util.Log;
+import android.os.Debug;
+import android.util.TimingLogger;
+
 import novoda.rest.database.ModularSQLiteOpenHelper;
 import novoda.rest.database.Persister;
 import novoda.rest.parsers.Node;
@@ -25,7 +26,7 @@ public abstract class PersistableCommand implements Command, Persister {
 	@Override
 	public void execute() {
 		try {
-			traverse(data, sqlite);
+		    traverse(data, sqlite);
 		} finally {
 			// sqlite.close();
 		}

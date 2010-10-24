@@ -1,10 +1,7 @@
-<?xml version="1.0" encoding="utf-8"?>
-<manifest
-	xmlns:android="http://schemas.android.com/apk/res/android"
-	package="novoda.rest">
+<?xml version="1.0" encoding="UTF-8"?>
+<manifest package="novoda.rest" xmlns:android="http://schemas.android.com/apk/res/android">
 	<application>
-		<provider
-			android:name="novoda.rest.providers.RESTProvider"
-			android:authorities="novoda.rest.changeme" />
+		<provider android:authorities="novoda.rest.changeme"
+			android:name="novoda.rest.providers.RESTProvider" />
 	</application>
-</manifest> 
+</manifest>
