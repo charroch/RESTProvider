@@ -5,38 +5,54 @@ import org.apache.http.client.HttpClient;
 import org.apache.http.client.methods.HttpUriRequest;
 import org.apache.http.impl.conn.tsccm.ThreadSafeClientConnManager;
 
+import android.content.ContentProviderOperation;
+
+import java.util.ArrayList;
 import java.util.concurrent.Callable;
 
-public class RequestCallable<T> implements Callable<T> {
+public abstract class RequestCallable<T> implements Callable<ArrayList<ContentProviderOperation>>,
+        RequestExecutionListener<T> {
 
-    private RequestExecutionListener<T> listener;
+    private HttpClient client;
 
-    private final HttpClient client;
+    private HttpUriRequest request;
 
-    private final HttpUriRequest request;
+    public RequestCallable(HttpUriRequest request) {
+        this.setRequest(request);
+    }
 
-    public RequestCallable(HttpClient client, HttpUriRequest request,
-            RequestExecutionListener<T> listener) {
-        super();
-        if (client.getConnectionManager() instanceof ThreadSafeClientConnManager) {
-            this.client = client;
-            this.request = request;
-            this.listener = listener;
-        } else {
-            throw new RuntimeException("Can not use non threaded http client");
-        }
+    public RequestCallable() {
     }
 
     @Override
-    public T call() throws Exception {
+    public ArrayList<ContentProviderOperation> call() throws Exception {
         try {
-            listener.onPreCall(request);
-            T data = client.execute(request, listener);
-            listener.onPostCall(data);
-            return data;
+            onPreCall(getRequest());
+            T data = client.execute(getRequest(), this);
+            onPostCall(data);
+            return marshall(data);
         } catch (Exception e) {
-            listener.onThrowable(e.getCause());
+            onThrowable(e.getCause());
         }
-        return null;
+        // return an empty array if the implementor did not return anything
+        return new ArrayList<ContentProviderOperation>();
+    }
+
+    public void setRequest(HttpUriRequest request) {
+        this.request = request;
+    }
+
+    public HttpUriRequest getRequest() {
+        return request;
+    }
+
+    public void setHttpClient(HttpClient client) {
+        if (client.getConnectionManager() instanceof ThreadSafeClientConnManager) {
+            this.client = client;
+        }
+    }
+
+    public HttpClient getHttpClient() {
+        return client;
     }
 }

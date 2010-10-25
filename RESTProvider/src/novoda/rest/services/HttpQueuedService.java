@@ -1,8 +1,9 @@
 
 package novoda.rest.services;
 
-import novoda.rest.net.RequestProcessor;
+import novoda.rest.concurrent.RequestCallable;
 import novoda.rest.net.UserAgent;
+import novoda.rest.utils.Logger;
 
 import org.apache.http.HttpEntity;
 import org.apache.http.client.entity.UrlEncodedFormEntity;
@@ -14,9 +15,12 @@ import org.apache.http.client.methods.HttpUriRequest;
 import org.apache.http.client.utils.URIUtils;
 import org.apache.http.client.utils.URLEncodedUtils;
 
+import android.content.ContentProviderOperation;
 import android.content.Intent;
+import android.content.OperationApplicationException;
 import android.net.Uri;
 import android.net.http.AndroidHttpClient;
+import android.os.RemoteException;
 import android.util.Log;
 
 import java.io.UnsupportedEncodingException;
@@ -26,7 +30,8 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.Callable;
 
-public abstract class HttpQueuedService extends QueuedService {
+public abstract class HttpQueuedService<T> extends
+        QueuedService<ArrayList<ContentProviderOperation>> {
 
     private static final String USER_AGENT = new UserAgent.Builder().with("RESTProvider").build();
 
@@ -48,10 +53,15 @@ public abstract class HttpQueuedService extends QueuedService {
 
     public static final String ACTION_QUERY = "novoda.rest.cp.QUERY";
 
+    private static final String EXTRA_AUTHORITY = "novoda.rest.extra.authority";
+
     private AndroidHttpClient client;
+
+    private String authority;
 
     @Override
     public void onCreate() {
+        authority = getPackageName();
         if (client == null) {
             client = AndroidHttpClient.newInstance(USER_AGENT, getBaseContext());
             if (Log.isLoggable(TAG, Log.VERBOSE)) {
@@ -69,6 +79,10 @@ public abstract class HttpQueuedService extends QueuedService {
 
     protected HttpUriRequest getHttpUriRequest(Intent intent) {
         final Uri uri = intent.getData();
+        final String intentAuthority = intent.getStringExtra(EXTRA_AUTHORITY);
+        if (intentAuthority != null && intentAuthority.length() > 1) {
+            authority = intentAuthority;
+        }
         HttpUriRequest request = null;
         int method = -1;
         List<ParcelableBasicNameValuePair> params = intent.getParcelableArrayListExtra("params");
@@ -84,6 +98,12 @@ public abstract class HttpQueuedService extends QueuedService {
         } else if (ACTION_UPDATE.equals(intent.getAction())) {
             method = PUT;
         }
+
+        if (method == -1) {
+            // by default do a GET
+            method = GET;
+        }
+
         switch (method) {
             case GET:
                 request = new HttpGet(getURIFromUri(uri, params));
@@ -139,9 +159,35 @@ public abstract class HttpQueuedService extends QueuedService {
     }
 
     @Override
-    protected <T> Callable<T> getCallable(Intent intent) {
-        return (Callable<T>) getProcessor(intent);
+    protected Callable<ArrayList<ContentProviderOperation>> getCallable(Intent intent) {
+        RequestCallable<T> marshaller = getMarshaller(intent);
+        marshaller.setHttpClient(client);
+        marshaller.setRequest(getHttpUriRequest(intent));
+        return marshaller;
     }
 
-    protected abstract <T> RequestProcessor getProcessor(final Intent intent);
+    protected String getAuthority() {
+        return authority;
+    }
+
+    @Override
+    protected void onHandleResult(ArrayList<ContentProviderOperation> data) {
+        try {
+            if (Logger.isWarnEnabled()) {
+                if (authority.equals(getPackageName())) {
+                    Log.w(TAG, "using default package name as authority, "
+                            + "override getAuthority to change behaviour");
+                }
+            }
+            if (data != null) {
+                getContentResolver().applyBatch(authority, data);
+            }
+        } catch (RemoteException e) {
+            e.printStackTrace();
+        } catch (OperationApplicationException e) {
+            e.printStackTrace();
+        }
+    }
+
+    protected abstract RequestCallable<T> getMarshaller(final Intent intent);
 }
