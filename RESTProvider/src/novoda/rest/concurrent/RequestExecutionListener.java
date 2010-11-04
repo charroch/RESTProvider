@@ -17,4 +17,6 @@ public interface RequestExecutionListener<T> extends ResponseHandler<T> {
     public void onPostCall(T data);
 
     public ArrayList<ContentProviderOperation> marshall(T data);
+    
+    public void onFinish();
 }

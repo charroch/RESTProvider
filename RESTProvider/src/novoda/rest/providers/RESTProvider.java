@@ -63,11 +63,13 @@ public class RESTProvider extends ContentProvider implements
 			selection ="_id=?";
 			selectionArgs = new String[] {uri.getLastPathSegment()};
 		}
+		
 		Cursor cursor = db.getReadableDatabase().query(getTableName(uri),
 				projection, selection, selectionArgs, null, null, sortOrder);
 
 		HttpServiceIntent intent = delegate.query(uri, projection, selection,
 				selectionArgs, sortOrder);
+		
 		if (intent != null) {
 			startService(intent);
 		}

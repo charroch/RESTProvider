@@ -6,7 +6,7 @@ import java.io.InputStream;
 
 import novoda.rest.database.ModularSQLiteOpenHelper;
 import novoda.rest.exception.ParserException;
-import novoda.rest.utils.AndroidHttpClient;
+import novoda.rest.net.AndroidHttpClient;
 
 import org.apache.http.HttpResponse;
 import org.apache.http.client.ClientProtocolException;

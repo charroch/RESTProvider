@@ -15,6 +15,7 @@ import java.util.concurrent.Callable;
 import java.util.concurrent.CompletionService;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.ExecutorCompletionService;
+import java.util.concurrent.Future;
 import java.util.concurrent.LinkedBlockingQueue;
 import java.util.concurrent.ThreadFactory;
 import java.util.concurrent.ThreadPoolExecutor;
@@ -70,7 +71,7 @@ public abstract class QueuedService<T> extends Service {
             public void run() {
                 while (!isInterrupted()) {
                     try {
-                        onHandleResult(completedTask.take().get());
+                        getAndRunTask();
                     } catch (InterruptedException e) {
                         e.printStackTrace();
                     } catch (ExecutionException e) {
@@ -80,6 +81,11 @@ public abstract class QueuedService<T> extends Service {
             };
         };
         looperThread.start();
+    }
+
+    protected void getAndRunTask() throws InterruptedException, ExecutionException {
+        Future<T> c = completedTask.take();
+        onHandleResult(c.get());
     }
 
     @Override
