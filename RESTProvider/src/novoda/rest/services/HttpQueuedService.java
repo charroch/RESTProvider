@@ -165,8 +165,6 @@ public abstract class HttpQueuedService<T> extends
         marshaller.setRequest(getHttpUriRequest(intent));
         return marshaller;
     }
-    
-    
 
     protected String getAuthority() {
         return authority;
@@ -189,7 +187,7 @@ public abstract class HttpQueuedService<T> extends
         } catch (OperationApplicationException e) {
             e.printStackTrace();
         }
-        
+
     }
 
     protected abstract RequestCallable<T> getMarshaller(final Intent intent);

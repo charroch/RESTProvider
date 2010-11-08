@@ -21,14 +21,6 @@ public class ModularSQLiteOpenHelper extends SQLiteOpenHelper {
 
     private static final String SELECT_TABLES_NAME = "SELECT name FROM sqlite_master WHERE type='table';";
 
-    public static final String TABLE_STATUS_NAME = "call_status";
-
-    private static final String CREATE_TABLE_STATUS = "CREATE TABLE IF NOT EXISTS "
-            + TABLE_STATUS_NAME + "(_id INTEGER PRIMARY KEY AUTOINCREMENT,"
-            + " url TEXT NOT NULL, " + "status INTEGER NOT NULL, " + "etag TEXT, "
-            + "lastModified TEXT, " + "contentLenght INTEGER, " + "createdAt INTEGER NOT NULL, "
-            + "updatedAt INTEGER);";
-
     private List<String> createdTable = new ArrayList<String>();
 
     private Map<String, SQLiteTableCreator> createStatements = new HashMap<String, SQLiteTableCreator>();
@@ -51,8 +43,6 @@ public class ModularSQLiteOpenHelper extends SQLiteOpenHelper {
 
     @Override
     public void onCreate(SQLiteDatabase db) {
-        Log.v(TAG, "creating database");
-        // db.execSQL(CREATE_TABLE_STATUS);
     }
 
     @Override
