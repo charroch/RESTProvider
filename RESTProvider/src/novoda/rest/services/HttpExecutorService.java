@@ -5,6 +5,7 @@ import novoda.rest.command.Command;
 import novoda.rest.database.ModularSQLiteOpenHelper;
 import novoda.rest.database.Persister;
 import novoda.rest.exception.ParserException;
+import novoda.rest.net.AndroidHttpClient;
 import novoda.rest.net.UserAgent;
 import novoda.rest.parsers.Node;
 import novoda.rest.parsers.json.JsonNodeParser;
@@ -18,7 +19,6 @@ import org.apache.http.protocol.HttpContext;
 
 import android.app.Service;
 import android.content.Intent;
-import android.net.http.AndroidHttpClient;
 import android.os.Bundle;
 import android.os.Debug;
 import android.os.Handler;
