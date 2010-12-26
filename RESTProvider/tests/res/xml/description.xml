@@ -27,7 +27,7 @@
 			rest:name="title">
 
 			<column
-				rest:type="TEXT|INTGER|SQLiteType"
+				rest:type="TEXT"
 				rest:unique="true"
 				rest:allow_null="true"
 				rest:on_conflict="SQLiteOnConflict" />

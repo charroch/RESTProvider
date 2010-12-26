@@ -31,7 +31,7 @@ public abstract class HttpRequestHandler<T> implements RequestExecutionListener<
     private boolean processStatusLine(StatusLine statusLine) {
         final int statusCode = statusLine.getStatusCode();
         if (statusCode >= 400 && statusCode <= 499) {
-            onHttpError(statusCode);
+         //   onHttpError(statusCode);
             return false;
         } else if (statusCode == HttpStatus.SC_NO_CONTENT) {
             onFinish();
