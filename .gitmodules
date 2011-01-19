@@ -1,0 +1,6 @@
+[submodule "libs/SQLiteProvider"]
+	path = libs/SQLiteProvider
+	url = git@github.com:novoda/SQLiteProvider.git
+[submodule "libs/HttpService"]
+	path = libs/HttpService
+	url = git@github.com:novoda/HttpService.git
