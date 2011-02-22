@@ -13,11 +13,12 @@ import android.content.ContentValues;
 import android.content.Intent;
 import android.content.pm.ServiceInfo;
 import android.database.Cursor;
+import android.database.sqlite.SQLiteOpenHelper;
 import android.net.Uri;
 
 public class RESTProvider extends ContentProvider implements ContentProviderDelegator {
 
-    ModularSQLiteOpenHelper db;
+    SQLiteOpenHelper db;
 
     private IOCLoader loader;
 
@@ -31,9 +32,9 @@ public class RESTProvider extends ContentProvider implements ContentProviderDele
         metaData = loader.getMetaData();
         delegate = getDelegate();
         db = getSQLiteOpenHelper();
-        for (SQLiteTableCreator creator : metaData.sqlite.tables) {
-            db.createTable(creator);
-        }
+//        for (SQLiteTableCreator creator : metaData.sqlite.tables) {
+//            db.createTable(creator);
+//        }
         return true;
     }
 
@@ -93,7 +94,7 @@ public class RESTProvider extends ContentProvider implements ContentProviderDele
         return new DefaultContentProviderDelegate(getContext());
     }
 
-    protected ModularSQLiteOpenHelper getSQLiteOpenHelper() {
+    protected SQLiteOpenHelper getSQLiteOpenHelper() {
         return new ModularSQLiteOpenHelper(getContext());
     }
 
