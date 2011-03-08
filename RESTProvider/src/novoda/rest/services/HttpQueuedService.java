@@ -1,7 +1,15 @@
 
 package novoda.rest.services;
 
+import java.io.UnsupportedEncodingException;
+import java.net.URI;
+import java.net.URISyntaxException;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.concurrent.Callable;
+
 import novoda.rest.concurrent.RequestCallable;
+import novoda.rest.net.AndroidHttpClient;
 import novoda.rest.net.UserAgent;
 import novoda.rest.utils.Logger;
 
@@ -19,16 +27,8 @@ import android.content.ContentProviderOperation;
 import android.content.Intent;
 import android.content.OperationApplicationException;
 import android.net.Uri;
-import android.net.http.AndroidHttpClient;
 import android.os.RemoteException;
 import android.util.Log;
-
-import java.io.UnsupportedEncodingException;
-import java.net.URI;
-import java.net.URISyntaxException;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.concurrent.Callable;
 
 public abstract class HttpQueuedService<T> extends
         QueuedService<ArrayList<ContentProviderOperation>> {

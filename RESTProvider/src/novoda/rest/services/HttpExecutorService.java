@@ -1,10 +1,18 @@
 
 package novoda.rest.services;
 
+import java.io.IOException;
+import java.util.concurrent.BlockingQueue;
+import java.util.concurrent.LinkedBlockingQueue;
+import java.util.concurrent.ThreadFactory;
+import java.util.concurrent.ThreadPoolExecutor;
+import java.util.concurrent.TimeUnit;
+import java.util.concurrent.atomic.AtomicInteger;
+
 import novoda.rest.command.Command;
-import novoda.rest.database.ModularSQLiteOpenHelper;
 import novoda.rest.database.Persister;
 import novoda.rest.exception.ParserException;
+import novoda.rest.net.AndroidHttpClient;
 import novoda.rest.net.UserAgent;
 import novoda.rest.parsers.Node;
 import novoda.rest.parsers.json.JsonNodeParser;
@@ -18,23 +26,13 @@ import org.apache.http.protocol.HttpContext;
 
 import android.app.Service;
 import android.content.Intent;
-import android.net.http.AndroidHttpClient;
 import android.os.Bundle;
-import android.os.Debug;
 import android.os.Handler;
 import android.os.IBinder;
 import android.os.Message;
 import android.os.ResultReceiver;
 import android.util.Log;
 import android.util.TimingLogger;
-
-import java.io.IOException;
-import java.util.concurrent.BlockingQueue;
-import java.util.concurrent.LinkedBlockingQueue;
-import java.util.concurrent.ThreadFactory;
-import java.util.concurrent.ThreadPoolExecutor;
-import java.util.concurrent.TimeUnit;
-import java.util.concurrent.atomic.AtomicInteger;
 
 public abstract class HttpExecutorService extends Service {
     private static final String TAG = HttpService.class.getSimpleName();
