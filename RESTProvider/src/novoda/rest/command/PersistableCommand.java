@@ -28,7 +28,7 @@ public abstract class PersistableCommand implements Command, Persister {
 		try {
 		    traverse(data, sqlite);
 		} finally {
-			// sqlite.close();
+			 sqlite.close();
 		}
 	}
 
