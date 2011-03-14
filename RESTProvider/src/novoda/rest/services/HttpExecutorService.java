@@ -111,7 +111,7 @@ public abstract class HttpExecutorService extends Service {
     protected void onThrowable(Exception e) {
         if (Log.isLoggable(TAG, Log.ERROR)) {
             Log.e(TAG, "an error occured against intent: ", e);
-            Log.e(TAG, e.getMessage());
+            Log.e(TAG, e.getMessage() + "");
         }
         if (Log.isLoggable(TAG, Log.DEBUG)) {
             Log.e(TAG, "full stack trace:", e);

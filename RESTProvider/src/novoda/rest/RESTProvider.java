@@ -135,13 +135,13 @@ public abstract class RESTProvider extends ContentProvider {
             return cursor;
         } catch (ConnectException e) {
             Log.w(TAG, "an error occured in query", e);
-            return ErrorCursor.getCursor(0, e.getMessage());
+            return ErrorCursor.getCursor(0, e.getMessage() + "");
         } catch (ClientProtocolException e) {
             Log.w(TAG, "an error occured in query", e);
-            return ErrorCursor.getCursor(0, e.getMessage());
+            return ErrorCursor.getCursor(0, e.getMessage() + "");
         } catch (IOException e) {
             Log.w(TAG, "an error occured in query", e);
-            return ErrorCursor.getCursor(0, e.getMessage());
+            return ErrorCursor.getCursor(0, e.getMessage() + "");
         } catch (IllegalArgumentException e) {
             Log.w(TAG, "an error occured in query", e);
             return ErrorCursor.getCursor(
