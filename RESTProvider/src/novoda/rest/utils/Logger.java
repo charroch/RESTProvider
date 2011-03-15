@@ -55,7 +55,7 @@ public class Logger {
     public final void warn(String message, Throwable t) {
         Log.w(tag, message);
         if (t != null) {
-            Log.w(tag, t.getMessage());
+            Log.w(tag, t.getMessage() + "");
         }
     }
 
@@ -66,7 +66,7 @@ public class Logger {
     public final void debug(String message, Throwable t) {
         Log.d(tag, message);
         if (t != null) {
-            Log.d(tag, t.getMessage());
+            Log.d(tag, t.getMessage() + "");
         }
     }
 
@@ -77,7 +77,7 @@ public class Logger {
     public final void info(String message, Throwable t) {
         Log.i(tag, message);
         if (t != null) {
-            Log.i(tag, t.getMessage());
+            Log.i(tag, t.getMessage() + "");
         }
     }
 

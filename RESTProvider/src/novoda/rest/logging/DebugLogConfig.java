@@ -73,7 +73,7 @@ public class DebugLogConfig {
         @Override
         public void publish(LogRecord record) {
             if (record.getLoggerName().startsWith("org.apache")) {
-                Log.d(LOG_TAG, record.getMessage());
+                Log.d(LOG_TAG, record.getMessage() + "");
             }
         }
     }
