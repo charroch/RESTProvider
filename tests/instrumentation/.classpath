@@ -3,9 +3,9 @@
 	<classpathentry kind="src" path="src"/>
 	<classpathentry kind="src" path="gen"/>
 	<classpathentry kind="con" path="com.android.ide.eclipse.adt.ANDROID_FRAMEWORK"/>
+	<classpathentry kind="src" path="RESTProvider_src"/>
 	<classpathentry kind="src" path="HttpService_src_main_java"/>
-	<classpathentry kind="lib" path="libs/google-gson-stream-1.6.jar"/>
-	<classpathentry kind="lib" path="libs/gson-1.6.jar"/>
 	<classpathentry kind="src" path="SQLiteProvider_src"/>
+	<classpathentry kind="lib" path="/RESTProvider/libs/google-gson-stream-1.6.jar"/>
 	<classpathentry kind="output" path="bin"/>
 </classpath>

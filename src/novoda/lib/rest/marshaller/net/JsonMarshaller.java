@@ -11,7 +11,7 @@ import java.io.InputStreamReader;
 
 public class JsonMarshaller extends HttpResponseMarshaller<JsonReader> {
     @Override
-    JsonReader marshall(InputStream content) throws IOException, MarshallingException {
+    protected JsonReader marshall(InputStream content) throws IOException, MarshallingException {
         return new JsonReader(new InputStreamReader(content, "UTF-8"));
     }
 }

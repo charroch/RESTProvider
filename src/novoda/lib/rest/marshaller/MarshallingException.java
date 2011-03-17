@@ -3,6 +3,10 @@ package novoda.lib.rest.marshaller;
 
 public class MarshallingException extends Exception {
 
+    public MarshallingException(Throwable e) {
+        super(e);
+    }
+
     /**
      * 
      */

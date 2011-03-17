@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="utf-8"?>
+<HttpService xmlns:android="http://schemas.android.com/apk/res/android"
+	xmlns:hs="http://schemas.android.com/apk/res/httpservice">
+	
+	<actor android:name="novoda.rest.example.actor.TwitterTrends">
+		<intent-filter>
+			<action name="GET" />
+			<scheme name="http" />
+			<auth host="api.twitter.com" />
+			<path name="trends" literal="/1/trends.json" />
+		</intent-filter>
+	</actor>
+</HttpService>

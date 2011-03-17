@@ -34,5 +34,5 @@ public abstract class HttpResponseMarshaller<To> implements IMarshaller<HttpResp
         return marshall(entity.getContent());
     }
 
-    abstract To marshall(InputStream content) throws IOException, MarshallingException;
+    protected abstract To marshall(InputStream content) throws IOException, MarshallingException;
 }
