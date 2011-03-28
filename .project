@@ -32,14 +32,14 @@
 	</natures>
 	<linkedResources>
 		<link>
-			<name>HttpService_src_main_java</name>
+			<name>com_novoda_lib_httpservice_idores_src_main_java</name>
 			<type>2</type>
-			<locationURI>_android_HttpService_c9bd4ed/src/main/java</locationURI>
+			<locationURI>_android_com_novoda_lib_httpservice_idores_3f383982/src/main/java</locationURI>
 		</link>
 		<link>
-			<name>SQLiteProvider_src</name>
+			<name>novoda_lib_sqliteprovider_idores_src</name>
 			<type>2</type>
-			<locationURI>_android_SQLiteProvider_62d4e3d/src</locationURI>
+			<locationURI>_android_novoda_lib_sqliteprovider_idores_7765bac/src</locationURI>
 		</link>
 	</linkedResources>
 </projectDescription>
