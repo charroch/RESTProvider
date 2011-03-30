@@ -46,5 +46,20 @@
 			<type>2</type>
 			<locationURI>_android_SQLiteProvider_62d4e3d/src</locationURI>
 		</link>
+		<link>
+			<name>com_novoda_lib_httpservice_idores_src_main_java</name>
+			<type>2</type>
+			<locationURI>_android_com_novoda_lib_httpservice_idores_3f383982/src/main/java</locationURI>
+		</link>
+		<link>
+			<name>novoda_lib_sqliteprovider_idores_src</name>
+			<type>2</type>
+			<locationURI>_android_novoda_lib_sqliteprovider_idores_7765bac/src</locationURI>
+		</link>
+		<link>
+			<name>novoda_rest_idores_src</name>
+			<type>2</type>
+			<locationURI>_android_novoda_rest_idores_8ad3fa2f/src</locationURI>
+		</link>
 	</linkedResources>
 </projectDescription>
