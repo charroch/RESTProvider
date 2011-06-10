@@ -116,19 +116,26 @@ public abstract class HttpService extends IntentService {
 	}
 
 	protected void onThrowable(Exception e) {
-		if (Log.isLoggable(TAG, Log.ERROR)) {
-			Log.e(TAG, "an error occured against intent: " + intent);
-			Log.e(TAG, e.getMessage() + "");
-		}
-		if (Log.isLoggable(TAG, Log.DEBUG)) {
-			Log.e(TAG, "full stack trace:", e);
-		}
-
-		if (receiver != null) {
-			final Bundle bundle = new Bundle();
-			bundle.putString(Intent.EXTRA_TEXT, e.toString());
-			receiver.send(STATUS_ERROR, bundle);
-		}
+        try
+        {
+            if (Log.isLoggable(TAG, Log.ERROR)) {
+                Log.e(TAG, "an error occured against intent: " + intent);
+                Log.e(TAG, e.getMessage() + "");
+            }
+            if (Log.isLoggable(TAG, Log.DEBUG)) {
+                Log.e(TAG, "full stack trace:", e);
+            }
+            if (receiver != null) {
+                final Bundle bundle = new Bundle();
+                bundle.putString(Intent.EXTRA_TEXT, e.toString());
+                receiver.send(STATUS_ERROR, bundle);
+            }
+        }
+        catch (Exception exception)
+        {
+            // Exception in exception handler, ouch
+            Log.e("TASTECARD", "Exception in HttpService.onThrowable()");
+        }
 	}
 
 	protected HttpUriRequest getHttpUriRequest(Intent intent) {
