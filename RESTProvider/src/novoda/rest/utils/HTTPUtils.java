@@ -29,6 +29,9 @@ import org.apache.http.NameValuePair;
 import org.apache.http.message.BasicNameValuePair;
 
 import android.content.ContentValues;
+import android.net.Uri;
+import android.text.Html;
+import android.text.TextUtils;
 
 /**
  * A collection of utility methods for handling parameters.
@@ -60,32 +63,17 @@ public class HTTPUtils {
         return parseQuerystring(t);
     }
 
-    /**
-     * Parse a query string into a map of key/value pairs.
-     * 
-     * @param queryString the string to parse (without the '?')
-     * @return key/value pairs mapping
-     */
-    public static Map<String, String> parseQuerystring(String queryString) {
-        Map<String, String> map = new HashMap<String, String>();
-        if ((queryString == null) || (queryString.equals(""))) {
-            return map;
-        }
-        String[] params = queryString.split("&");
+    public static Map<String, String> parseQuerystring(String query) {
+        if (TextUtils.isEmpty(query))
+            new HashMap<String, String>();
+
+        Map<String, String> ret = new HashMap<String, String>();
+        String[] params = query.split("&");
         for (String param : params) {
-            try {
-                String[] keyValuePair = param.split("=", 2);
-                String name = URLDecoder.decode(keyValuePair[0], "UTF-8");
-                if (name == "") {
-                    continue;
-                }
-                String value = keyValuePair.length > 1 ? URLDecoder
-                        .decode(keyValuePair[1], "UTF-8") : "";
-                map.put(name, value);
-            } catch (UnsupportedEncodingException e) {
-            }
+            String[] pair = param.split("=", 2);
+            ret.put(TextUtils.htmlEncode(pair[0]), TextUtils.htmlEncode(pair[1]));
         }
-        return map;
+        return ret;
     }
 
     /**

@@ -1,6 +1,5 @@
-package novoda.rest.services;
 
-import java.io.IOException;
+package novoda.rest.services;
 
 import novoda.rest.command.Command;
 import novoda.rest.database.ModularSQLiteOpenHelper;
@@ -14,43 +13,52 @@ import org.apache.http.HttpResponse;
 import org.apache.http.client.ClientProtocolException;
 import org.apache.http.protocol.HttpContext;
 
+import android.content.Context;
 import android.content.Intent;
-import android.util.Log;
+
+import java.io.IOException;
 
 public abstract class HttpServiceCommand extends HttpService {
 
-	private static final int JSON = 0;
+    private static final int JSON = 0;
 
-	@Override
-	protected void onHandleResponse(HttpResponse response, HttpContext context) {
-		Command command = getCommand(getIntent());
-		command.setData(getData(response, context));
-		if (command instanceof Persister) {
-			ModularSQLiteOpenHelper db = new ModularSQLiteOpenHelper(
-					getApplicationContext());
-			((Persister) command).setPersister(db);
-		}
-		command.execute();
-	}
+    private ModularSQLiteOpenHelper db;
 
-	private Node<?> getData(HttpResponse response, HttpContext context) {
-		int type = IOCLoader.getInstance(getApplicationContext()).getFormat();
-		switch (type) {
-		case JSON:
-			return getJsonNode(response, context);
-		}
-		throw new IllegalArgumentException("can not find format");
-	}
+    @Override
+    protected void onHandleResponse(HttpResponse response, HttpContext context) {
+        Command command = getCommand(getIntent());
+        command.setData(getData(response, context));
+        if (command instanceof Persister) {
+            ((Persister) command).setPersister(getDBHelper(getApplicationContext()));
+        }
+        command.execute();
+    }
 
-	private Node<?> getJsonNode(HttpResponse response, HttpContext context) {
-		JsonNodeParser parser = new JsonNodeParser();
-		try {
-			return parser.handleResponse(response);
-		} catch (ClientProtocolException e) {
-		} catch (IOException e) {
-		}
-		throw new ParserException("can not parse stream");
-	}
+    protected ModularSQLiteOpenHelper getDBHelper(Context context) {
+        if (db == null) {
+            db = new ModularSQLiteOpenHelper(getApplicationContext());
+        }
+        return db;
+    }
 
-	protected abstract Command getCommand(Intent intent);
+    private Node<?> getData(HttpResponse response, HttpContext context) {
+        int type = IOCLoader.getInstance(getApplicationContext()).getFormat();
+        switch (type) {
+            case JSON:
+                return getJsonNode(response, context);
+        }
+        throw new IllegalArgumentException("can not find format");
+    }
+
+    private Node<?> getJsonNode(HttpResponse response, HttpContext context) {
+        JsonNodeParser parser = new JsonNodeParser();
+        try {
+            return parser.handleResponse(response);
+        } catch (ClientProtocolException e) {
+        } catch (IOException e) {
+        }
+        throw new ParserException("can not parse stream");
+    }
+
+    protected abstract Command getCommand(Intent intent);
 }

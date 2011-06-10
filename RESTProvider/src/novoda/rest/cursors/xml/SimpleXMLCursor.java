@@ -1,4 +1,3 @@
-
 package novoda.rest.cursors.xml;
 
 import java.io.IOException;
@@ -14,7 +13,6 @@ import javax.xml.parsers.ParserConfigurationException;
 
 import novoda.mixml.XMLNode;
 import novoda.rest.cursors.RESTMarshaller;
-import novoda.rest.cursors.xml.SimpleXMLCursor.Builder;
 import novoda.rest.database.SQLiteTableCreator;
 import novoda.rest.utils.XMLMiXPath;
 
@@ -25,274 +23,283 @@ import org.xml.sax.SAXException;
 
 import android.net.Uri;
 import android.os.Bundle;
+import android.util.Log;
 
 public class SimpleXMLCursor extends RESTMarshaller<SimpleXMLCursor> {
 
-    public SimpleXMLCursor(Uri uri) {
-        super(uri);
-    }
-    
-    public SimpleXMLCursor() {
-        super();
-    }
+	private static final String TAG = SimpleXMLCursor.class.getSimpleName();
 
-    private CursorParams P;
+	public SimpleXMLCursor(Uri uri) {
+		super(uri);
+	}
 
-    private XMLNode node;
+	public SimpleXMLCursor() {
+		super();
+	}
 
-    private String[] columnName;
+	private CursorParams P;
 
-    private List<XMLNode> nodeList = new ArrayList<XMLNode>();
+	private XMLNode node;
 
-    private List<List<SimpleXMLCursor>> children = new ArrayList<List<SimpleXMLCursor>>();
-    
-    private List<List<Uri>> childrenUri = new ArrayList<List<Uri>>();
+	private String[] columnName;
 
-    public static class CursorParams {
-        public String rootName;
+	private List<XMLNode> nodeList = new ArrayList<XMLNode>();
 
-        public String fieldId;
+	private List<List<SimpleXMLCursor>> children = new ArrayList<List<SimpleXMLCursor>>();
 
-        public String nodeName = null;
+	private List<List<Uri>> childrenUri = new ArrayList<List<Uri>>();
 
-        public Map<String, String> mapper = new HashMap<String, String>();
+	public static class CursorParams {
+		public String rootName;
 
-        public SQLiteTableCreator sqlCreateMapper;
+		public String fieldId;
 
-        public boolean withAutoId = false;
+		public String nodeName = null;
 
-        public List<SimpleXMLCursor> withChildren;
+		public Map<String, String> mapper = new HashMap<String, String>();
 
-        public Uri uri;
+		public SQLiteTableCreator sqlCreateMapper;
 
-        public CursorParams() {
-        }
-    }
+		public boolean withAutoId = false;
 
-    public static class Builder {
-        private final CursorParams P = new CursorParams();
+		public List<SimpleXMLCursor> withChildren;
 
-        public Builder() {
-        }
+		public Uri uri;
 
-        public Builder withFieldID(final String fieldID) {
-            return withFieldID(fieldID, false);
-        }
+		public CursorParams() {
+		}
+	}
 
-        public Builder withRootNode(final String rootNode) {
-            P.rootName = rootNode;
-            return this;
-        }
+	public static class Builder {
+		private final CursorParams P = new CursorParams();
 
-        public Builder withNodeName(final String nodeName) {
-            P.nodeName = nodeName;
-            return this;
-        }
+		public Builder() {
+		}
 
-        public SimpleXMLCursor create() {
-            final SimpleXMLCursor cursor = new SimpleXMLCursor();
-            cursor.P = P;
-            return cursor;
-        }
+		public Builder withFieldID(final String fieldID) {
+			return withFieldID(fieldID, false);
+		}
 
-        public Builder withFieldID(String fieldID, boolean shouldBeUnderscore) {
-            if (shouldBeUnderscore)
-                P.mapper.put("_id", fieldID);
-            return this;
-        }
+		public Builder withRootNode(final String rootNode) {
+			P.rootName = rootNode;
+			return this;
+		}
 
-        public Builder withMappedField(final String original, final String newValue) {
-            P.mapper.put(original, newValue);
-            return this;
-        }
+		public Builder withNodeName(final String nodeName) {
+			P.nodeName = nodeName;
+			return this;
+		}
 
-        public Builder withSQLTableCreator(SQLiteTableCreator creator) {
-            P.sqlCreateMapper = creator;
-            return this;
-        }
+		public SimpleXMLCursor create() {
+			final SimpleXMLCursor cursor = new SimpleXMLCursor();
+			cursor.P = P;
+			return cursor;
+		}
 
-        public Builder withAutoID() {
-            P.withAutoId = true;
-            return this;
-        }
+		public Builder withFieldID(String fieldID, boolean shouldBeUnderscore) {
+			if (shouldBeUnderscore)
+				P.mapper.put("_id", fieldID);
+			return this;
+		}
 
-        public Builder withChildren(SimpleXMLCursor... child) {
-            P.withChildren = new ArrayList<SimpleXMLCursor>(Arrays.asList(child));
-            return this;
-        }
-    }
+		public Builder withMappedField(final String original,
+				final String newValue) {
+			P.mapper.put(original, newValue);
+			return this;
+		}
 
-    @Override
-    public String[] getColumnNames() {
-        return columnName;
-    }
+		public Builder withSQLTableCreator(SQLiteTableCreator creator) {
+			P.sqlCreateMapper = creator;
+			return this;
+		}
 
-    @Override
-    public int getCount() {
-        return nodeList.size();
-    }
+		public Builder withAutoID() {
+			P.withAutoId = true;
+			return this;
+		}
 
-    @Override
-    public double getDouble(int column) {
-        return nodeList.get(mPos).path(getOriginalName(column)).getAsDouble();
-    }
+		public Builder withChildren(SimpleXMLCursor... child) {
+			P.withChildren = new ArrayList<SimpleXMLCursor>(
+					Arrays.asList(child));
+			return this;
+		}
+	}
 
-    @Override
-    public float getFloat(int column) {
-        return nodeList.get(mPos).path(getOriginalName(column)).getAsFloat();
-    }
+	@Override
+	public String[] getColumnNames() {
+		return columnName;
+	}
 
-    @Override
-    public int getInt(int column) {
-        if (P.withAutoId && columnName[column].equals("_id")) {
-            return mPos;
-        }
-        
-        XMLNode ret = nodeList.get(mPos);
-        if (getOriginalName(column).contains("/")) {
-            XMLMiXPath p = new XMLMiXPath();
-            ret = p.parse(ret, getOriginalName(column));
-            return ret.getAsInt();
-        }
-        return nodeList.get(mPos).path(getOriginalName(column)).getAsInt();
-    }
+	@Override
+	public int getCount() {
+		return nodeList.size();
+	}
 
-    private String getOriginalName(int column) {
-        return P.mapper.containsKey(columnName[column]) ? P.mapper.get(columnName[column])
-                : columnName[column];
-    }
+	@Override
+	public double getDouble(int column) {
+		return nodeList.get(mPos).path(getOriginalName(column)).getAsDouble();
+	}
 
-    @Override
-    public long getLong(int column) {
-        if (P.withAutoId && columnName[column].equals("_id")) {
-            return mPos;
-        }
-        return nodeList.get(mPos).path(getOriginalName(column)).getAsLong();
-    }
+	@Override
+	public float getFloat(int column) {
+		return nodeList.get(mPos).path(getOriginalName(column)).getAsFloat();
+	}
 
-    @Override
-    public short getShort(int column) {
-        return nodeList.get(mPos).path(getOriginalName(column)).getAsShort();
-    }
+	@Override
+	public int getInt(int column) {
+		if (P.withAutoId && columnName[column].equals("_id")) {
+			return mPos;
+		}
 
-    @Override
-    public String getString(int column) {
-        XMLNode ret = nodeList.get(mPos);
-        if (getOriginalName(column).contains("/")) {
-            XMLMiXPath p = new XMLMiXPath();
-            ret = p.parse(ret, getOriginalName(column));
-            return ret.getAsString();
-        }
-        return nodeList.get(mPos).path(getOriginalName(column)).getAsString();
-    }
+		XMLNode ret = nodeList.get(mPos);
+		if (getOriginalName(column).contains("/")) {
+			XMLMiXPath p = new XMLMiXPath();
+			ret = p.parse(ret, getOriginalName(column));
+			return ret.getAsInt();
+		}
+		return nodeList.get(mPos).path(getOriginalName(column)).getAsInt();
+	}
 
-    @Override
-    public boolean isNull(int column) {
-        return false;
-    }
+	private String getOriginalName(int column) {
+		return P.mapper.containsKey(columnName[column]) ? P.mapper
+				.get(columnName[column]) : columnName[column];
+	}
 
-    @Override
-    public boolean onMove(int oldPosition, int newPosition) {
-        if (P.withChildren != null) {
-            List<SimpleXMLCursor> child = new ArrayList<SimpleXMLCursor>(P.withChildren.size());
-            List<Uri> childUri = new ArrayList<Uri>(P.withChildren.size());
-            for (SimpleXMLCursor c : P.withChildren) {
-                c.initDom(nodeList.get(newPosition).path(c.P.rootName));
-                child.add(c);
-                childUri.add(c.P.uri);
-            }
-            children.add(child);
-            childrenUri.add(childUri);
-        }
-        return super.onMove(oldPosition, newPosition);
-    }
+	@Override
+	public long getLong(int column) {
+		if (P.withAutoId && columnName[column].equals("_id")) {
+			return mPos;
+		}
+		return nodeList.get(mPos).path(getOriginalName(column)).getAsLong();
+	}
 
-    private void initDom(XMLNode nodeC) {
-        node = nodeC;
-        try {
-            for (String n : P.rootName.split("/")) {
-                node = node.path(n);
-            }
-        } catch (IllegalStateException e) {
-            e.printStackTrace();
-        }
-        init();
-    }
+	@Override
+	public short getShort(int column) {
+		return nodeList.get(mPos).path(getOriginalName(column)).getAsShort();
+	}
 
-    private XMLNode root;
-    
-    @Override
-    public SimpleXMLCursor handleResponse(HttpResponse response) throws ClientProtocolException,
-            IOException {
-        if (response == null) {
-            throw new IOException("response can't be null");
-        }
-        node = new XMLNode();
-        root = node;
-        try {
-            node.parse(response.getEntity().getContent());
-            for (String n : P.rootName.split("/")) {
-                node = node.path(n);
-            }
-        } catch (IllegalStateException e) {
-            e.printStackTrace();
-        } catch (SAXException e) {
-            e.printStackTrace();
-        } catch (ParserConfigurationException e) {
-            e.printStackTrace();
-        } catch (FactoryConfigurationError e) {
-            e.printStackTrace();
-        } finally {
-            response.getEntity().consumeContent();
-        }
-        init();
-        return this;
-    }
+	@Override
+	public String getString(int column) {
+		XMLNode ret = nodeList.get(mPos);
+		if (getOriginalName(column).contains("/")) {
+			XMLMiXPath p = new XMLMiXPath();
+			ret = p.parse(ret, getOriginalName(column));
+			return ret.getAsString();
+		}
+		return nodeList.get(mPos).path(getOriginalName(column)).getAsString();
+	}
 
-    private void init() {
-        if (P.nodeName != null) {
-            nodeList = node.getAsList(P.nodeName);
-        } else {
-            nodeList.add(node);
-        }
+	@Override
+	public boolean isNull(int column) {
+		return false;
+	}
 
-        Map<String, String> m = nodeList.get(0).getAsMap();
-        for (Entry<String, String> e : P.mapper.entrySet()) {
-            m.put(e.getKey(), m.remove(e.getValue()));
-        }
-        columnName = m.keySet().toArray(new String[] {});
+	@Override
+	public boolean onMove(int oldPosition, int newPosition) {
+		if (P.withChildren != null) {
+			List<SimpleXMLCursor> child = new ArrayList<SimpleXMLCursor>(
+					P.withChildren.size());
+			List<Uri> childUri = new ArrayList<Uri>(P.withChildren.size());
+			for (SimpleXMLCursor c : P.withChildren) {
+				c.initDom(nodeList.get(newPosition).path(c.P.rootName));
+				child.add(c);
+				childUri.add(c.P.uri);
+			}
+			children.add(child);
+			childrenUri.add(childUri);
+		}
+		return super.onMove(oldPosition, newPosition);
+	}
 
-        if (P.withAutoId) {
-            String[] tmp = new String[columnName.length + 1];
-            System.arraycopy(columnName, 0, tmp, 0, columnName.length);
-            tmp[tmp.length - 1] = "_id";
-            columnName = tmp;
-        }
-    }
+	private void initDom(XMLNode nodeC) {
+		node = nodeC;
+		try {
+			for (String n : P.rootName.split("/")) {
+				node = node.path(n);
+			}
+		} catch (IllegalStateException e) {
+			e.printStackTrace();
+		}
+		init();
+	}
 
-    @Override
-    public SimpleXMLCursor getChild(Uri uri) {
-        return children.get(0).get(0);
-    }
+	private XMLNode root;
 
-    @Override
-    public List<Uri> getChildUri() {
-        return childrenUri.get(mPos);
-    }
+	@Override
+	public SimpleXMLCursor handleResponse(HttpResponse response)
+			throws ClientProtocolException, IOException {
+		if (response == null) {
+			throw new IOException("response can't be null");
+		}
+		node = new XMLNode();
+		root = node;
+		try {
+			node.parse(response.getEntity().getContent());
+			for (String n : P.rootName.split("/")) {
+				node = node.path(n);
+			}
+			init();
+		} catch (IllegalStateException e) {
+			e.printStackTrace();
+		} catch (SAXException e) {
+			e.printStackTrace();
+		} catch (ParserConfigurationException e) {
+			e.printStackTrace();
+		} catch (FactoryConfigurationError e) {
+			e.printStackTrace();
+		} catch (IndexOutOfBoundsException e) {
+			Log.i(TAG, "Can not parse using options: " + e.getMessage());
+		} finally {
+			response.getEntity().consumeContent();
+		}
+		return this;
+	}
 
-    @Override
-    public SimpleXMLCursor getCursor() {
-        return this;
-    }
+	private void init() {
+		if (P.nodeName != null) {
+			nodeList = node.getAsList(P.nodeName);
+		} else {
+			nodeList.add(node);
+		}
 
-    @Override
-    public void parse(HttpResponse response) throws ParseException {
-    }
-    
-    @Override
-    public Bundle getExtras() {
-        Bundle bundle = new Bundle();
-        bundle.putSerializable("response", root);
-        return bundle;
-    }
+		// Arf!
+		Map<String, String> m = nodeList.get(0).getAsMap();
+		for (Entry<String, String> e : P.mapper.entrySet()) {
+			m.put(e.getKey(), m.remove(e.getValue()));
+		}
+		columnName = m.keySet().toArray(new String[] {});
+
+		if (P.withAutoId) {
+			String[] tmp = new String[columnName.length + 1];
+			System.arraycopy(columnName, 0, tmp, 0, columnName.length);
+			tmp[tmp.length - 1] = "_id";
+			columnName = tmp;
+		}
+	}
+
+	@Override
+	public SimpleXMLCursor getChild(Uri uri) {
+		return children.get(0).get(0);
+	}
+
+	@Override
+	public List<Uri> getChildUri() {
+		return childrenUri.get(mPos);
+	}
+
+	@Override
+	public SimpleXMLCursor getCursor() {
+		return this;
+	}
+
+	@Override
+	public void parse(HttpResponse response) throws ParseException {
+	}
+
+	@Override
+	public Bundle getExtras() {
+		Bundle bundle = new Bundle();
+		bundle.putSerializable("response", root);
+		return bundle;
+	}
 }

@@ -4,6 +4,7 @@ import novoda.rest.net.ETag;
 import android.content.ContentValues;
 import android.content.Context;
 import android.database.Cursor;
+import android.database.DatabaseUtils;
 import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteDatabase.CursorFactory;
 import android.database.sqlite.SQLiteOpenHelper;
@@ -99,6 +100,7 @@ public class ETagSQLiteHelper extends SQLiteOpenHelper {
 			etag.lastModified = cur.getString(1);
 		}
 		if (cur != null) {
+			getReadableDatabase().close();
 			cur.close();
 		}
 		return etag;
@@ -112,14 +114,7 @@ public class ETagSQLiteHelper extends SQLiteOpenHelper {
 		getWritableDatabase().delete(TABLE_NAME, null, null);
 	}
 
-	/* package */int getCount() {
-		Cursor cur = getReadableDatabase().rawQuery(
-				"SELECT COUNT(*) FROM " + TABLE_NAME + ";", null);
-		cur.moveToFirst();
-		try {
-			return cur.getInt(0);
-		} finally {
-			cur.close();
-		}
+	private synchronized long getCount() {
+		return DatabaseUtils.queryNumEntries(getReadableDatabase(), TABLE_NAME);
 	}
 }

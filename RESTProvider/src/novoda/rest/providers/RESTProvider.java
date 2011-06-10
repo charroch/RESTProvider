@@ -1,8 +1,8 @@
+
 package novoda.rest.providers;
 
 import novoda.rest.clag.provider.ClagProvider;
 import novoda.rest.configuration.ProviderMetaData;
-import novoda.rest.configuration.SQLiteMetaData;
 import novoda.rest.database.ModularSQLiteOpenHelper;
 import novoda.rest.database.SQLiteTableCreator;
 import novoda.rest.intents.HttpServiceIntent;
@@ -13,101 +13,103 @@ import android.content.ContentValues;
 import android.content.Intent;
 import android.content.pm.ServiceInfo;
 import android.database.Cursor;
+import android.database.sqlite.SQLiteOpenHelper;
 import android.net.Uri;
 
-// delegate class
-public class RESTProvider extends ContentProvider implements
-		ContentProviderDelegator {
+public class RESTProvider extends ContentProvider implements ContentProviderDelegator {
 
-	ModularSQLiteOpenHelper db;
+    SQLiteOpenHelper db;
 
-	IRESTProvider remoteProvider;
+    private IOCLoader loader;
 
-	private IOCLoader loader;
+    private ProviderMetaData metaData;
 
-	private ProviderMetaData metaData;
+    private ContentProviderDelegate delegate;
 
-	private ContentProviderDelegate delegate;
+    @Override
+    public boolean onCreate() {
+        loader = IOCLoader.getInstance(getContext());
+        metaData = loader.getMetaData();
+        delegate = getDelegate();
+        db = getSQLiteOpenHelper();
+//        for (SQLiteTableCreator creator : metaData.sqlite.tables) {
+//            db.createTable(creator);
+//        }
+        return true;
+    }
 
-	@Override
-	public boolean onCreate() {
-		loader = IOCLoader.getInstance(getContext());
-		metaData = loader.getMetaData();
-		delegate = getDelegate();
-		db = getSQLiteOpenHelper();
-		for (SQLiteTableCreator creator : metaData.sqlite.tables) {
-			db.createTable(creator);
-		}
-		return true;
-	}
+    @Override
+    public String getType(Uri uri) {
+        return null;
+    }
 
-	@Override
-	public int delete(Uri arg0, String arg1, String[] arg2) {
-		return 0;
-	}
+    @Override
+    public Cursor query(Uri uri, String[] projection, String selection, String[] selectionArgs,
+            String sortOrder) {
+        if (UriUtils.isItem(uri)) {
+            selection = "_id=?";
+            selectionArgs = new String[] {
+                uri.getLastPathSegment()
+            };
+        }
+        Cursor cursor = db.getReadableDatabase().query(getTableName(uri), projection, selection,
+                selectionArgs, null, null, sortOrder);
+        onQuery(uri, projection, selection, selectionArgs, sortOrder);
+        return cursor;
+    }
 
-	@Override
-	public String getType(Uri uri) {
-		return null;
-	}
+    protected void onQuery(Uri uri, String[] projection, String selection, String[] selectionArgs,
+            String sortOrder) {
+        final HttpServiceIntent intent = delegate.query(uri, projection, selection, selectionArgs,
+                sortOrder);
+        if (intent != null) {
+            startService(intent);
+        }
+    }
 
-	@Override
-	public Uri insert(Uri arg0, ContentValues arg1) {
-		return null;
-	}
+    @Override
+    public ServiceInfo getService() {
+        return loader.getServiceInfo();
+    }
 
-	@Override
-	public Cursor query(Uri uri, String[] projection, String selection,
-			String[] selectionArgs, String sortOrder) {
+    @Override
+    public void startService(HttpServiceIntent intent) {
+        Intent in = intent.getIntent();
+        in.setClassName(getContext(), getService().name);
+        getContext().startService(in);
+    }
 
-		if (UriUtils.isItem(uri)) {
-			selection ="_id=?";
-			selectionArgs = new String[] {uri.getLastPathSegment()};
-		}
-		Cursor cursor = db.getReadableDatabase().query(getTableName(uri),
-				projection, selection, selectionArgs, null, null, sortOrder);
+    public String getBaseURI() {
+        return "";
+    }
 
-		HttpServiceIntent intent = delegate.query(uri, projection, selection,
-				selectionArgs, sortOrder);
-		if (intent != null) {
-			startService(intent);
-		}
-		return cursor;
-	}
+    public String getTableName(Uri uri) {
+        return UriUtils.getTableName(uri);
+    }
 
-	@Override
-	public int update(Uri arg0, ContentValues arg1, String arg2, String[] arg3) {
-		return 0;
-	}
+    public ContentProviderDelegate getDelegate() {
+        if (metaData.isClag()) {
+            delegate = new ClagProvider(metaData.clag);
+        }
+        return new DefaultContentProviderDelegate(getContext());
+    }
 
-	@Override
-	public ServiceInfo getService() {
-		return loader.getServiceInfo();
-	}
+    protected SQLiteOpenHelper getSQLiteOpenHelper() {
+        return new ModularSQLiteOpenHelper(getContext());
+    }
 
-	@Override
-	public void startService(HttpServiceIntent intent) {
-		Intent in = intent.getIntent();
-		in.setClassName(getContext(), getService().name);
-		getContext().startService(in);
-	}
+    @Override
+    public Uri insert(Uri uri, ContentValues values) {
+        throw new UnsupportedOperationException("not implemented!");
+    }
 
-	public String getBaseURI() {
-		return "";
-	}
+    @Override
+    public int delete(Uri uri, String where, String[] whereArg) {
+        throw new UnsupportedOperationException("not implemented!");
+    }
 
-	public String getTableName(Uri uri) {
-		return UriUtils.getTableName(uri);
-	}
-
-	public ContentProviderDelegate getDelegate() {
-		if (metaData.isClag()) {
-			delegate = new ClagProvider(metaData.clag);
-		}
-		return new DefaultContentProviderDelegate(getContext());
-	}
-
-	protected ModularSQLiteOpenHelper getSQLiteOpenHelper() {
-		return new ModularSQLiteOpenHelper(getContext());
-	}
+    @Override
+    public int update(Uri uri, ContentValues values, String where, String[] whereArg) {
+        throw new UnsupportedOperationException("not implemented!");
+    }
 }

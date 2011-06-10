@@ -6,7 +6,7 @@ import java.io.InputStream;
 
 import novoda.rest.database.ModularSQLiteOpenHelper;
 import novoda.rest.exception.ParserException;
-import novoda.rest.utils.AndroidHttpClient;
+import novoda.rest.net.AndroidHttpClient;
 
 import org.apache.http.HttpResponse;
 import org.apache.http.client.ClientProtocolException;
@@ -56,8 +56,8 @@ public abstract class CallContext<T> implements ICallContext<T> {
     protected HttpClient getHttpClient() {
         try {
             if (client == null) {
-                client = android.net.http.AndroidHttpClient.newInstance(USER_AGENT, getContext());
-                ((android.net.http.AndroidHttpClient)client).enableCurlLogging("curl", Log.DEBUG);
+                client = AndroidHttpClient.newInstance(USER_AGENT, getContext());
+                ((AndroidHttpClient)client).enableCurlLogging("curl", Log.DEBUG);
             }
         } catch (RuntimeException e) {
             if (client == null) {

@@ -1,6 +1,5 @@
 package novoda.rest.services;
 
-import java.io.IOException;
 import java.io.UnsupportedEncodingException;
 import java.net.URI;
 import java.net.URISyntaxException;
@@ -8,12 +7,10 @@ import java.util.ArrayList;
 import java.util.List;
 
 import novoda.rest.net.AndroidHttpClient;
-import novoda.rest.net.ETagInterceptor;
 import novoda.rest.net.UserAgent;
 
 import org.apache.http.HttpEntity;
 import org.apache.http.HttpResponse;
-import org.apache.http.client.ClientProtocolException;
 import org.apache.http.client.entity.UrlEncodedFormEntity;
 import org.apache.http.client.methods.HttpDelete;
 import org.apache.http.client.methods.HttpGet;
@@ -28,8 +25,20 @@ import org.apache.http.protocol.HttpContext;
 import android.app.IntentService;
 import android.content.Intent;
 import android.net.Uri;
+import android.os.Bundle;
+import android.os.ResultReceiver;
+import android.util.Log;
+import android.util.TimingLogger;
 
 public abstract class HttpService extends IntentService {
+
+	private static final String TAG = HttpService.class.getSimpleName();
+
+	/*
+	 * In order to enable ensure you run "setprop log.tag.HttpService VERBOSE"
+	 * in adb
+	 */
+	private TimingLogger logger = new TimingLogger(TAG, "lifecycle");
 
 	private static final String USER_AGENT = new UserAgent.Builder().with(
 			"RESTProvider").build();
@@ -52,16 +61,27 @@ public abstract class HttpService extends IntentService {
 
 	public static final String ACTION_QUERY = "novoda.rest.cp.QUERY";
 
+	private static final String EXTRA_STATUS_RECEIVER = "novoda.rest.extra.STATUS_RECEIVER";
+
+	private static final int STATUS_FINISHED = 0;
+
+	private static final int STATUS_ERROR = 1;
+
 	private Intent intent;
 
 	protected AndroidHttpClient client;
 
 	private HttpUriRequest request;
 
+	private ResultReceiver receiver;
+
 	public HttpService(String name) {
 		super(name);
 		if (client == null) {
 			client = getHttpClient();
+			if (Log.isLoggable(TAG, Log.VERBOSE)) {
+				client.enableCurlLogging(TAG, Log.VERBOSE);
+			}
 		}
 	}
 
@@ -78,10 +98,8 @@ public abstract class HttpService extends IntentService {
 
 	@Override
 	protected void onHandleIntent(Intent intent) {
-		ETagInterceptor e2 = new ETagInterceptor(getBaseContext(), "etag.db");
-		client.addRequestInterceptor(e2);
-		client.addResponseInterceptor(e2);
 		this.intent = intent;
+		receiver = intent.getParcelableExtra(EXTRA_STATUS_RECEIVER);
 		try {
 			request = getHttpUriRequest(intent);
 			HttpContext context = getHttpContext();
@@ -90,18 +108,35 @@ public abstract class HttpService extends IntentService {
 			HttpResponse response = client.execute(request, context);
 			onPostCall(response, context);
 			onHandleResponse(response, context);
-		} catch (ClientProtocolException e) {
-			e.printStackTrace();
-		} catch (IOException e) {
-			e.printStackTrace();
+		} catch (Exception e) {
+			onThrowable(e);
 		} finally {
 			onFinishCall();
 		}
 	}
 
-	protected void onFinishCall() {
-		// TODO Auto-generated method stub
-		
+	protected void onThrowable(Exception e) {
+        try
+        {
+            if (Log.isLoggable(TAG, Log.ERROR)) {
+                Log.e(TAG, "an error occured against intent: " + intent);
+                Log.e(TAG, e.getMessage() + "");
+            }
+            if (Log.isLoggable(TAG, Log.DEBUG)) {
+                Log.e(TAG, "full stack trace:", e);
+            }
+
+            if (receiver != null) {
+                final Bundle bundle = new Bundle();
+                bundle.putString(Intent.EXTRA_TEXT, e.toString());
+                receiver.send(STATUS_ERROR, bundle);
+            }
+        }
+        catch (Exception error)
+        {
+            // Exception thrown in exception handling code - ouch
+            Log.e("TasteCard", "Exception in onThrowable exception handler");
+        }
 	}
 
 	protected HttpUriRequest getHttpUriRequest(Intent intent) {
@@ -197,9 +232,17 @@ public abstract class HttpService extends IntentService {
 	 *            given by the intent
 	 */
 	protected void onPreCall(HttpUriRequest request, HttpContext context) {
+		if (Log.isLoggable(TAG, Log.VERBOSE)) {
+			logger.addSplit("on pre call: "
+					+ request.getRequestLine().toString());
+		}
 	}
 
 	protected void onPostCall(HttpResponse response, HttpContext context) {
+		if (Log.isLoggable(TAG, Log.VERBOSE)) {
+			logger.addSplit("on post call: "
+					+ response.getStatusLine().toString());
+		}
 	}
 
 	protected Intent getIntent() {
@@ -216,4 +259,12 @@ public abstract class HttpService extends IntentService {
 
 	protected abstract void onHandleResponse(HttpResponse response,
 			HttpContext context);
+
+	protected void onFinishCall() {
+		if (Log.isLoggable(TAG, Log.VERBOSE)) {
+			logger.dumpToLog();
+		}
+		if (receiver != null)
+			receiver.send(STATUS_FINISHED, Bundle.EMPTY);
+	}
 }

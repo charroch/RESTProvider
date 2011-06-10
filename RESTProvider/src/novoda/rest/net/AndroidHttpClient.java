@@ -31,6 +31,7 @@ import org.apache.http.conn.ClientConnectionManager;
 import org.apache.http.conn.scheme.PlainSocketFactory;
 import org.apache.http.conn.scheme.Scheme;
 import org.apache.http.conn.scheme.SchemeRegistry;
+import org.apache.http.conn.ssl.SSLSocketFactory;
 import org.apache.http.entity.AbstractHttpEntity;
 import org.apache.http.entity.ByteArrayEntity;
 import org.apache.http.impl.client.DefaultHttpClient;
@@ -46,8 +47,7 @@ import org.apache.http.protocol.HttpContext;
 
 import android.content.ContentResolver;
 import android.content.Context;
-import android.net.SSLCertificateSocketFactory;
-import android.net.SSLSessionCache;
+//import android.net.SSLSessionCache;
 import android.os.Looper;
 import android.util.Log;
 
@@ -111,16 +111,18 @@ public final class AndroidHttpClient implements HttpClient {
 		HttpClientParams.setRedirecting(params, false);
 
 		// Use a session cache for SSL sockets
-		SSLSessionCache sessionCache = context == null ? null
-				: new SSLSessionCache(context);
+//		SSLSessionCache sessionCache = context == null ? null
+//				: new SSLSessionCache(context);
 
 		// Set the specified user agent and register standard protocols.
 		HttpProtocolParams.setUserAgent(params, userAgent);
 		SchemeRegistry schemeRegistry = new SchemeRegistry();
 		schemeRegistry.register(new Scheme("http", PlainSocketFactory
 				.getSocketFactory(), 80));
-		schemeRegistry.register(new Scheme("https", SSLCertificateSocketFactory
-				.getHttpSocketFactory(30 * 1000, sessionCache), 443));
+
+		// Changed from android.net to Apache to fit versions prior to 2.2
+		schemeRegistry.register(new Scheme("https", SSLSocketFactory
+				.getSocketFactory(), 443));
 
 		ClientConnectionManager manager = new ThreadSafeClientConnManager(
 				params, schemeRegistry);
